@@ -76,11 +76,11 @@ public class Scene extends AbstractScene {
 		createWindow();
 		//TODO: Load all programs from the directory
 		// Create the vertex data
-		final VertexData mesh = WavefrontOBJLoader.load(Engine.class.getResourceAsStream("/models/lamp.obj"));
+		final VertexData mesh = WavefrontOBJLoader.load(Engine.class.getResourceAsStream("/models/bunny.obj"));
 
 		// Create the model
 		final Model model = new Model(getProgram("basic"), mesh);
-		model.getTransform().scale(0.05f);
+		model.getTransform().scale(5.0f);
 
 		// Add the model to the scene
 		final SceneNode modelNode = new SceneNode();
