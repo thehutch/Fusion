@@ -1,0 +1,98 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Project information -->
+	<name>Engine</name>
+	<artifactId>fusion-engine</artifactId>
+	<packaging>jar</packaging>
+	<description>Implementation of the Fusion API</description>
+
+	<!-- Parent information -->
+	<parent>
+		<groupId>me.thehutch.fusion</groupId>
+		<artifactId>fusion</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<!-- Build properties -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.root>.</project.root>
+	</properties>
+
+	<!-- Project dependencies -->
+	<dependencies>
+		<!-- Include in final JAR -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>fusion-api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl.lwjgl</groupId>
+			<artifactId>lwjgl</artifactId>
+			<version>2.9.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl.lwjgl</groupId>
+			<artifactId>lwjgl_util</artifactId>
+			<version>2.9.1</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<!-- Build configuration -->
+	<build>
+		<defaultGoal>clean install</defaultGoal>
+
+		<!-- Resources to include -->
+		<resources>
+			<resource>
+				<filtering>false</filtering>
+				<directory>src/main/resources</directory>
+				<targetPath>${project.root}</targetPath>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
+
+		<!-- Build plugins -->
+		<plugins>
+			<!-- Dependency addition plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<configuration>
+							<minimizeJar>true</minimizeJar>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>lib/**</exclude>
+										<exclude>templates/**</exclude>
+										<exclude>META-INF/*.xml</exclude>
+										<exclude>META-INF/*.txt</exclude>
+										<exclude>**/LICENSE</exclude>
+										<exclude>**/NOTICE</exclude>
+										<exclude>**/DEPENDENCIES</exclude>
+										<exclude>**/*.java</exclude>
+									</excludes>
+								</filter>
+							</filters>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
