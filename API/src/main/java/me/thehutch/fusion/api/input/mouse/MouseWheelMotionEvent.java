@@ -20,6 +20,8 @@ package me.thehutch.fusion.api.input.mouse;
 import me.thehutch.fusion.api.event.Event;
 
 /**
+ * An event to represent the mouse wheel motion.
+ *
  * @author thehutch
  */
 public class MouseWheelMotionEvent extends Event {
@@ -29,6 +31,11 @@ public class MouseWheelMotionEvent extends Event {
 		this.delta = delta;
 	}
 
+	/**
+	 * The amount the mouse wheel was moved.
+	 *
+	 * @return The mouse wheel motion delta
+	 */
 	public float getDelta() {
 		return delta;
 	}

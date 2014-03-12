@@ -20,6 +20,8 @@ package me.thehutch.fusion.api.input.mouse;
 import me.thehutch.fusion.api.event.Event;
 
 /**
+ * An event to represent when the mouse is moved.
+ *
  * @author thehutch
  */
 public class MouseMotionEvent extends Event {
@@ -35,18 +37,38 @@ public class MouseMotionEvent extends Event {
 		this.y = y;
 	}
 
+	/**
+	 * The x-coordinate on the window where the mouse was clicked/released.
+	 *
+	 * @return The x-coordinate of the mouse
+	 */
 	public int getX() {
 		return x;
 	}
 
+	/**
+	 * The y-coordinate on the window where the mouse was clicked/released.
+	 *
+	 * @return The y-coordinate of the mouse
+	 */
 	public int getY() {
 		return y;
 	}
 
+	/**
+	 * The relative motion of the move in the x-axis.
+	 *
+	 * @return The amount the mouse moved in the x-axis
+	 */
 	public float getDX() {
 		return dx;
 	}
 
+	/**
+	 * The relative motion of the move in the y-axis.
+	 *
+	 * @return The amount the mouse moved in the y-axis
+	 */
 	public float getDY() {
 		return dy;
 	}

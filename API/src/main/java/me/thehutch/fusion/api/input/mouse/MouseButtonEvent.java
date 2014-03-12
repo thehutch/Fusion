@@ -20,28 +20,56 @@ package me.thehutch.fusion.api.input.mouse;
 import me.thehutch.fusion.api.event.Event;
 
 /**
+ * An event to represent when a mouse button is clicked or released.
+ *
  * @author thehutch
  */
 public class MouseButtonEvent extends Event {
 	private final MouseButton button;
+	private final boolean state;
 	private final int x;
 	private final int y;
 
-	public MouseButtonEvent(MouseButton button, int x, int y) {
+	public MouseButtonEvent(MouseButton button, int x, int y, boolean state) {
 		this.button = button;
+		this.state = state;
 		this.x = x;
 		this.y = y;
 	}
 
+	/**
+	 * The x-coordinate on the window where the mouse was clicked/released.
+	 *
+	 * @return The x-coordinate of the mouse
+	 */
 	public int getX() {
 		return x;
 	}
 
+	/**
+	 * The y-coordinate on the window where the mouse was clicked/released.
+	 *
+	 * @return The y-coordinate of the mouse
+	 */
 	public int getY() {
 		return y;
 	}
 
+	/**
+	 * The button which was clicked/released.
+	 *
+	 * @return The event mouse button
+	 */
 	public MouseButton getButton() {
 		return button;
+	}
+
+	/**
+	 * The current state of the mouse button.
+	 *
+	 * @return True if the mouse button is down
+	 */
+	public boolean getState() {
+		return state;
 	}
 }

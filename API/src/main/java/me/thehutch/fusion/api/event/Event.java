@@ -29,16 +29,17 @@ public abstract class Event {
 	/**
 	 * Returns true if the event has been cancelled.
 	 *
-	 * @return true if the event is cancelled
+	 * @return True if the event is cancelled
 	 */
 	public final boolean isCancelled() {
 		return isCancelled;
 	}
 
 	/**
-	 * Sets the cancellation state of this event.
+	 * Sets the cancellation state of this event. If the event can not be cancelled then
+	 * the new state is ignored.
 	 *
-	 * @param cancelled true if event should be cancelled
+	 * @param cancelled True if event should be cancelled
 	 */
 	public final void setCancelled(boolean cancelled) {
 		if (canCancel()) {

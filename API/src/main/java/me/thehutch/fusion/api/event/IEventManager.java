@@ -21,9 +21,30 @@ package me.thehutch.fusion.api.event;
  * @author thehutch
  */
 public interface IEventManager {
+	/**
+	 * Executes the event synchronously.
+	 *
+	 * @param <T> The type of event being called
+	 * @param event The event being called
+	 *
+	 * @return The final result of the event
+	 */
 	public <T extends Event> T callEvent(T event);
 
+	/**
+	 * Executes the event asynchronously.
+	 *
+	 * @param <T> The type of event being called
+	 * @param event The event being called
+	 *
+	 * @return The final result of the event
+	 */
 	public <T extends Event> T callEventAsync(T event);
 
+	/**
+	 * Registers all the {@link EventHandler}'s in the class.
+	 *
+	 * @param listenerObj An instance of the class with the {@link EventHandler}'s
+	 */
 	public void registerListener(Object listenerObj);
 }

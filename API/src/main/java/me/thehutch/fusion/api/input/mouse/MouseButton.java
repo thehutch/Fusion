@@ -24,13 +24,18 @@ public enum MouseButton {
 	LEFT_BUTTON(0x00),
 	RIGHT_BUTTON(0x01),
 	MIDDLE_BUTTON(0x02);
-	private final int mouseButton;
+	private final int buttonIndex;
 
-	private MouseButton(int mouseButton) {
-		this.mouseButton = mouseButton;
+	private MouseButton(int buttonIndex) {
+		this.buttonIndex = buttonIndex;
 	}
 
-	public int getMouseButton() {
-		return mouseButton;
+	/**
+	 * Gets the index of the mouse button.
+	 *
+	 * @return The button index
+	 */
+	public int getButtonIndex() {
+		return buttonIndex;
 	}
 }

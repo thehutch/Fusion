@@ -29,10 +29,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EventHandler {
 	/**
-	 * The priority of the event, the higher the priority the earlier the event
-	 * is called
+	 * The priority of the event, the higher the priority the earlier the event is called.
 	 *
-	 * @return
+	 * @return The priority of this event handler
 	 */
 	EventPriority priority() default EventPriority.MEDIUM;
 

@@ -69,7 +69,7 @@ public class InputManager implements IInputManager, Runnable {
 
 	@Override
 	public boolean isMouseDown(MouseButton button) {
-		return Mouse.isButtonDown(button.getMouseButton());
+		return Mouse.isButtonDown(button.getButtonIndex());
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class InputManager implements IInputManager, Runnable {
 			final int mouseButton = Mouse.getEventButton();
 			if (mouseButton != -1) {
 				// Call the mouse button event
-				this.eventManager.callEvent(new MouseButtonEvent(MouseButton.values()[mouseButton], Mouse.getEventX(), Mouse.getY()));
+				this.eventManager.callEvent(new MouseButtonEvent(MouseButton.values()[mouseButton], Mouse.getEventX(), Mouse.getY(), Mouse.getEventButtonState()));
 			}
 			// Check if the mouse has moved
 			if (Mouse.getEventDX() != 0.0f && Mouse.getEventDY() != 0.0f) {
