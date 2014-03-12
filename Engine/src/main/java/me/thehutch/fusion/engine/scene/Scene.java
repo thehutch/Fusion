@@ -15,23 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * This file is part of FusionEngine.
- *
- * Copyright (c) 2014 thehutch.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at:
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package me.thehutch.fusion.engine.scene;
 
 import static me.thehutch.fusion.engine.Engine.ENGINE_VERSION;
@@ -43,11 +26,10 @@ import gnu.trove.map.hash.THashMap;
 import java.io.InputStream;
 import me.thehutch.fusion.api.event.EventHandler;
 import me.thehutch.fusion.api.event.EventPriority;
-import me.thehutch.fusion.api.input.event.KeyboardEvent;
+import me.thehutch.fusion.api.input.keyboard.KeyboardEvent;
 import me.thehutch.fusion.api.scene.AbstractScene;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.SceneNode;
-import me.thehutch.fusion.api.scheduler.TaskPriority;
 import me.thehutch.fusion.engine.Engine;
 import me.thehutch.fusion.engine.render.Program;
 import me.thehutch.fusion.engine.render.Shader;
@@ -61,7 +43,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
 
-public class Scene extends AbstractScene {
+public class Scene extends AbstractScene implements Runnable {
 	private static final String VERTEX_SHADER_EXTENSION = ".vs";
 	private static final String FRAGMENT_SHADER_EXTENSION = ".fs";
 	private final TMap<String, Program> programs = new THashMap<>();
@@ -79,34 +61,13 @@ public class Scene extends AbstractScene {
 		final VertexData mesh = WavefrontOBJLoader.load(Engine.class.getResourceAsStream("/models/bunny.obj"));
 
 		// Create the model
-		final Model model = new Model(getProgram("basic"), mesh);
-		model.getTransform().scale(5.0f);
+		final Model model1 = new Model(getProgram("basic"), mesh);
+		model1.getTransform().scale(5.0f);
 
 		// Add the model to the scene
 		final SceneNode modelNode = new SceneNode();
-		modelNode.addComponent(model);
+		modelNode.addComponent(model1);
 		addNode("models", modelNode);
-
-		getEngine().getScheduler().scheduleSyncRepeatingTask(new Runnable() {
-			@Override
-			public void run() {
-				// Check if the display has been closed
-				if (Display.isCloseRequested()) {
-					model.dispose();
-					getEngine().stop("Display Closed");
-				}
-				// Clear the screen
-				GL11.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-				// Update the scene
-				update(0.0f);
-				// Render the scene
-				render();
-
-				// Update the display
-				Display.update();
-			}
-		}, TaskPriority.CRITICAL, 0L, 1L);
 
 		// Register this class as an event listener
 		getEngine().getEventManager().registerListener(this);
@@ -132,23 +93,18 @@ public class Scene extends AbstractScene {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGH_IGNORE_CANCELLED)
-	public void onKeyPressed(KeyboardEvent event) {
-		System.out.println("KeyboardEvent: " + event.getKeycode().name() + "|" + Boolean.toString(event.isDown()));
-		if (event.isDown()) {
-			switch (event.getKeycode()) {
-				case KEY_W:
-					break;
-				case KEY_A:
-					break;
-				case KEY_S:
-					break;
-				case KEY_D:
-					break;
-				default:
-					break;
-			}
-		}
+	@Override
+	public void run() {
+		// Clear the screen
+		GL11.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Update the scene
+		update(getEngine().getScheduler().getDelta());
+		// Render the scene
+		render();
+
+		// Update the display
+		Display.update();
 	}
 
 	private void createWindow() {

@@ -15,32 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * This file is part of FusionEngine.
- *
- * Copyright (c) 2014 thehutch.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at:
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package me.thehutch.fusion.engine.input;
 
 import me.thehutch.fusion.api.input.IInputManager;
-import me.thehutch.fusion.api.input.event.KeyboardEvent;
-import me.thehutch.fusion.api.input.event.MouseButtonEvent;
-import me.thehutch.fusion.api.input.event.MouseMotionEvent;
-import me.thehutch.fusion.api.input.event.MouseWheelMotionEvent;
 import me.thehutch.fusion.api.input.keyboard.Key;
+import me.thehutch.fusion.api.input.keyboard.KeyboardEvent;
 import me.thehutch.fusion.api.input.mouse.MouseButton;
+import me.thehutch.fusion.api.input.mouse.MouseButtonEvent;
+import me.thehutch.fusion.api.input.mouse.MouseMotionEvent;
+import me.thehutch.fusion.api.input.mouse.MouseWheelMotionEvent;
 import me.thehutch.fusion.engine.Engine;
 import me.thehutch.fusion.engine.event.EventManager;
 import org.lwjgl.LWJGLException;
@@ -65,6 +48,8 @@ public class InputManager implements IInputManager, Runnable {
 		} catch (LWJGLException ex) {
 			ex.printStackTrace();
 		}
+		// Enable repeating keys
+		enableRepeatKeyEvents(true);
 	}
 
 	@Override
