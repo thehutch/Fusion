@@ -63,4 +63,11 @@ public interface IInputManager {
 	 * @param enable True to enable repeat event
 	 */
 	public void enableRepeatKeyEvents(boolean enable);
+
+	/**
+	 * Registers all the methods in instance class which have the {@link KeyBinding} Annotation.
+	 *
+	 * @param instance An instance of the class with the key binding methods
+	 */
+	public void registerKeyBinding(Object instance);
 }

@@ -24,10 +24,12 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import java.io.InputStream;
+import me.thehutch.fusion.api.input.keyboard.Key;
+import me.thehutch.fusion.api.input.keyboard.KeyBinding;
 import me.thehutch.fusion.api.scene.AbstractScene;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.SceneNode;
-import me.thehutch.fusion.engine.Engine;
+import me.thehutch.fusion.engine.Client;
 import me.thehutch.fusion.engine.render.Program;
 import me.thehutch.fusion.engine.render.Shader;
 import me.thehutch.fusion.engine.render.Shader.ShaderType;
@@ -45,9 +47,9 @@ public class Scene extends AbstractScene implements Runnable {
 	private static final String FRAGMENT_SHADER_EXTENSION = ".fs";
 	private final TMap<String, Program> programs = new THashMap<>();
 	private final String shaderDirectory;
-	private final Engine engine;
+	private final Client engine;
 
-	public Scene(Engine engine, Camera camera, String shaderDirectory) {
+	public Scene(Client engine, Camera camera, String shaderDirectory) {
 		super(camera);
 		this.shaderDirectory = shaderDirectory;
 		this.engine = engine;
@@ -55,7 +57,7 @@ public class Scene extends AbstractScene implements Runnable {
 		createWindow();
 		//TODO: Load all programs from the directory
 		// Create the vertex data
-		final VertexData mesh = WavefrontOBJLoader.load(Engine.class.getResourceAsStream("/models/bunny.obj"));
+		final VertexData mesh = WavefrontOBJLoader.load(Client.class.getResourceAsStream("/models/bunny.obj"));
 
 		// Create the model
 		final Model model1 = new Model(getProgram("basic"), mesh);
@@ -65,12 +67,9 @@ public class Scene extends AbstractScene implements Runnable {
 		final SceneNode modelNode = new SceneNode();
 		modelNode.addComponent(model1);
 		addNode("models", modelNode);
-
-		// Register this class as an event listener
-		getEngine().getEventManager().registerListener(this);
 	}
 
-	public Engine getEngine() {
+	public Client getEngine() {
 		return engine;
 	}
 
@@ -119,13 +118,13 @@ public class Scene extends AbstractScene implements Runnable {
 		// Get the file path of the shader (Excluding file extension)
 		final String shaderFilePath = shaderDirectory + name;
 		// Create an input stream for the vertex shader
-		InputStream inputStream = Engine.class.getResourceAsStream(shaderFilePath + VERTEX_SHADER_EXTENSION);
+		InputStream inputStream = Client.class.getResourceAsStream(shaderFilePath + VERTEX_SHADER_EXTENSION);
 		if (inputStream == null) {
 			throw new IllegalStateException("Unable to load program: " + name);
 		}
 		final Shader vertexShader = new Shader(inputStream, ShaderType.VERTEX);
 		// Create an input stream for the fragment shader
-		inputStream = Engine.class.getResourceAsStream(shaderFilePath + FRAGMENT_SHADER_EXTENSION);
+		inputStream = Client.class.getResourceAsStream(shaderFilePath + FRAGMENT_SHADER_EXTENSION);
 		if (inputStream == null) {
 			throw new IllegalStateException("Unable to load program: " + name);
 		}

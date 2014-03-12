@@ -17,13 +17,22 @@
  */
 package me.thehutch.fusion.engine.input;
 
+import gnu.trove.map.TMap;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Set;
 import me.thehutch.fusion.api.input.IInputManager;
 import me.thehutch.fusion.api.input.keyboard.Key;
+import me.thehutch.fusion.api.input.keyboard.KeyBinding;
 import me.thehutch.fusion.api.input.keyboard.KeyboardEvent;
 import me.thehutch.fusion.api.input.mouse.MouseButton;
 import me.thehutch.fusion.api.input.mouse.MouseButtonEvent;
 import me.thehutch.fusion.api.input.mouse.MouseMotionEvent;
 import me.thehutch.fusion.api.input.mouse.MouseWheelMotionEvent;
+import me.thehutch.fusion.api.util.ReflectionHelper;
 import me.thehutch.fusion.engine.Engine;
 import me.thehutch.fusion.engine.event.EventManager;
 import org.lwjgl.LWJGLException;
@@ -35,6 +44,7 @@ import org.lwjgl.opengl.Display;
  * @author thehutch
  */
 public class InputManager implements IInputManager, Runnable {
+	private final TMap<Key, Set<KeyBindingExecutor>> keyBindings = new THashMap<>();
 	private final EventManager eventManager;
 	private final Engine engine;
 
@@ -83,6 +93,15 @@ public class InputManager implements IInputManager, Runnable {
 		if (Display.isCloseRequested()) {
 			this.engine.stop("Displayed Closed");
 		}
+		// Check for the keybindings
+		for (Key key : keyBindings.keySet()) {
+			if (isKeyDown(key)) {
+				final Set<KeyBindingExecutor> executors = keyBindings.get(key);
+				for (KeyBindingExecutor executor : executors) {
+					executor.execute();
+				}
+			}
+		}
 		// Check for keyboard events
 		while (Keyboard.next()) {
 			// Get the event keycode
@@ -99,9 +118,9 @@ public class InputManager implements IInputManager, Runnable {
 				this.eventManager.callEvent(new MouseButtonEvent(MouseButton.values()[mouseButton], Mouse.getEventX(), Mouse.getY(), Mouse.getEventButtonState()));
 			}
 			// Check if the mouse has moved
-			if (Mouse.getEventDX() != 0.0f && Mouse.getEventDY() != 0.0f) {
+			if (Mouse.getEventDX() != 0.0f || Mouse.getEventDY() != 0.0f) {
 				// Call the mouse motion event
-				this.eventManager.callEvent(new MouseMotionEvent(Mouse.getEventDX(), Mouse.getEventDY(), Mouse.getX(), Mouse.getEventY()));
+				this.eventManager.callEvent(new MouseMotionEvent(Mouse.getEventDX(), Mouse.getEventDY(), Mouse.getEventX(), Mouse.getEventY()));
 			}
 			// Check if the mouse wheel has moved
 			if (Mouse.getEventDWheel() != 0.0f) {
@@ -110,5 +129,41 @@ public class InputManager implements IInputManager, Runnable {
 			}
 		}
 		//TODO: Possibilty of other input devices (Joystick, Touchscreen etc...)
+	}
+
+	@Override
+	public void registerKeyBinding(Object instance) {
+		final Collection<Method> methods = ReflectionHelper.getAnnotatedMethods(instance.getClass(), KeyBinding.class);
+		for (Method method : methods) {
+			final KeyBinding keyBinding = method.getAnnotation(KeyBinding.class);
+			if (ReflectionHelper.hasExactParameters(method)) {
+				for (int i = 0; i < keyBinding.keys().length; ++i) {
+					Set<KeyBindingExecutor> executors = keyBindings.get(keyBinding.keys()[i]);
+					if (executors == null) {
+						executors = new THashSet<>();
+					}
+					executors.add(new KeyBindingExecutor(instance, method));
+					this.keyBindings.put(keyBinding.keys()[i], executors);
+				}
+			}
+		}
+	}
+
+	private class KeyBindingExecutor {
+		private final Object invoker;
+		private final Method method;
+
+		private KeyBindingExecutor(Object invoker, Method method) {
+			this.invoker = invoker;
+			this.method = method;
+		}
+
+		public void execute() {
+			try {
+				this.method.invoke(invoker);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 }

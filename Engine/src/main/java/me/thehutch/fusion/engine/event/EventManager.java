@@ -21,6 +21,7 @@ import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -28,6 +29,7 @@ import me.thehutch.fusion.api.event.Event;
 import me.thehutch.fusion.api.event.EventHandler;
 import me.thehutch.fusion.api.event.EventPriority;
 import me.thehutch.fusion.api.event.IEventManager;
+import me.thehutch.fusion.api.util.ReflectionHelper;
 
 /**
  * @author thehutch
@@ -60,27 +62,25 @@ public class EventManager implements IEventManager {
 
 	@Override
 	public void registerListener(Object listenerObj) {
-		final Method[] methods = listenerObj.getClass().getMethods();
+		final Collection<Method> methods = ReflectionHelper.getAnnotatedMethods(listenerObj.getClass(), EventHandler.class);
 		for (Method method : methods) {
 			final EventHandler handler = method.getAnnotation(EventHandler.class);
-			if (handler != null) {
-				final Class<?>[] parameters = method.getParameterTypes();
-				if (parameters.length == 1 && Event.class.isAssignableFrom(parameters[0])) {
-					final Class<? extends Event> event = parameters[0].asSubclass(Event.class);
-					SortedSet<EventExecutor> executors = events.get(event);
-					if (executors == null) {
-						executors = new TreeSet<>(new Comparator<EventExecutor>() {
-							@Override
-							public int compare(EventExecutor e1, EventExecutor e2) {
-								return e1.priority.getPriority() - e2.priority.getPriority();
-							}
-						});
-					}
-					if (executors.add(new EventExecutor(listenerObj, method, handler.priority(), handler.ignoreCancelled()))) {
-						System.out.println("Duplicate Event Found!");
-					}
-					this.events.put(event, executors);
+			final Class<?>[] parameters = method.getParameterTypes();
+			if (ReflectionHelper.hasExactParameters(method, Event.class)) {
+				final Class<? extends Event> event = parameters[0].asSubclass(Event.class);
+				SortedSet<EventExecutor> executors = events.get(event);
+				if (executors == null) {
+					executors = new TreeSet<>(new Comparator<EventExecutor>() {
+						@Override
+						public int compare(EventExecutor e1, EventExecutor e2) {
+							return e1.priority.getPriority() - e2.priority.getPriority();
+						}
+					});
 				}
+				if (executors.add(new EventExecutor(listenerObj, method, handler.priority(), handler.ignoreCancelled()))) {
+					System.out.println("Duplicate Event Found!");
+				}
+				this.events.put(event, executors);
 			}
 		}
 	}
