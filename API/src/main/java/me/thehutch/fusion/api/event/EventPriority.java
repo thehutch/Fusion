@@ -22,17 +22,17 @@ package me.thehutch.fusion.api.event;
  */
 public enum EventPriority {
 	/**
-	 * Called before all handlers.
+	 * High priority event, called before all other priorities.
 	 */
-	LOW(0),
+	HIGH(0),
 	/**
-	 * Called after {@link #LOW} priority handlers.
+	 * Medium priority event, called after {@link #HIGH} priority.
 	 */
 	MEDIUM(1),
 	/**
-	 * Called after {@link #MEDIUM} priority handlers.
+	 * Low priority event, called after {@link #MEDIUM} priority.
 	 */
-	HIGH(2);
+	LOW(2);
 	private final int priority;
 
 	private EventPriority(int priority) {
@@ -40,9 +40,7 @@ public enum EventPriority {
 	}
 
 	/**
-	 * Gets the priority level of this priority.
-	 * <br/>
-	 * The lower the value, the more priority it has.
+	 * Gets the priority level of this priority. The lower the value, the more priority it has.
 	 *
 	 * @return The value of this priority
 	 */

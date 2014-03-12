@@ -18,7 +18,6 @@
 package me.thehutch.fusion.api.input.keyboard;
 
 import me.thehutch.fusion.api.event.Event;
-import me.thehutch.fusion.api.input.keyboard.Key;
 
 /**
  * @author thehutch

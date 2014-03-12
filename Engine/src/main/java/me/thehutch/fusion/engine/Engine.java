@@ -20,7 +20,6 @@ package me.thehutch.fusion.engine;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.thehutch.fusion.api.IEngine;
-import me.thehutch.fusion.api.scheduler.TaskPriority;
 import me.thehutch.fusion.engine.event.EventManager;
 import me.thehutch.fusion.engine.scheduler.Scheduler;
 

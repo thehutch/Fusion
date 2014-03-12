@@ -44,10 +44,8 @@ public class EventManager implements IEventManager {
 		}
 		try {
 			for (EventExecutor executor : executors) {
-				// Set the executor's event
-				executor.event = event;
 				// Execute the event
-				executor.execute();
+				executor.execute(event);
 			}
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			ex.printStackTrace();
@@ -78,7 +76,7 @@ public class EventManager implements IEventManager {
 							}
 						});
 					}
-					if (executors.add(new EventExecutor(listenerObj, method, handler.priority()))) {
+					if (executors.add(new EventExecutor(listenerObj, method, handler.priority(), handler.ignoreCancelled()))) {
 						System.out.println("Duplicate Event Found!");
 					}
 					this.events.put(event, executors);
@@ -88,19 +86,22 @@ public class EventManager implements IEventManager {
 	}
 
 	private class EventExecutor {
+		private final boolean ignoreCancelled;
 		private final EventPriority priority;
 		private final Object invoker;
 		private final Method method;
-		private Event event;
 
-		private EventExecutor(Object invoker, Method method, EventPriority priority) {
+		private EventExecutor(Object invoker, Method method, EventPriority priority, boolean ignoreCancelled) {
 			this.invoker = invoker;
 			this.method = method;
 			this.priority = priority;
+			this.ignoreCancelled = ignoreCancelled;
 		}
 
-		public void execute() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-			this.method.invoke(invoker, event);
+		public void execute(Event event) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+			if (!event.isCancelled() || ignoreCancelled) {
+				this.method.invoke(invoker, event);
+			}
 		}
 	}
 }
