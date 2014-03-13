@@ -29,6 +29,9 @@ public class SceneNode {
 	private final Set<SceneComponent> components = new THashSet<>();
 	private final Set<SceneNode> children = new THashSet<>();
 
+	protected SceneNode() {
+	}
+
 	/**
 	 * Adds a child node to this node.
 	 *
@@ -54,6 +57,9 @@ public class SceneNode {
 	 * @param component The component to add
 	 */
 	public void addComponent(SceneComponent component) {
+		// Set the component parent
+		component.setParent(this);
+		// Add the component to this node
 		this.components.add(component);
 	}
 

@@ -39,6 +39,15 @@ public abstract class SceneComponent {
 	public abstract void update(float delta);
 
 	/**
+	 * Gets the transform of this component.
+	 *
+	 * @return The transform
+	 */
+	public Transform getTransform() {
+		return transform;
+	}
+
+	/**
 	 * Gets the parent scene node which this component is attached to.
 	 *
 	 * @return The parent scene node
@@ -48,11 +57,11 @@ public abstract class SceneComponent {
 	}
 
 	/**
-	 * Gets the transform of this component.
+	 * Set the parent scene node which this component is attached to.
 	 *
-	 * @return The transform
+	 * @param parent The parent scene node
 	 */
-	public Transform getTransform() {
-		return transform;
+	void setParent(SceneNode parent) {
+		this.parent = parent;
 	}
 }

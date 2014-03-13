@@ -32,6 +32,14 @@ public abstract class AbstractScene implements Disposable {
 		this.camera = camera;
 	}
 
+	public SceneNode createNode(SceneComponent... components) {
+		final SceneNode node = new SceneNode();
+		for (int i = 0; i < components.length; ++i) {
+			node.addComponent(components[i]);
+		}
+		return node;
+	}
+
 	public void addNode(String name, SceneNode node) {
 		this.nodes.put(name, node);
 	}

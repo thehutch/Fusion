@@ -87,11 +87,7 @@ public class Quaternion {
 	}
 
 	public float length() {
-		return (float) Math.sqrt(lengthSquared());
-	}
-
-	public float lengthSquared() {
-		return dot(this);
+		return (float) Math.sqrt(x * x + y * y + z * z + w * w);
 	}
 
 	public Quaternion normalise() {

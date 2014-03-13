@@ -24,8 +24,6 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import java.io.InputStream;
-import me.thehutch.fusion.api.input.keyboard.Key;
-import me.thehutch.fusion.api.input.keyboard.KeyBinding;
 import me.thehutch.fusion.api.scene.AbstractScene;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.SceneNode;
@@ -60,12 +58,11 @@ public class Scene extends AbstractScene implements Runnable {
 		final VertexData mesh = WavefrontOBJLoader.load(Client.class.getResourceAsStream("/models/bunny.obj"));
 
 		// Create the model
-		final Model model1 = new Model(getProgram("basic"), mesh);
-		model1.getTransform().scale(5.0f);
+		final Model bunny = new Model(getProgram("basic"), mesh);
+		bunny.getTransform().scale(5.0f);
 
 		// Add the model to the scene
-		final SceneNode modelNode = new SceneNode();
-		modelNode.addComponent(model1);
+		final SceneNode modelNode = createNode(bunny);
 		addNode("models", modelNode);
 	}
 
