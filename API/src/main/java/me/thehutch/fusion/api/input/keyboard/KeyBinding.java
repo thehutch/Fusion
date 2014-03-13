@@ -28,11 +28,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
  * @author thehutch
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface KeyBinding {
+	/**
+	 * An array of keys which when in the down state will execute
+	 * the method this annotation is attached to.
+	 *
+	 * @return The keys
+	 */
 	Key[] keys() default {};
 }

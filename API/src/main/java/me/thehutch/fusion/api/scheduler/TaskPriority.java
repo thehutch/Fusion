@@ -22,35 +22,33 @@ package me.thehutch.fusion.api.scheduler;
  */
 public enum TaskPriority {
 	/**
-	 * Priority for tasks which may not be deferred
+	 * Priority for tasks which may not be deferred.
 	 */
 	CRITICAL(0L),
 	/**
-	 * Priority for tasks which can be deferred by up to 50ms when under load
+	 * Priority for tasks which can be deferred by up to 50ms when under load.
 	 */
 	HIGHEST(50L),
 	/**
-	 * Priority for tasks which can be deferred by up to 150ms when under load
+	 * Priority for tasks which can be deferred by up to 150ms when under load.
 	 */
 	HIGH(150L),
 	/**
-	 * Priority for tasks which can be deferred by up to 500ms when under load
+	 * Priority for tasks which can be deferred by up to 500ms when under load.
 	 */
 	MEDIUM(500L),
 	/**
-	 * Priority for tasks which can be deferred by up to 1500ms when under load
+	 * Priority for tasks which can be deferred by up to 1500ms when under load.
 	 */
 	LOW(1500L),
 	/**
-	 * Priority for tasks which can be deferred by up to 10000ms when under load
+	 * Priority for tasks which can be deferred by up to 10000ms when under load.
 	 */
 	LOWEST(10000L);
-
 	private final long maxDeferred;
 
 	/**
-	 * Creates a TaskPriority instance which sets the maximum time that a task
-	 * can be deferred.
+	 * Creates a TaskPriority instance which sets the maximum time that a task can be deferred.
 	 *
 	 * @param maxDeferred The maximum delay for this task
 	 */

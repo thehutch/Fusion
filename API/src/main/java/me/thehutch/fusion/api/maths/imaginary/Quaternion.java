@@ -74,18 +74,6 @@ public class Quaternion {
 		return new Quaternion(x, y, z, w);
 	}
 
-	public Quaternion div(float v) {
-		return new Quaternion(x / v, y / v, z / v, w / v);
-	}
-
-	public float dot(Quaternion q) {
-		return dot(q.x, q.y, q.z, q.w);
-	}
-
-	public float dot(float x, float y, float z, float w) {
-		return this.x * x + this.y * y + this.z * z + this.w * w;
-	}
-
 	public float length() {
 		return (float) Math.sqrt(x * x + y * y + z * z + w * w);
 	}
@@ -103,15 +91,6 @@ public class Quaternion {
 		final Vector3 forward = new Vector3(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y));
 		final Vector3 up = new Vector3(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x));
 		return Matrix4.createRotation(forward, up);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Quaternion)) {
-			return false;
-		}
-		final Quaternion q = (Quaternion) obj;
-		return x == q.x && y == q.y && z == q.z && w == q.w;
 	}
 
 	public static Quaternion fromAxisAngleDeg(Vector3 axis, float angle) {

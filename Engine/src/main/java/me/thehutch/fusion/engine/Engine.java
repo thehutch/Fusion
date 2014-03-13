@@ -78,9 +78,4 @@ public abstract class Engine implements IEngine {
 
 		System.exit(0);
 	}
-
-	@Override
-	public final String getName() {
-		return "Fusion";
-	}
 }

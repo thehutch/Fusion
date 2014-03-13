@@ -29,7 +29,7 @@ public class SceneNode {
 	private final Set<SceneComponent> components = new THashSet<>();
 	private final Set<SceneNode> children = new THashSet<>();
 
-	protected SceneNode() {
+	SceneNode() {
 	}
 
 	/**

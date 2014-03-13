@@ -73,13 +73,18 @@ public class InputManager implements IInputManager, Runnable {
 	}
 
 	@Override
-	public boolean isKeyDown(Key key) {
-		return Keyboard.isKeyDown(key.getKeycode());
+	public boolean isMouseDown(MouseButton button) {
+		return Mouse.isButtonDown(button.getButtonIndex());
 	}
 
 	@Override
-	public boolean isMouseDown(MouseButton button) {
-		return Mouse.isButtonDown(button.getButtonIndex());
+	public void setMouseGrabbed(boolean grabbed) {
+		Mouse.setGrabbed(grabbed);
+	}
+
+	@Override
+	public boolean isKeyDown(Key key) {
+		return Keyboard.isKeyDown(key.getKeycode());
 	}
 
 	@Override

@@ -45,7 +45,7 @@ public interface IScheduler {
 	public int scheduleSyncDelayedTask(Runnable task, TaskPriority priority, long delay);
 
 	/**
-	 * Schedules a one off task.
+	 * Schedules a task which will be executed at a ticking interval of period.
 	 * This task will be executed by the main thread.
 	 *
 	 * @param task Task to be executed
@@ -59,8 +59,7 @@ public interface IScheduler {
 
 	/**
 	 * Schedules a once off short lived task to occur as soon as possible. This
-	 * task will be
-	 * executed by a thread managed by the scheduler.
+	 * task will be executed by a thread managed by the scheduler.
 	 *
 	 * @param task Task to be executed
 	 * @param priority Priority of the task
@@ -71,8 +70,7 @@ public interface IScheduler {
 
 	/**
 	 * Schedules a once off short lived task to occur as soon as possible. This
-	 * task will be
-	 * executed by a thread managed by the scheduler.
+	 * task will be executed by a thread managed by the scheduler.
 	 *
 	 * @param task Task to be executed
 	 * @param priority Priority of the task
@@ -85,7 +83,7 @@ public interface IScheduler {
 	/**
 	 * Cancels the task associated with this id.
 	 *
-	 * @param taskId Id of the task ot be cancelled
+	 * @param taskId Id of the task to be cancelled
 	 */
 	public void cancelTask(int taskId);
 }

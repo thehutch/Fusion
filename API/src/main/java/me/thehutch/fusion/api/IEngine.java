@@ -20,12 +20,11 @@ package me.thehutch.fusion.api;
 import java.util.logging.Logger;
 import me.thehutch.fusion.api.event.IEventManager;
 import me.thehutch.fusion.api.scheduler.IScheduler;
-import me.thehutch.fusion.api.util.Named;
 
 /**
  * @author thehutch
  */
-public interface IEngine extends Named {
+public interface IEngine {
 	/**
 	 * Gets the {@link Platform} this engine is using.
 	 *

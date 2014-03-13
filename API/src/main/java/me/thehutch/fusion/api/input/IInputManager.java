@@ -39,15 +39,6 @@ public interface IInputManager {
 	public int getMouseY();
 
 	/**
-	 * Gets the current state of the key.
-	 *
-	 * @param key The key to check the state of
-	 *
-	 * @return True if the key is currently pressed down
-	 */
-	public boolean isKeyDown(Key key);
-
-	/**
 	 * Gets the current state of the mouse button.
 	 *
 	 * @param button The mouse button to check the state of
@@ -55,6 +46,22 @@ public interface IInputManager {
 	 * @return True if the mouse button is currently pressed down
 	 */
 	public boolean isMouseDown(MouseButton button);
+
+	/**
+	 * Sets the grabbed state of the mouse. A grabbed mouse can not exit the window area.
+	 *
+	 * @param grabbed true to set the mouse as grabbed
+	 */
+	public void setMouseGrabbed(boolean grabbed);
+
+	/**
+	 * Gets the current state of the key.
+	 *
+	 * @param key The key to check the state of
+	 *
+	 * @return True if the key is currently pressed down
+	 */
+	public boolean isKeyDown(Key key);
 
 	/**
 	 * Set to true if keyboard events should be fired continuously while a key

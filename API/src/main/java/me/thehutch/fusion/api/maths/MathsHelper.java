@@ -22,16 +22,18 @@ package me.thehutch.fusion.api.maths;
  */
 public class MathsHelper {
 	public static final float PI = 3.141592653f;
+	private static final float DEG_TO_RAD = PI / 180.0f;
+	private static final float RAD_TO_DEG = 180.0f / PI;
 
 	private MathsHelper() {
 	}
 
 	public static float toRadians(float degrees) {
-		return degrees * PI / 180.0f;
+		return degrees * DEG_TO_RAD;
 	}
 
 	public static float toDegrees(float radians) {
-		return radians * 180.0f / PI;
+		return radians * RAD_TO_DEG;
 	}
 
 	public static int abs(int value) {
@@ -55,11 +57,27 @@ public class MathsHelper {
 		return floor(value + 0.5f);
 	}
 
+	public static int max(int v1, int v2) {
+		return v1 > v2 ? v1 : v2;
+	}
+
+	public static int min(int v1, int v2) {
+		return v1 < v2 ? v1 : v2;
+	}
+
 	public static float max(float v1, float v2) {
 		return v1 > v2 ? v1 : v2;
 	}
 
 	public static float min(float v1, float v2) {
 		return v1 < v2 ? v1 : v2;
+	}
+
+	public static int clamp(int value, int min, int max) {
+		return min(max(value, min), max);
+	}
+
+	public static float clamp(float value, float min, float max) {
+		return min(max(value, min), max);
 	}
 }
