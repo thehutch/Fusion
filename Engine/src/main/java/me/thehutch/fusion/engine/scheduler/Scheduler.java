@@ -128,7 +128,7 @@ public class Scheduler implements IScheduler {
 	}
 
 	public float getDelta() {
-		return diffTimePerTick / 1000000.0f;
+		return diffTimePerTick;
 	}
 
 	@Override

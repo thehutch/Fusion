@@ -28,8 +28,19 @@ import java.util.Set;
 public class SceneNode {
 	private final Set<SceneComponent> components = new THashSet<>();
 	private final Set<SceneNode> children = new THashSet<>();
+	private final AbstractScene scene;
 
-	SceneNode() {
+	SceneNode(AbstractScene scene) {
+		this.scene = scene;
+	}
+
+	/**
+	 * Gets the scene this node is attached to.
+	 *
+	 * @return The scene
+	 */
+	public AbstractScene getScene() {
+		return scene;
 	}
 
 	/**

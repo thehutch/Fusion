@@ -33,7 +33,7 @@ public abstract class AbstractScene implements Disposable {
 	}
 
 	public SceneNode createNode(SceneComponent... components) {
-		final SceneNode node = new SceneNode();
+		final SceneNode node = new SceneNode(this);
 		for (int i = 0; i < components.length; ++i) {
 			node.addComponent(components[i]);
 		}
