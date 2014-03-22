@@ -24,15 +24,11 @@ import static org.lwjgl.opengl.GL20.GL_INFO_LOG_LENGTH;
 import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
 import static org.lwjgl.opengl.GL20.GL_VALIDATE_STATUS;
 
-import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.hash.THashSet;
 import java.nio.FloatBuffer;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import me.thehutch.fusion.api.maths.matrix.Matrix4;
 import me.thehutch.fusion.api.maths.vector.Vector2;
 import me.thehutch.fusion.api.maths.vector.Vector3;
@@ -43,11 +39,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
 public class Program implements Disposable {
-	private static final char TOKEN_SYMBOL = '$';
-	private static final String TEXTURE_LAYOUT_TOKEN = "texture_layout";
-	private static final Pattern LAYOUT_TOKEN_PATTERN = Pattern.compile("\\" + TOKEN_SYMBOL + "(" + TEXTURE_LAYOUT_TOKEN + ") *: *(\\w+) *= *(\\d+)");
-
-	private final TIntObjectMap<String> textures = new TIntObjectHashMap<>();
 	private final TObjectIntMap<String> uniforms = new TObjectIntHashMap<>();
 	private final Set<Shader> shaders = new THashSet<>();
 	private final int id;
@@ -62,8 +53,6 @@ public class Program implements Disposable {
 	}
 
 	public void attachShader(Shader shader) {
-		// Parse the shader's source to get its texture layouts
-		parseShaderSource(shader.getId());
 		// Attach the shader
 		GL20.glAttachShader(id, shader.getId());
 		// Add the shader to the program
@@ -106,25 +95,19 @@ public class Program implements Disposable {
 
 	@Override
 	public void dispose() {
-		// Detach and delete all the shaders
-		for (Shader shader : shaders) {
+		this.shaders.stream().map((shader) -> {
 			GL20.glDetachShader(id, shader.getId());
 			GL20.glDeleteShader(shader.getId());
-		}
+			return shader;
+		});
 		// Delete the program
 		GL20.glDeleteProgram(id);
 		// Clear the shaders set
 		this.shaders.clear();
 		// Clear the uniforms map
 		this.uniforms.clear();
-		// Clear the texutres map
-		this.textures.clear();
 		// Check for errors
 		RenderUtil.checkGLError();
-	}
-
-	public void bindSampler(int unit) {
-		setUniform(textures.get(unit), unit);
 	}
 
 	public void setUniform(String name, boolean b) {
@@ -156,19 +139,5 @@ public class Program implements Disposable {
 		buffer.put(matrix.toArray());
 		buffer.flip();
 		GL20.glUniformMatrix4(uniforms.get(name), false, buffer);
-	}
-
-	private void parseShaderSource(int shader) {
-		final String source = GL20.glGetShaderSource(shader, GL20.glGetShaderi(shader, GL20.GL_SHADER_SOURCE_LENGTH));
-		final String[] lines = source.split("\n");
-		for (String line : lines) {
-			final Matcher matcher = LAYOUT_TOKEN_PATTERN.matcher(line);
-			while (matcher.find()) {
-				final String token = matcher.group(1);
-				if (token.equals(TEXTURE_LAYOUT_TOKEN)) {
-					this.textures.put(Integer.parseInt(matcher.group(3)), matcher.group(2));
-				}
-			}
-		}
 	}
 }

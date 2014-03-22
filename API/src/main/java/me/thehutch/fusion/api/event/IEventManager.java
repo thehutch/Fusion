@@ -24,7 +24,7 @@ public interface IEventManager {
 	/**
 	 * Executes the event synchronously.
 	 *
-	 * @param <T> The type of event being called
+	 * @param <T>   The type of event being called
 	 * @param event The event being called
 	 *
 	 * @return The final result of the event
@@ -34,7 +34,7 @@ public interface IEventManager {
 	/**
 	 * Executes the event asynchronously.
 	 *
-	 * @param <T> The type of event being called
+	 * @param <T>   The type of event being called
 	 * @param event The event being called
 	 *
 	 * @return The final result of the event

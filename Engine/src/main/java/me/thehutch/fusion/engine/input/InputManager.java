@@ -98,15 +98,12 @@ public class InputManager implements IInputManager, Runnable {
 		if (Display.isCloseRequested()) {
 			this.engine.stop("Displayed Closed");
 		}
-		// Check for the keybindings
-		for (Key key : keyBindings.keySet()) {
-			if (isKeyDown(key)) {
-				final Set<KeyBindingExecutor> executors = keyBindings.get(key);
-				for (KeyBindingExecutor executor : executors) {
-					executor.execute();
-				}
-			}
-		}
+		this.keyBindings.keySet().stream().filter(key -> isKeyDown(key)).map(key -> keyBindings.get(key)).forEach(executors -> {
+			executors.stream().forEach(executor -> {
+				executor.execute();
+			});
+		});
+
 		// Check for keyboard events
 		while (Keyboard.next()) {
 			// Get the event keycode
@@ -114,6 +111,7 @@ public class InputManager implements IInputManager, Runnable {
 			// Call the KeyboardEvent
 			this.eventManager.callEvent(new KeyboardEvent(Key.fromKeycode(keycode), Keyboard.getEventKeyState(), Keyboard.isRepeatEvent()));
 		}
+
 		// Check for mouse events
 		while (Mouse.next()) {
 			// Get the event mouse button
@@ -139,7 +137,7 @@ public class InputManager implements IInputManager, Runnable {
 	@Override
 	public void registerKeyBinding(Object instance) {
 		final Collection<Method> methods = ReflectionHelper.getAnnotatedMethods(instance.getClass(), KeyBinding.class);
-		for (Method method : methods) {
+		methods.parallelStream().forEach(method -> {
 			final KeyBinding keyBinding = method.getAnnotation(KeyBinding.class);
 			if (ReflectionHelper.hasExactParameters(method)) {
 				for (int i = 0; i < keyBinding.keys().length; ++i) {
@@ -151,7 +149,7 @@ public class InputManager implements IInputManager, Runnable {
 					this.keyBindings.put(keyBinding.keys()[i], executors);
 				}
 			}
-		}
+		});
 	}
 
 	private class KeyBindingExecutor {

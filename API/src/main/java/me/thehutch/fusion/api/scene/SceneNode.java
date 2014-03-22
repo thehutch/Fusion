@@ -87,14 +87,12 @@ public class SceneNode {
 	 * Renders the components and then the children nodes.
 	 */
 	void render() {
-		// Render the components
-		for (SceneComponent component : components) {
+		this.components.stream().forEach((component) -> {
 			component.render();
-		}
-		// Render the children node
-		for (SceneNode child : children) {
+		});
+		this.children.stream().forEach((child) -> {
 			child.render();
-		}
+		});
 	}
 
 	/**
@@ -103,13 +101,11 @@ public class SceneNode {
 	 * @param delta The time in milliseconds since the last update
 	 */
 	void update(float delta) {
-		// Update the components
-		for (SceneComponent component : components) {
+		this.components.stream().forEach((component) -> {
 			component.update(delta);
-		}
-		// Update the children node
-		for (SceneNode child : children) {
+		});
+		this.children.stream().forEach((child) -> {
 			child.update(delta);
-		}
+		});
 	}
 }

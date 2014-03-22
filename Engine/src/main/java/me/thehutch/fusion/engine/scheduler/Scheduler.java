@@ -53,8 +53,8 @@ public class Scheduler implements IScheduler {
 	}
 
 	public void execute() {
-		final Queue<Task> asyncTasks = new ArrayDeque<>();
-		final Queue<Task> syncTasks = new ArrayDeque<>();
+		final Queue<Task> asyncTasks = new ArrayDeque<>(0);
+		final Queue<Task> syncTasks = new ArrayDeque<>(0);
 
 		final long timePerTick = MILLISECOND_TO_SECOND / ticksPerSecond;
 
@@ -158,17 +158,15 @@ public class Scheduler implements IScheduler {
 
 	@Override
 	public void cancelTask(int taskId) {
-		for (final Task task : currentTasks) {
-			if (task.getId() == taskId) {
-				task.cancel();
-			}
-		}
+		this.currentTasks.stream().filter((task) -> (task.getId() == taskId)).forEach((task) -> {
+			task.cancel();
+		});
 	}
 
 	public void cancelAllTasks() {
-		for (final Task task : currentTasks) {
+		this.currentTasks.stream().forEach((task) -> {
 			task.cancel();
-		}
+		});
 	}
 
 	public long getUpTime() {

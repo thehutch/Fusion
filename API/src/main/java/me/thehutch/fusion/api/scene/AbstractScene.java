@@ -57,14 +57,14 @@ public abstract class AbstractScene implements Disposable {
 	}
 
 	protected void render() {
-		for (SceneNode node : nodes.values()) {
+		this.nodes.values().stream().forEach((node) -> {
 			node.render();
-		}
+		});
 	}
 
 	protected void update(float delta) {
-		for (SceneNode node : nodes.values()) {
+		this.nodes.values().stream().forEach((node) -> {
 			node.update(delta);
-		}
+		});
 	}
 }

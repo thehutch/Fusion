@@ -58,7 +58,6 @@
 				</includes>
 			</resource>
 		</resources>
-
 		<!-- Build plugins -->
 		<plugins>
 			<!-- Dependency addition plugin -->
@@ -69,7 +68,7 @@
 				<executions>
 					<execution>
 						<configuration>
-							<minimizeJar>true</minimizeJar>
+							<minimizeJar>false</minimizeJar>
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>

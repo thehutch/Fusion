@@ -20,15 +20,16 @@ package me.thehutch.fusion.engine.scene;
 import me.thehutch.fusion.api.scene.SceneComponent;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.render.Program;
+import me.thehutch.fusion.engine.render.VertexArray;
 import me.thehutch.fusion.engine.render.VertexData;
 
 public class Model extends SceneComponent implements Disposable {
+	private final VertexArray mesh;
 	private final Program program;
-	private final VertexData mesh;
 
-	public Model(Program program, VertexData mesh) {
+	public Model(Program program, VertexData meshData) {
+		this.mesh = new VertexArray(meshData);
 		this.program = program;
-		this.mesh = mesh;
 	}
 
 	@Override

@@ -22,7 +22,6 @@ import gnu.trove.map.hash.THashMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import me.thehutch.fusion.api.event.Event;
@@ -63,26 +62,21 @@ public class EventManager implements IEventManager {
 	@Override
 	public void registerListener(Object listenerObj) {
 		final Collection<Method> methods = ReflectionHelper.getAnnotatedMethods(listenerObj.getClass(), EventHandler.class);
-		for (Method method : methods) {
+		methods.parallelStream().forEach((method) -> {
 			final EventHandler handler = method.getAnnotation(EventHandler.class);
 			final Class<?>[] parameters = method.getParameterTypes();
 			if (ReflectionHelper.hasExactParameters(method, Event.class)) {
 				final Class<? extends Event> event = parameters[0].asSubclass(Event.class);
 				SortedSet<EventExecutor> executors = events.get(event);
 				if (executors == null) {
-					executors = new TreeSet<>(new Comparator<EventExecutor>() {
-						@Override
-						public int compare(EventExecutor e1, EventExecutor e2) {
-							return e1.priority.getPriority() - e2.priority.getPriority();
-						}
-					});
+					executors = new TreeSet<>((EventExecutor e1, EventExecutor e2) -> e1.priority.getPriority() - e2.priority.getPriority());
 				}
 				if (executors.add(new EventExecutor(listenerObj, method, handler.priority(), handler.ignoreCancelled()))) {
 					System.out.println("Duplicate Event Found!");
 				}
 				this.events.put(event, executors);
 			}
-		}
+		});
 	}
 
 	private class EventExecutor {

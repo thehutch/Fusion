@@ -25,7 +25,7 @@ public interface IScheduler {
 	 * Schedules a one off task.
 	 * This task will be executed by the main thread.
 	 *
-	 * @param task Task to be executed
+	 * @param task     Task to be executed
 	 * @param priority Priority of the task
 	 *
 	 * @return The id of the task which has been scheduled
@@ -36,9 +36,9 @@ public interface IScheduler {
 	 * Schedules a one off task.
 	 * This task will be executed by the main thread.
 	 *
-	 * @param task Task to be executed
+	 * @param task     Task to be executed
 	 * @param priority Priority of the task
-	 * @param delay Delay in ticks before executing the task
+	 * @param delay    Delay in ticks before executing the task
 	 *
 	 * @return The id of the task which has been scheduled
 	 */
@@ -48,10 +48,10 @@ public interface IScheduler {
 	 * Schedules a task which will be executed at a ticking interval of period.
 	 * This task will be executed by the main thread.
 	 *
-	 * @param task Task to be executed
+	 * @param task     Task to be executed
 	 * @param priority Priority of the task
-	 * @param delay Delay in ticks before executing the task
-	 * @param period The ticks between executions of this task
+	 * @param delay    Delay in ticks before executing the task
+	 * @param period   The ticks between executions of this task
 	 *
 	 * @return The id of the task which has been scheduled
 	 */
@@ -61,7 +61,7 @@ public interface IScheduler {
 	 * Schedules a once off short lived task to occur as soon as possible. This
 	 * task will be executed by a thread managed by the scheduler.
 	 *
-	 * @param task Task to be executed
+	 * @param task     Task to be executed
 	 * @param priority Priority of the task
 	 *
 	 * @return The id of the task which has been scheduled
@@ -72,9 +72,9 @@ public interface IScheduler {
 	 * Schedules a once off short lived task to occur as soon as possible. This
 	 * task will be executed by a thread managed by the scheduler.
 	 *
-	 * @param task Task to be executed
+	 * @param task     Task to be executed
 	 * @param priority Priority of the task
-	 * @param delay Delay in ticks before executing the task
+	 * @param delay    Delay in ticks before executing the task
 	 *
 	 * @return The id of the task which has been scheduled
 	 */

@@ -20,7 +20,9 @@ package me.thehutch.fusion.api.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @author thehutch
@@ -33,18 +35,17 @@ public class ReflectionHelper {
 	/**
 	 * Gets all the declared methods found in the class with the specified annotation.
 	 *
-	 * @param clazz The class containing the methods
+	 * @param clazz           The class containing the methods
 	 * @param annotationClass The annotation to test for
 	 *
 	 * @return A collection of methods with the annotation
 	 */
 	public static Collection<Method> getAnnotatedMethods(Class<?> clazz, Class<? extends Annotation> annotationClass) {
-		final Collection<Method> annotatedMethods = new ArrayList<>();
-		for (Method method : clazz.getDeclaredMethods()) {
-			if (method.getAnnotation(annotationClass) != null) {
-				annotatedMethods.add(method);
-			}
-		}
+		final Collection<Method> declaredMethods = Arrays.asList(clazz.getDeclaredMethods());
+		final Collection<Method> annotatedMethods = new ArrayList<>(declaredMethods.size());
+		declaredMethods.parallelStream().filter((method) -> (method.getAnnotation(annotationClass) != null)).forEach((method) -> {
+			annotatedMethods.add(method);
+		});
 		return annotatedMethods;
 	}
 
@@ -55,7 +56,7 @@ public class ReflectionHelper {
 	 * This method allows for subclasses to be passed in a parameters, therefore passing in
 	 * {@code Object.class} will allow any parameter.
 	 *
-	 * @param method The method to test
+	 * @param method           The method to test
 	 * @param parameterClasses The classes of the parameter types
 	 *
 	 * @return True if the method parameters match

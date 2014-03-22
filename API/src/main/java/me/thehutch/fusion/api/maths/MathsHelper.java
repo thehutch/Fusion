@@ -80,4 +80,8 @@ public class MathsHelper {
 	public static float clamp(float value, float min, float max) {
 		return min(max(value, min), max);
 	}
+
+	public static float lerp(float a, float b, float percentage) {
+		return a + (b - a) * percentage;
+	}
 }

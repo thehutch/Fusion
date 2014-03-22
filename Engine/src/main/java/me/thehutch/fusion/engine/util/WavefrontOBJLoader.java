@@ -22,11 +22,9 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import java.io.InputStream;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.Scanner;
+import me.thehutch.fusion.engine.render.VertexAttribute;
 import me.thehutch.fusion.engine.render.VertexData;
-import org.lwjgl.BufferUtils;
 
 /**
  * @author thehutch
@@ -54,25 +52,12 @@ public class WavefrontOBJLoader {
 		// Load the raw vertex data into the lists
 		load(stream, positions, texcoords, normals, indices);
 
-		// Convert the lists into buffers
-		final FloatBuffer positionsBuffer = BufferUtils.createFloatBuffer(positions.size());
-		positionsBuffer.put(positions.toArray());
-		positionsBuffer.flip();
-
-		final FloatBuffer texcoordsBuffer = BufferUtils.createFloatBuffer(texcoords.size());
-		texcoordsBuffer.put(texcoords.toArray());
-		texcoordsBuffer.flip();
-
-		final FloatBuffer normalsBuffer = BufferUtils.createFloatBuffer(normals.size());
-		normalsBuffer.put(normals.toArray());
-		normalsBuffer.flip();
-
-		final IntBuffer indicesBuffer = BufferUtils.createIntBuffer(indices.size());
-		indicesBuffer.put(indices.toArray());
-		indicesBuffer.flip();
-
-		// Return the vertex data with the loaded data
-		return new VertexData(positionsBuffer, texcoordsBuffer, normalsBuffer, indicesBuffer);
+		// Create the vertex data and add the attributes
+		final VertexData data = new VertexData(indices);
+		data.addAttribute(new VertexAttribute(POSITION_SIZE, positions));
+		data.addAttribute(new VertexAttribute(TEXCOORD_SIZE, texcoords));
+		data.addAttribute(new VertexAttribute(NORMAL_SIZE, normals));
+		return data;
 	}
 
 	/**
@@ -80,11 +65,11 @@ public class WavefrontOBJLoader {
 	 * Note that normal and/or texture coord attributes might be missing from the .obj file. If this is the case, their lists will be empty.
 	 * The indices are stored in the indices list.
 	 *
-	 * @param stream The input stream for the .obj file
-	 * @param positions The list in which to store the positions
+	 * @param stream        The input stream for the .obj file
+	 * @param positions     The list in which to store the positions
 	 * @param textureCoords The list in which to store the texture coords
-	 * @param normals The list in which to store the normals
-	 * @param indices The list in which to store the indices
+	 * @param normals       The list in which to store the normals
+	 * @param indices       The list in which to store the indices
 	 *
 	 * @throws MalformedOBJFileException If any errors occur during loading
 	 */
@@ -170,10 +155,10 @@ public class WavefrontOBJLoader {
 		private static final long serialVersionUID = 1L;
 
 		/**
-		 * Creates an new exception from the line at which the error occured and the cuase.
+		 * Creates an new exception from the line at which the error occured and the cause.
 		 * If the error did not occur on a line, the line can be passed as null.
 		 *
-		 * @param line The line the error occured on
+		 * @param line  The line the error occured on
 		 * @param cause The cause of the exception
 		 */
 		private MalformedOBJFileException(String line, Throwable cause) {

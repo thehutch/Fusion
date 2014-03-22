@@ -28,18 +28,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class SchedulerService {
 	private final BlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
-	private final List<Thread> threads = new ArrayList<>();
 	private final AtomicBoolean running = new AtomicBoolean(true);
 	private final Object lock = new Object();
+	private final List<Thread> threads;
 
 	public SchedulerService(int threadSize) {
+		this.threads = new ArrayList<>(threadSize);
 		for (int i = 0; i < threadSize; ++i) {
-			this.threads.add(new Thread(new Runnable() {
-				@Override
-				public void run() {
-					handleRunnable();
-				}
-			}));
+			this.threads.add(i, new Thread(this::handleRunnable));
 		}
 	}
 

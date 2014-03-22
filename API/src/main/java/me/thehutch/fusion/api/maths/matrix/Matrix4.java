@@ -30,41 +30,41 @@ public class Matrix4 {
 													   0, 0, 1, 0,
 													   0, 0, 0, 1);
 	private static final int SIZE = 4;
-	private final float[][] m;
+	private final float[][] data;
 
 	public Matrix4(float[][] matrix) {
 		if (matrix.length != SIZE && matrix[0].length == SIZE) {
-			throw new IllegalArgumentException("A Matrix4f can only be assigned a float[][] of equal size.");
+			throw new IllegalArgumentException("A Matrix4 can only be assigned a float[][] of equal size.");
 		}
-		this.m = matrix;
+		this.data = matrix;
 	}
 
 	public Matrix4(float m00, float m10, float m20, float m30,
 				   float m01, float m11, float m21, float m31,
 				   float m02, float m12, float m22, float m32,
 				   float m03, float m13, float m23, float m33) {
-		this.m = new float[SIZE][SIZE];
+		this.data = new float[SIZE][SIZE];
 
-		this.m[0][0] = m00;
-		this.m[0][1] = m01;
-		this.m[0][2] = m02;
-		this.m[0][3] = m03;
-		this.m[1][0] = m10;
-		this.m[1][1] = m11;
-		this.m[1][2] = m12;
-		this.m[1][3] = m13;
-		this.m[2][0] = m20;
-		this.m[2][1] = m21;
-		this.m[2][2] = m22;
-		this.m[2][3] = m23;
-		this.m[3][0] = m30;
-		this.m[3][1] = m31;
-		this.m[3][2] = m32;
-		this.m[3][3] = m33;
+		this.data[0][0] = m00;
+		this.data[0][1] = m01;
+		this.data[0][2] = m02;
+		this.data[0][3] = m03;
+		this.data[1][0] = m10;
+		this.data[1][1] = m11;
+		this.data[1][2] = m12;
+		this.data[1][3] = m13;
+		this.data[2][0] = m20;
+		this.data[2][1] = m21;
+		this.data[2][2] = m22;
+		this.data[2][3] = m23;
+		this.data[3][0] = m30;
+		this.data[3][1] = m31;
+		this.data[3][2] = m32;
+		this.data[3][3] = m33;
 	}
 
 	public float get(int col, int row) {
-		return m[col][row];
+		return data[col][row];
 	}
 
 	public Vector4 getRow(int row) {
@@ -97,10 +97,10 @@ public class Matrix4 {
 
 	public float[] toArray() {
 		return new float[] {
-			m[0][0], m[1][0], m[2][0], m[3][0],
-			m[0][1], m[1][1], m[2][1], m[3][1],
-			m[0][2], m[1][2], m[2][2], m[3][2],
-			m[0][3], m[1][3], m[2][3], m[3][3]
+			data[0][0], data[1][0], data[2][0], data[3][0],
+			data[0][1], data[1][1], data[2][1], data[3][1],
+			data[0][2], data[1][2], data[2][2], data[3][2],
+			data[0][3], data[1][3], data[2][3], data[3][3]
 		};
 	}
 

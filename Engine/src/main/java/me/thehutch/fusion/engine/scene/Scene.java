@@ -24,6 +24,8 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import java.io.InputStream;
+import me.thehutch.fusion.api.input.keyboard.Key;
+import me.thehutch.fusion.api.input.keyboard.KeyBinding;
 import me.thehutch.fusion.api.scene.AbstractScene;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.SceneNode;
@@ -66,6 +68,11 @@ public class Scene extends AbstractScene implements Runnable {
 		addNode("models", modelNode);
 	}
 
+	@KeyBinding(keys = { Key.KEY_ESCAPE })
+	public void keyPress() {
+		getEngine().stop("Exit key pressed");
+	}
+
 	public Client getEngine() {
 		return engine;
 	}
@@ -80,10 +87,9 @@ public class Scene extends AbstractScene implements Runnable {
 
 	@Override
 	public void dispose() {
-		// Dispose of the programs
-		for (Program program : programs.values()) {
+		this.programs.values().stream().forEach((program) -> {
 			program.dispose();
-		}
+		});
 	}
 
 	@Override
@@ -109,6 +115,7 @@ public class Scene extends AbstractScene implements Runnable {
 		} catch (LWJGLException ex) {
 			ex.printStackTrace();
 		}
+		GL11.glClearColor(0.0f, 0.50f, 0.75f, 1.0f);
 	}
 
 	private Program loadProgram(String name) {
