@@ -19,18 +19,18 @@ package me.thehutch.fusion.api.maths;
 
 import me.thehutch.fusion.api.maths.imaginary.Quaternion;
 import me.thehutch.fusion.api.maths.matrix.Matrix4;
-import me.thehutch.fusion.api.maths.vector.Vector3;
+import me.thehutch.fusion.api.maths.vector.Vector3f;
 
 public class Transform {
 	private Quaternion rotation;
-	private Vector3 position;
-	private Vector3 scale;
+	private Vector3f position;
+	private Vector3f scale;
 
 	public Transform() {
-		this(Quaternion.IDENTITY, Vector3.ZERO, Vector3.ONE);
+		this(Quaternion.IDENTITY, Vector3f.ZERO, Vector3f.ONE);
 	}
 
-	public Transform(Quaternion rotation, Vector3 position, Vector3 scale) {
+	public Transform(Quaternion rotation, Vector3f position, Vector3f scale) {
 		this.rotation = rotation;
 		this.position = position;
 		this.scale = scale;
@@ -43,7 +43,7 @@ public class Transform {
 		return translation.mul(rotation.mul(scale));
 	}
 
-	public Vector3 getPosition() {
+	public Vector3f getPosition() {
 		return position;
 	}
 
@@ -51,7 +51,7 @@ public class Transform {
 		return rotation;
 	}
 
-	public Vector3 getScale() {
+	public Vector3f getScale() {
 		return scale;
 	}
 
@@ -72,15 +72,15 @@ public class Transform {
 	}
 
 	public void rotateX(float angle) {
-		rotate(Quaternion.fromAxisAngleRad(1.0f, 0.0f, 0.0f, angle));
+		rotate(Quaternion.fromAxisAngleRad(Vector3f.X_AXIS, angle));
 	}
 
 	public void rotateY(float angle) {
-		rotate(Quaternion.fromAxisAngleRad(0.0f, 1.0f, 0.0f, angle));
+		rotate(Quaternion.fromAxisAngleRad(Vector3f.Y_AXIS, angle));
 	}
 
 	public void rotateZ(float angle) {
-		rotate(Quaternion.fromAxisAngleRad(0.0f, 0.0f, 1.0f, angle));
+		rotate(Quaternion.fromAxisAngleRad(Vector3f.Z_AXIS, angle));
 	}
 
 	public void rotate(Quaternion rotation) {

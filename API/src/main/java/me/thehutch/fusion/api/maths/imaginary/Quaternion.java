@@ -19,7 +19,7 @@ package me.thehutch.fusion.api.maths.imaginary;
 
 import me.thehutch.fusion.api.maths.MathsHelper;
 import me.thehutch.fusion.api.maths.matrix.Matrix4;
-import me.thehutch.fusion.api.maths.vector.Vector3;
+import me.thehutch.fusion.api.maths.vector.Vector3f;
 
 public class Quaternion {
 	public static final Quaternion IDENTITY = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
@@ -66,7 +66,7 @@ public class Quaternion {
 							  this.w * w - this.x * x - this.y * y - this.z * z);
 	}
 
-	public Quaternion mul(Vector3 vec) {
+	public Quaternion mul(Vector3f vec) {
 		final float x = getW() * vec.getX() + getY() * vec.getZ() - getZ() * vec.getY();
 		final float y = getW() * vec.getY() + getZ() * vec.getX() - getX() * vec.getZ();
 		final float z = getW() * vec.getZ() + getX() * vec.getY() - getY() * vec.getX();
@@ -88,16 +88,16 @@ public class Quaternion {
 	}
 
 	public Matrix4 toRotationMatrix() {
-		final Vector3 forward = new Vector3(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y));
-		final Vector3 up = new Vector3(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x));
+		final Vector3f forward = new Vector3f(2.0f * (x * z - w * y), 2.0f * (y * z + w * x), 1.0f - 2.0f * (x * x + y * y));
+		final Vector3f up = new Vector3f(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z), 2.0f * (y * z - w * x));
 		return Matrix4.createRotation(forward, up);
 	}
 
-	public static Quaternion fromAxisAngleDeg(Vector3 axis, float angle) {
+	public static Quaternion fromAxisAngleDeg(Vector3f axis, float angle) {
 		return Quaternion.fromAxisAngleRad(axis.getX(), axis.getY(), axis.getZ(), MathsHelper.toRadians(angle));
 	}
 
-	public static Quaternion fromAxisAngleRad(Vector3 axis, float angle) {
+	public static Quaternion fromAxisAngleRad(Vector3f axis, float angle) {
 		return Quaternion.fromAxisAngleRad(axis.getX(), axis.getY(), axis.getZ(), angle);
 	}
 

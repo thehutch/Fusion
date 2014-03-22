@@ -18,8 +18,8 @@
 package me.thehutch.fusion.api.maths.matrix;
 
 import me.thehutch.fusion.api.maths.MathsHelper;
-import me.thehutch.fusion.api.maths.vector.Vector3;
-import me.thehutch.fusion.api.maths.vector.Vector4;
+import me.thehutch.fusion.api.maths.vector.Vector3f;
+import me.thehutch.fusion.api.maths.vector.Vector4f;
 
 /**
  * @author thehutch
@@ -67,12 +67,12 @@ public class Matrix4 {
 		return data[col][row];
 	}
 
-	public Vector4 getRow(int row) {
-		return new Vector4(get(0, row), get(1, row), get(2, row), get(3, row));
+	public Vector4f getRow(int row) {
+		return new Vector4f(get(0, row), get(1, row), get(2, row), get(3, row));
 	}
 
-	public Vector4 getColumn(int col) {
-		return new Vector4(get(col, 0), get(col, 1), get(col, 2), get(col, 3));
+	public Vector4f getColumn(int col) {
+		return new Vector4f(get(col, 0), get(col, 1), get(col, 2), get(col, 3));
 	}
 
 	public Matrix4 mul(Matrix4 m) {
@@ -104,7 +104,7 @@ public class Matrix4 {
 		};
 	}
 
-	public static Matrix4 createTranslation(Vector3 vec) {
+	public static Matrix4 createTranslation(Vector3f vec) {
 		return createTranslation(vec.getX(), vec.getY(), vec.getZ());
 	}
 
@@ -115,8 +115,8 @@ public class Matrix4 {
 						   0, 0, 0, 1);
 	}
 
-	public static Matrix4 createRotation(Vector3 forward, Vector3 up) {
-		final Vector3 right = forward.cross(up);
+	public static Matrix4 createRotation(Vector3f forward, Vector3f up) {
+		final Vector3f right = forward.cross(up);
 		return new Matrix4(right.getX(), right.getY(), right.getZ(), 0,
 						   up.getX(), up.getY(), up.getZ(), 0,
 						   forward.getX(), forward.getY(), forward.getZ(), 0,
@@ -127,11 +127,11 @@ public class Matrix4 {
 		return createScale(scale, scale, scale, scale);
 	}
 
-	public static Matrix4 createScale(Vector3 vec) {
+	public static Matrix4 createScale(Vector3f vec) {
 		return createScale(vec.getX(), vec.getY(), vec.getZ(), 1.0f);
 	}
 
-	public static Matrix4 createScale(Vector4 vec) {
+	public static Matrix4 createScale(Vector4f vec) {
 		return createScale(vec.getX(), vec.getY(), vec.getZ(), vec.getW());
 	}
 

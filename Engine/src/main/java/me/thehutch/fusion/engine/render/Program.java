@@ -30,9 +30,9 @@ import gnu.trove.set.hash.THashSet;
 import java.nio.FloatBuffer;
 import java.util.Set;
 import me.thehutch.fusion.api.maths.matrix.Matrix4;
-import me.thehutch.fusion.api.maths.vector.Vector2;
-import me.thehutch.fusion.api.maths.vector.Vector3;
-import me.thehutch.fusion.api.maths.vector.Vector4;
+import me.thehutch.fusion.api.maths.vector.Vector2f;
+import me.thehutch.fusion.api.maths.vector.Vector3f;
+import me.thehutch.fusion.api.maths.vector.Vector4f;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.BufferUtils;
@@ -122,15 +122,15 @@ public class Program implements Disposable {
 		GL20.glUniform1f(uniforms.get(name), f);
 	}
 
-	public void setUniform(String name, Vector2 vec) {
+	public void setUniform(String name, Vector2f vec) {
 		GL20.glUniform2f(uniforms.get(name), vec.getX(), vec.getY());
 	}
 
-	public void setUniform(String name, Vector3 vec) {
+	public void setUniform(String name, Vector3f vec) {
 		GL20.glUniform3f(uniforms.get(name), vec.getX(), vec.getY(), vec.getZ());
 	}
 
-	public void setUniform(String name, Vector4 vec) {
+	public void setUniform(String name, Vector4f vec) {
 		GL20.glUniform4f(uniforms.get(name), vec.getX(), vec.getY(), vec.getZ(), vec.getW());
 	}
 

@@ -28,59 +28,193 @@ public class MathsHelper {
 	private MathsHelper() {
 	}
 
+	/**
+	 * Converts the angle given in degrees to radians.
+	 *
+	 * @param degrees The angle in degrees
+	 *
+	 * @return The angle in radians
+	 */
 	public static float toRadians(float degrees) {
 		return degrees * DEG_TO_RAD;
 	}
 
+	/**
+	 * Converts the angle given in radians to degrees.
+	 *
+	 * @param radians The angle in radians
+	 *
+	 * @return The angle in degrees
+	 */
 	public static float toDegrees(float radians) {
 		return radians * RAD_TO_DEG;
 	}
 
+	/**
+	 * Returns the absolute value of the value given.
+	 *
+	 * @param value The value
+	 *
+	 * @return The absolute value
+	 */
 	public static int abs(int value) {
 		return value < 0 ? -value : value;
 	}
 
+	/**
+	 * Returns the absolute value of the value given.
+	 *
+	 * @param value The value
+	 *
+	 * @return The absolute value
+	 */
 	public static float abs(float value) {
 		return value < +0.0f ? -value : value;
 	}
 
+	/**
+	 * Rounds down the value given.
+	 *
+	 * @param value The value
+	 *
+	 * @return The rounded down value
+	 */
 	public static int floor(float value) {
 		final int x = (int) value;
 		return value < x ? x - 1 : x;
 	}
 
+	/**
+	 * Rounds up the value given.
+	 *
+	 * @param value The value
+	 *
+	 * @return The rounded up value
+	 */
 	public static int ceil(float value) {
 		return floor(value) + 1;
 	}
 
+	/**
+	 * Rounds the value given to the nearest integer.
+	 *
+	 * @param value The value
+	 *
+	 * @return The rounded value
+	 */
 	public static int round(float value) {
 		return floor(value + 0.5f);
 	}
 
+	/**
+	 * Returns the largest of the two values given
+	 *
+	 * @param v1 The first value
+	 * @param v2 The second value
+	 *
+	 * @return The largest value
+	 */
 	public static int max(int v1, int v2) {
 		return v1 > v2 ? v1 : v2;
 	}
 
+	/**
+	 * Returns the smallest of the two values given
+	 *
+	 * @param v1 The first value
+	 * @param v2 The second value
+	 *
+	 * @return The smallest value
+	 */
 	public static int min(int v1, int v2) {
 		return v1 < v2 ? v1 : v2;
 	}
 
+	/**
+	 * Returns the largest of the two values given
+	 *
+	 * @param v1 The first value
+	 * @param v2 The second value
+	 *
+	 * @return The largest value
+	 */
 	public static float max(float v1, float v2) {
 		return v1 > v2 ? v1 : v2;
 	}
 
+	/**
+	 * Returns the smallest of the two values given
+	 *
+	 * @param v1 The first value
+	 * @param v2 The second value
+	 *
+	 * @return The smallest value
+	 */
 	public static float min(float v1, float v2) {
 		return v1 < v2 ? v1 : v2;
 	}
 
+	/**
+	 * Clamps the value given between the min and max values.
+	 *
+	 * @param value The value
+	 * @param min   The min boundary
+	 * @param max   The max boundary
+	 *
+	 * @return The clamped value
+	 */
 	public static int clamp(int value, int min, int max) {
 		return min(max(value, min), max);
 	}
 
+	/**
+	 * Clamps the value given between the min and max values.
+	 *
+	 * @param value The value
+	 * @param min   The min boundary
+	 * @param max   The max boundary
+	 *
+	 * @return The clamped value
+	 */
 	public static float clamp(float value, float min, float max) {
 		return min(max(value, min), max);
 	}
 
+	/**
+	 * Wraps the value given between the min and max values.
+	 *
+	 * @param value The value
+	 * @param min   The min boundary
+	 * @param max   The max boundary
+	 *
+	 * @return The wrapped value
+	 */
+	public static int wrap(int value, int min, int max) {
+		return value < min ? max : value > max ? min : value;
+	}
+
+	/**
+	 * Wraps the value given between the min and max values.
+	 *
+	 * @param value The value
+	 * @param min   The min boundary
+	 * @param max   The max boundary
+	 *
+	 * @return The wrapped value
+	 */
+	public static float wrap(float value, float min, float max) {
+		return value < min ? max : value > max ? min : value;
+	}
+
+	/**
+	 * Interpolates between the two values given.
+	 *
+	 * @param a          The start value
+	 * @param b          The end value
+	 * @param percentage The amount of interpolate by
+	 *
+	 * @return The interpolated value
+	 */
 	public static float lerp(float a, float b, float percentage) {
 		return a + (b - a) * percentage;
 	}

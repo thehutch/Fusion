@@ -17,8 +17,8 @@
  */
 package me.thehutch.fusion.api.util.hashing;
 
-import me.thehutch.fusion.api.maths.vector.Vector2;
-import me.thehutch.fusion.api.maths.vector.Vector3;
+import me.thehutch.fusion.api.maths.vector.Vector2f;
+import me.thehutch.fusion.api.maths.vector.Vector3f;
 
 /**
  * @author thehutch
@@ -27,11 +27,11 @@ public class LongTripleHash {
 	private LongTripleHash() {
 	}
 
-	public static long hash(Vector2 vec) {
+	public static long hash(Vector2f vec) {
 		return hash(vec.getFloorX(), vec.getFloorY(), 0);
 	}
 
-	public static long hash(Vector3 vec) {
+	public static long hash(Vector3f vec) {
 		return hash(vec.getFloorX(), vec.getFloorY(), vec.getFloorZ());
 	}
 
