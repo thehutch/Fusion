@@ -24,6 +24,7 @@ import me.thehutch.fusion.api.input.mouse.MouseButton;
  * @author thehutch
  */
 public interface IInputManager {
+
 	/**
 	 * Gets the current mouse x position on the window.
 	 *
@@ -64,17 +65,17 @@ public interface IInputManager {
 	public boolean isKeyDown(Key key);
 
 	/**
-	 * Set to true if keyboard events should be fired continuously while a key
-	 * or mouse button is pressed down.
+	 * Set to true if keyboard events should be fired continuously while a key or mouse button is pressed down.
 	 *
 	 * @param enable True to enable repeat event
 	 */
 	public void enableRepeatKeyEvents(boolean enable);
 
 	/**
-	 * Registers all the methods in instance class which have the {@link KeyBinding} Annotation.
+	 * Registers this function to handle keyboard input of the given keys.
 	 *
-	 * @param instance An instance of the class with the key binding methods
+	 * @param function The function to handle the input
+	 * @param keys     The keys this function will handle
 	 */
-	public void registerKeyBinding(Object instance);
+	public void registerKeyBinding(Runnable function, Key... keys);
 }

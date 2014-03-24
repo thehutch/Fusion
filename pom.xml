@@ -29,6 +29,18 @@
 		<project.root>.</project.root>
 	</properties>
 
+	<!-- Build plugin repositories -->
+	<pluginRepositories>
+		<pluginRepository>
+			<id>sonatype-nexus</id>
+			<url>https://oss.sonatype.org/content/repositories/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<!-- Build configuration -->
 	<build>
 		<defaultGoal>clean install</defaultGoal>
@@ -40,6 +52,14 @@
 				<targetPath>${project.root}</targetPath>
 				<includes>
 					<include>**/*</include>
+				</includes>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
+				<directory>${project.root}</directory>
+				<targetPath>${project.root}</targetPath>
+				<includes>
+					<include>LICENSE.txt</include>
 				</includes>
 			</resource>
 		</resources>
@@ -71,16 +91,25 @@
 						<manifestEntries>
 							<Specification-Title>${project.name}</Specification-Title>
 						</manifestEntries>
-						<manifestSections>
-							<manifestSection>
-								<name>me/thehutch/fusion</name>
-								<manifestEntries>
-									<Sealed>true</Sealed>
-								</manifestEntries>
-							</manifestSection>
-						</manifestSections>
 					</archive>
 				</configuration>
+			</plugin>
+			<!-- Dependency addition plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<configuration>
+							<minimizeJar>false</minimizeJar>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<!-- License header plugin -->
 			<plugin>

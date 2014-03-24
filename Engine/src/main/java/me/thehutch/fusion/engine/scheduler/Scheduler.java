@@ -18,7 +18,6 @@
 package me.thehutch.fusion.engine.scheduler;
 
 import java.util.ArrayDeque;
-import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -30,10 +29,11 @@ import me.thehutch.fusion.api.scheduler.TaskPriority;
  * @author thehutch
  */
 public class Scheduler implements IScheduler {
-	public static final float OVERLOAD_FACTOR = 1.5f;
-	public static final long MILLISECOND_TO_SECOND = 1000L;
+
+	private static final float OVERLOAD_FACTOR = 1.5f;
+	private static final long MILLISECOND_TO_SECOND = 1000L;
 	private static final AtomicInteger TASK_ID_COUNTER = new AtomicInteger(0);
-	private final PriorityQueue<Task> currentTasks = new PriorityQueue<>(4, new TaskQueueComparator());
+	private final PriorityQueue<Task> currentTasks = new PriorityQueue<>(1);
 	private final Queue<Task> pendingQueue = new LinkedBlockingQueue<>();
 	private final SchedulerService service;
 	private final long ticksPerSecond;
@@ -76,7 +76,7 @@ public class Scheduler implements IScheduler {
 			while (!syncTasks.isEmpty()) {
 				final Task task = syncTasks.poll();
 				task.execute();
-				task.setTickTime(getUpTime() + task.getPeriod(), isOverloaded());
+				task.setTickTime(upTime + task.getPeriod(), overloaded);
 
 				if (task.isAlive() && task.isRepeating()) {
 					this.currentTasks.add(task);
@@ -94,7 +94,7 @@ public class Scheduler implements IScheduler {
 
 				if (diffTime < MILLISECOND_TO_SECOND) {
 					try {
-						Thread.sleep(timePerTick - diffTimePerTick);
+						Thread.sleep(MILLISECOND_TO_SECOND - diffTime);
 					} catch (InterruptedException ex) {
 						ex.printStackTrace();
 					}
@@ -117,7 +117,7 @@ public class Scheduler implements IScheduler {
 			if (currentTasks.isEmpty()) {
 				stop();
 			}
-		} while (isActive());
+		} while (active);
 
 		// Wait until all threads have finished
 		this.service.joinAll();
@@ -169,23 +169,11 @@ public class Scheduler implements IScheduler {
 		});
 	}
 
-	public long getUpTime() {
-		return upTime;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public boolean isOverloaded() {
-		return overloaded;
-	}
-
 	private void getReadyTasks(Queue<Task> parallelTasks, Queue<Task> syncedTasks) {
 		boolean isExecuted;
 		do {
 			final Task task = currentTasks.element();
-			isExecuted = task.getTickTime() <= getUpTime();
+			isExecuted = task.getTickTime() <= upTime;
 
 			if (isExecuted && task.isAlive()) {
 				if (task.isParallel()) {
@@ -203,15 +191,8 @@ public class Scheduler implements IScheduler {
 	private int addTask(Runnable executor, TaskPriority priority, long delay, long period, boolean isParallel) {
 		final int taskId = TASK_ID_COUNTER.getAndIncrement();
 		final Task task = new Task(taskId, executor, priority, delay, period, isParallel);
-		task.setTickTime(delay + getUpTime(), isOverloaded());
+		task.setTickTime(delay + upTime, overloaded);
 		this.pendingQueue.add(task);
 		return taskId;
-	}
-
-	private class TaskQueueComparator implements Comparator<Task> {
-		@Override
-		public int compare(Task t1, Task t2) {
-			return t1.hasLessPriority(t2) ? -1 : 1;
-		}
 	}
 }

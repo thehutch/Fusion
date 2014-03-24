@@ -155,7 +155,7 @@ public enum Key {
 	KEY_APPS(0xDD),
 	KEY_POWER(0xDE),
 	KEY_SLEEP(0xDF);
-	private static final TIntObjectMap<Key> KEYCODES = new TIntObjectHashMap();
+	private static final TIntObjectMap<Key> KEYCODES = new TIntObjectHashMap<>();
 	private final int keycode;
 
 	static {

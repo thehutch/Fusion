@@ -17,7 +17,6 @@
  */
 package me.thehutch.fusion.engine;
 
-
 import me.thehutch.fusion.api.IClient;
 import me.thehutch.fusion.api.Platform;
 import me.thehutch.fusion.api.scene.Camera;
@@ -28,7 +27,7 @@ import me.thehutch.fusion.engine.scene.Scene;
 /**
  * @author thehutch
  */
-public class Client extends Engine implements IClient {
+public final class Client extends Engine implements IClient {
 	private final InputManager inputManager;
 	private final Scene scene;
 

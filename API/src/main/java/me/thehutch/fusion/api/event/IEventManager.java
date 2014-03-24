@@ -17,6 +17,8 @@
  */
 package me.thehutch.fusion.api.event;
 
+import java.util.function.Consumer;
+
 /**
  * @author thehutch
  */
@@ -42,9 +44,13 @@ public interface IEventManager {
 	public <T extends Event> T callEventAsync(T event);
 
 	/**
-	 * Registers all the {@link EventHandler}'s in the class.
+	 * Registers the event handler with the given priority and ignore flag.
 	 *
-	 * @param listenerObj An instance of the class with the {@link EventHandler}'s
+	 * @param <T>             The type of event being registered
+	 * @param handler         The function which handles the event
+	 * @param eventClass      The class of the event being registered
+	 * @param priority        The priority of the event
+	 * @param ignoreCancelled If the handler ignores the cancellation state of the event
 	 */
-	public void registerListener(Object listenerObj);
+	public <T extends Event> void registerEvent(Consumer<T> handler, Class<T> eventClass, EventPriority priority, boolean ignoreCancelled);
 }

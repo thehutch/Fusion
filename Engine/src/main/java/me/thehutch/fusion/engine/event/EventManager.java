@@ -19,16 +19,12 @@ package me.thehutch.fusion.engine.event;
 
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import me.thehutch.fusion.api.event.Event;
-import me.thehutch.fusion.api.event.EventHandler;
 import me.thehutch.fusion.api.event.EventPriority;
 import me.thehutch.fusion.api.event.IEventManager;
-import me.thehutch.fusion.api.util.ReflectionHelper;
 
 /**
  * @author thehutch
@@ -37,20 +33,15 @@ public class EventManager implements IEventManager {
 	private final TMap<Class<? extends Event>, SortedSet<EventExecutor>> events = new THashMap<>();
 
 	@Override
-	public <T extends Event> T callEvent(final T event) {
+	public <T extends Event> T callEvent(T event) {
 		final SortedSet<EventExecutor> executors = events.get(event.getClass());
 		// Check if there are any event executors for this event
 		if (executors == null) {
 			return event;
 		}
-		try {
-			for (EventExecutor executor : executors) {
-				// Execute the event
-				executor.execute(event);
-			}
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-			ex.printStackTrace();
-		}
+		executors.stream().forEach((EventExecutor executor) -> {
+			executor.execute(event);
+		});
 		return event;
 	}
 
@@ -60,42 +51,37 @@ public class EventManager implements IEventManager {
 	}
 
 	@Override
-	public void registerListener(Object listenerObj) {
-		final Collection<Method> methods = ReflectionHelper.getAnnotatedMethods(listenerObj.getClass(), EventHandler.class);
-		methods.parallelStream().forEach((method) -> {
-			final EventHandler handler = method.getAnnotation(EventHandler.class);
-			final Class<?>[] parameters = method.getParameterTypes();
-			if (ReflectionHelper.hasExactParameters(method, Event.class)) {
-				final Class<? extends Event> event = parameters[0].asSubclass(Event.class);
-				SortedSet<EventExecutor> executors = events.get(event);
-				if (executors == null) {
-					executors = new TreeSet<>((EventExecutor e1, EventExecutor e2) -> e1.priority.getPriority() - e2.priority.getPriority());
-				}
-				if (executors.add(new EventExecutor(listenerObj, method, handler.priority(), handler.ignoreCancelled()))) {
-					System.out.println("Duplicate Event Found!");
-				}
-				this.events.put(event, executors);
-			}
-		});
+	public <T extends Event> void registerEvent(Consumer<T> handler, Class<T> eventClass, EventPriority priority, boolean ignoreCancelled) {
+		SortedSet<EventExecutor> executors = events.get(eventClass);
+		if (executors == null) {
+			executors = new TreeSet<>();
+		}
+		if (!executors.add(new EventExecutor<>(handler, priority, ignoreCancelled))) {
+			throw new IllegalStateException("Duplicate events registered: " + eventClass.getName());
+		}
+		this.events.put(eventClass, executors);
 	}
 
-	private class EventExecutor {
-		private final boolean ignoreCancelled;
+	private class EventExecutor<T extends Event> implements Comparable<EventExecutor> {
+		private final Consumer<T> function;
 		private final EventPriority priority;
-		private final Object invoker;
-		private final Method method;
+		private final boolean ignoreCancelled;
 
-		private EventExecutor(Object invoker, Method method, EventPriority priority, boolean ignoreCancelled) {
-			this.invoker = invoker;
-			this.method = method;
+		private EventExecutor(Consumer<T> function, EventPriority priority, boolean ignoreCancelled) {
+			this.function = function;
 			this.priority = priority;
 			this.ignoreCancelled = ignoreCancelled;
 		}
 
-		public void execute(Event event) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		public void execute(T event) {
 			if (!event.isCancelled() || ignoreCancelled) {
-				this.method.invoke(invoker, event);
+				this.function.accept(event);
 			}
+		}
+
+		@Override
+		public int compareTo(EventExecutor other) {
+			return priority.getPriority() - other.priority.getPriority();
 		}
 	}
 }

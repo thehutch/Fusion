@@ -22,7 +22,7 @@ import me.thehutch.fusion.api.scheduler.TaskPriority;
 /**
  * @author thehutch
  */
-public class Task {
+public class Task implements Comparable<Task> {
 	private final TaskPriority priority;
 	private final Runnable executor;
 	private final boolean parallel;
@@ -93,10 +93,11 @@ public class Task {
 		return period > 0;
 	}
 
-	protected boolean hasLessPriority(Task task) {
+	@Override
+	public int compareTo(Task task) {
 		if (getTickTime() == task.getTickTime()) {
-			return (getPriority() == task.getPriority()) ? (getCreationTime() < task.getCreationTime()) : (getPriority().getMaxDeferred() > task.getPriority().getMaxDeferred());
+			return (int) (getPriority() == task.getPriority() ? getCreationTime() - task.getCreationTime() : task.getPriority().getMaxDeferred() - getPriority().getMaxDeferred());
 		}
-		return getTickTime() < task.getTickTime();
+		return getTickTime() < task.getTickTime() ? 1 : -1;
 	}
 }

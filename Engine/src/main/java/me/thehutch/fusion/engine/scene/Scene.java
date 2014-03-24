@@ -24,8 +24,6 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import java.io.InputStream;
-import me.thehutch.fusion.api.input.keyboard.Key;
-import me.thehutch.fusion.api.input.keyboard.KeyBinding;
 import me.thehutch.fusion.api.scene.AbstractScene;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.SceneNode;
@@ -42,7 +40,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
 
-public class Scene extends AbstractScene implements Runnable {
+public final class Scene extends AbstractScene implements Runnable {
 	private static final String VERTEX_SHADER_EXTENSION = ".vs";
 	private static final String FRAGMENT_SHADER_EXTENSION = ".fs";
 	private final TMap<String, Program> programs = new THashMap<>();
@@ -66,11 +64,6 @@ public class Scene extends AbstractScene implements Runnable {
 		// Add the model to the scene
 		final SceneNode modelNode = createNode(bunny);
 		addNode("models", modelNode);
-	}
-
-	@KeyBinding(keys = { Key.KEY_ESCAPE })
-	public void keyPress() {
-		getEngine().stop("Exit key pressed");
 	}
 
 	public Client getEngine() {
@@ -111,7 +104,7 @@ public class Scene extends AbstractScene implements Runnable {
 			Display.setTitle("Fusion Engine | " + ENGINE_VERSION);
 			Display.setDisplayMode(new DisplayMode(800, 600));
 			Display.setVSyncEnabled(true);
-			Display.create(new PixelFormat(), new ContextAttribs(3, 2).withProfileCore(true).withDebug(true));
+			Display.create(new PixelFormat(), new ContextAttribs(3, 0).withForwardCompatible(true));
 		} catch (LWJGLException ex) {
 			ex.printStackTrace();
 		}

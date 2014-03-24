@@ -17,7 +17,6 @@
  */
 package me.thehutch.fusion.engine.render;
 
-
 import gnu.trove.list.TIntList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -29,13 +28,14 @@ public class VertexData implements Disposable {
 	private final TIntObjectMap<VertexAttribute> attributes = new TIntObjectHashMap<>();
 	private final IntBuffer indicesBuffer;
 
-//	public VertexData(VertexData vertexData) {
-//		// Copy the attributes across
-//		this.attributes.putAll(vertexData.attributes);
-//		// Create the indices buffer and copy the data cross
-//		this.indicesBuffer = BufferUtils.createIntBuffer(vertexData.getIndicesCount());
-//		this.indicesBuffer.put(vertexData.indicesBuffer);
-//	}
+	public VertexData(VertexData vertexData) {
+		// Copy the attributes across
+		this.attributes.putAll(vertexData.attributes);
+		// Create the indices buffer and copy the data cross
+		this.indicesBuffer = BufferUtils.createIntBuffer(vertexData.getIndicesCount());
+		this.indicesBuffer.put(vertexData.indicesBuffer);
+		this.indicesBuffer.flip();
+	}
 
 	public VertexData(TIntList indices) {
 		this.indicesBuffer = BufferUtils.createIntBuffer(indices.size());

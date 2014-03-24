@@ -20,19 +20,14 @@ package me.thehutch.fusion.engine.input;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.Set;
 import me.thehutch.fusion.api.input.IInputManager;
 import me.thehutch.fusion.api.input.keyboard.Key;
-import me.thehutch.fusion.api.input.keyboard.KeyBinding;
 import me.thehutch.fusion.api.input.keyboard.KeyboardEvent;
 import me.thehutch.fusion.api.input.mouse.MouseButton;
 import me.thehutch.fusion.api.input.mouse.MouseButtonEvent;
 import me.thehutch.fusion.api.input.mouse.MouseMotionEvent;
 import me.thehutch.fusion.api.input.mouse.MouseWheelMotionEvent;
-import me.thehutch.fusion.api.util.ReflectionHelper;
 import me.thehutch.fusion.engine.Engine;
 import me.thehutch.fusion.engine.event.EventManager;
 import org.lwjgl.LWJGLException;
@@ -43,8 +38,8 @@ import org.lwjgl.opengl.Display;
 /**
  * @author thehutch
  */
-public class InputManager implements IInputManager, Runnable {
-	private final TMap<Key, Set<KeyBindingExecutor>> keyBindings = new THashMap<>();
+public final class InputManager implements IInputManager, Runnable {
+	private final TMap<Key, Set<Runnable>> keyBindings = new THashMap<>();
 	private final EventManager eventManager;
 	private final Engine engine;
 
@@ -100,7 +95,7 @@ public class InputManager implements IInputManager, Runnable {
 		}
 		this.keyBindings.keySet().stream().filter(key -> isKeyDown(key)).map(key -> keyBindings.get(key)).forEach(executors -> {
 			executors.stream().forEach(executor -> {
-				executor.execute();
+				executor.run();
 			});
 		});
 
@@ -135,38 +130,17 @@ public class InputManager implements IInputManager, Runnable {
 	}
 
 	@Override
-	public void registerKeyBinding(Object instance) {
-		final Collection<Method> methods = ReflectionHelper.getAnnotatedMethods(instance.getClass(), KeyBinding.class);
-		methods.parallelStream().forEach(method -> {
-			final KeyBinding keyBinding = method.getAnnotation(KeyBinding.class);
-			if (ReflectionHelper.hasExactParameters(method)) {
-				for (int i = 0; i < keyBinding.keys().length; ++i) {
-					Set<KeyBindingExecutor> executors = keyBindings.get(keyBinding.keys()[i]);
-					if (executors == null) {
-						executors = new THashSet<>();
-					}
-					executors.add(new KeyBindingExecutor(instance, method));
-					this.keyBindings.put(keyBinding.keys()[i], executors);
-				}
-			}
-		});
-	}
-
-	private class KeyBindingExecutor {
-		private final Object invoker;
-		private final Method method;
-
-		private KeyBindingExecutor(Object invoker, Method method) {
-			this.invoker = invoker;
-			this.method = method;
+	public void registerKeyBinding(Runnable function, Key... keys) {
+		if (keys.length == 0) {
+			throw new IllegalArgumentException("Can not register key binding with no keys bound.");
 		}
-
-		public void execute() {
-			try {
-				this.method.invoke(invoker);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-				ex.printStackTrace();
+		for (int i = 0; i < keys.length; ++i) {
+			Set<Runnable> functions = keyBindings.get(keys[i]);
+			if (functions == null) {
+				functions = new THashSet<>();
 			}
+			functions.add(function);
+			this.keyBindings.put(keys[i], functions);
 		}
 	}
 }
