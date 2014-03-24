@@ -24,7 +24,6 @@ import me.thehutch.fusion.api.input.mouse.MouseButton;
  * @author thehutch
  */
 public interface IInputManager {
-
 	/**
 	 * Gets the current mouse x position on the window.
 	 *

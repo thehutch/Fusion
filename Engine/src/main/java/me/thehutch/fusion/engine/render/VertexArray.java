@@ -35,14 +35,13 @@ import org.lwjgl.opengl.GL30;
  * @author thehutch
  */
 public class VertexArray implements Disposable {
-	private final VertexData vertexData;
 	private final int[] attributeIds;
+	private final int numIndices;
 	private final int vao;
 	private final int ibo;
 
 	public VertexArray(VertexData data) {
-		this.vertexData = data;
-
+		this.numIndices = data.getIndicesCount();
 		// Create the vertex array object
 		this.vao = GL30.glGenVertexArrays();
 		// Bind the vertex array
@@ -53,7 +52,7 @@ public class VertexArray implements Disposable {
 		// Bind the index buffer
 		GL15.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		// Set the indices data to the vao from the vertex data
-		GL15.glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexData.getIndices(), GL_STATIC_DRAW);
+		GL15.glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.getIndices(), GL_STATIC_DRAW);
 		// Unbind the index buffer
 		GL15.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -89,7 +88,7 @@ public class VertexArray implements Disposable {
 		// Bind the index buffer
 		GL15.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		// Draw the vertex elements
-		GL11.glDrawElements(GL_TRIANGLES, vertexData.getIndicesCount(), GL_UNSIGNED_INT, 0L);
+		GL11.glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0L);
 		// Unbind the index buffer
 		GL15.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		// Unbind the vertex array object
@@ -98,8 +97,6 @@ public class VertexArray implements Disposable {
 
 	@Override
 	public void dispose() {
-		// Dispose the vertex data
-		this.vertexData.dispose();
 		// Delete the attribute buffers
 		for (int buffer : attributeIds) {
 			GL15.glDeleteBuffers(buffer);

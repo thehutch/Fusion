@@ -37,9 +37,9 @@ public final class Client extends Engine implements IClient {
 		this.scene = new Scene(this, Camera.createPerspective(70.0f, 800.0f / 600.0f, 0.1f, 1000.0f), "/shaders/");
 		this.inputManager = new InputManager(this);
 		// Schedule the input manager task
-		getScheduler().scheduleSyncRepeatingTask(getInputManager(), TaskPriority.CRITICAL, 0L, 1L);
+		getScheduler().scheduleSyncRepeatingTask(getInputManager()::execute, TaskPriority.CRITICAL, 0L, 1L);
 		// Schedule the scene task
-		getScheduler().scheduleSyncRepeatingTask(getScene(), TaskPriority.HIGHEST, 0L, 1L);
+		getScheduler().scheduleSyncRepeatingTask(getScene()::execute, TaskPriority.HIGHEST, 0L, 1L);
 	}
 
 	@Override

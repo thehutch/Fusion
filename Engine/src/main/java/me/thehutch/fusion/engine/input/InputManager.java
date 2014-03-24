@@ -38,7 +38,7 @@ import org.lwjgl.opengl.Display;
 /**
  * @author thehutch
  */
-public final class InputManager implements IInputManager, Runnable {
+public final class InputManager implements IInputManager {
 	private final TMap<Key, Set<Runnable>> keyBindings = new THashMap<>();
 	private final EventManager eventManager;
 	private final Engine engine;
@@ -87,12 +87,13 @@ public final class InputManager implements IInputManager, Runnable {
 		Keyboard.enableRepeatEvents(enable);
 	}
 
-	@Override
-	public void run() {
+	public void execute() {
 		// Check for display close
 		if (Display.isCloseRequested()) {
 			this.engine.stop("Displayed Closed");
 		}
+		
+		// Check and execute each key binding
 		this.keyBindings.keySet().stream().filter(key -> isKeyDown(key)).map(key -> keyBindings.get(key)).forEach(executors -> {
 			executors.stream().forEach(executor -> {
 				executor.run();

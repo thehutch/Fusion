@@ -40,7 +40,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
 
-public final class Scene extends AbstractScene implements Runnable {
+public final class Scene extends AbstractScene {
 	private static final String VERTEX_SHADER_EXTENSION = ".vs";
 	private static final String FRAGMENT_SHADER_EXTENSION = ".fs";
 	private final TMap<String, Program> programs = new THashMap<>();
@@ -85,8 +85,7 @@ public final class Scene extends AbstractScene implements Runnable {
 		});
 	}
 
-	@Override
-	public void run() {
+	public void execute() {
 		// Clear the screen
 		GL11.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
