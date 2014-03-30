@@ -89,6 +89,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
+							<Main-Class>me.thehutch.fusion.engine.Application</Main-Class>
 							<Specification-Title>${project.name}</Specification-Title>
 						</manifestEntries>
 					</archive>

@@ -22,7 +22,12 @@
  */
 package me.thehutch.fusion.engine.render;
 
+import static org.lwjgl.opengl.GL11.GL_RGB;
+import static org.lwjgl.opengl.GL11.GL_RGB8;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_RGBA8;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 
 import java.awt.image.BufferedImage;
@@ -31,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import javax.imageio.ImageIO;
-import me.thehutch.fusion.api.graphics.DataType;
 import me.thehutch.fusion.api.graphics.ITexture;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -42,18 +46,15 @@ import org.lwjgl.opengl.GL13;
  * @author thehutch
  */
 public class Texture implements ITexture {
-	private final Format format;
 	private final int width;
 	private final int height;
 	private final int id;
 
-	public Texture(InputStream stream, Format format) {
-		this.format = format;
+	public Texture(InputStream stream) {
 		try {
 			final BufferedImage image = ImageIO.read(stream);
 			this.width = image.getWidth();
 			this.height = image.getHeight();
-
 			final int type = image.getType();
 			final int[] pixels;
 			if (type == BufferedImage.TYPE_INT_ARGB || type == BufferedImage.TYPE_INT_RGB) {
@@ -62,26 +63,21 @@ public class Texture implements ITexture {
 				pixels = new int[width * height];
 				image.getRGB(0, 0, width, height, pixels, 0, width);
 			}
+			final int numComponents = image.getColorModel().getNumComponents();
+			final ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * numComponents);
 
-			final ByteBuffer data = BufferUtils.createByteBuffer(width * height * format.getNumComponents());
 			for (int h = height - 1; h >= 0; --h) {
 				for (int w = 0; w < width; ++w) {
 					final int pixel = pixels[w + h * width];
-					if (format.hasRed()) {
-						data.put((byte) ((pixel >> 16) & 0xFF));
-					}
-					if (format.hasGreen()) {
-						data.put((byte) ((pixel >> 8) & 0xFF));
-					}
-					if (format.hasBlue()) {
-						data.put((byte) (pixel & 0xFF));
-					}
-					if (format.hasAlpha()) {
-						data.put((byte) ((pixel >> 24) & 0xFF));
+					buffer.put((byte) ((pixel >> 16) & 0xFF));
+					buffer.put((byte) ((pixel >> 8) & 0xFF));
+					buffer.put((byte) (pixel & 0xFF));
+					if (numComponents == 4) {
+						buffer.put((byte) ((pixel >> 24) & 0xFF));
 					}
 				}
 			}
-			data.flip();
+			buffer.flip();
 
 			// Generate a texture handle
 			this.id = GL11.glGenTextures();
@@ -95,11 +91,10 @@ public class Texture implements ITexture {
 			GL11.glTexParameteri(GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 			GL11.glTexParameteri(GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 
-			GL11.glTexImage2D(GL_TEXTURE_2D, 0, format.getGLConstant(), width, height, 0, format.getGLConstant(), DataType.UNSIGNED_BYTE.getGLConstant(), data);
+			GL11.glTexImage2D(GL_TEXTURE_2D, 0, numComponents == 4 ? GL_RGBA8 : GL_RGB8, width, height, 0, numComponents == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, buffer);
 
 			// Unbind the texture
 			GL11.glBindTexture(GL_TEXTURE_2D, 0);
-
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to read texture image data", ex);
 		}
@@ -120,15 +115,5 @@ public class Texture implements ITexture {
 	@Override
 	public int getHeight() {
 		return height;
-	}
-
-	@Override
-	public Format getFormat() {
-		return format;
-	}
-
-	@Override
-	public InternalFormat getInternalFormat() {
-		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

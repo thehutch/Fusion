@@ -30,7 +30,6 @@ import gnu.trove.map.hash.THashMap;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import me.thehutch.fusion.api.graphics.ITexture;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.IScene;
 import me.thehutch.fusion.api.scene.ISceneNode;
@@ -69,7 +68,7 @@ public final class Scene implements IScene {
 		final VertexData mesh = WavefrontOBJLoader.load(Client.class.getResourceAsStream("/models/teleporter.obj"));
 
 		// Create the model
-		final Model model = new Model(this, getProgram("basic"), mesh, new Texture(Engine.class.getResourceAsStream("/models/teleporter.jpg"), ITexture.Format.RGB));
+		final Model model = new Model(this, getProgram("basic"), mesh, new Texture(Engine.class.getResourceAsStream("/models/teleporter.jpg")));
 		model.scale(0.125f);
 
 		// Disable blending
