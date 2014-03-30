@@ -24,9 +24,11 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import java.io.InputStream;
-import me.thehutch.fusion.api.scene.AbstractScene;
+import java.util.ArrayList;
+import java.util.Collection;
 import me.thehutch.fusion.api.scene.Camera;
-import me.thehutch.fusion.api.scene.SceneNode;
+import me.thehutch.fusion.api.scene.IScene;
+import me.thehutch.fusion.api.scene.ISceneNode;
 import me.thehutch.fusion.engine.Client;
 import me.thehutch.fusion.engine.render.Program;
 import me.thehutch.fusion.engine.render.Shader;
@@ -40,16 +42,18 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.PixelFormat;
 
-public final class Scene extends AbstractScene {
+public final class Scene implements IScene {
 	private static final String VERTEX_SHADER_EXTENSION = ".vs";
 	private static final String FRAGMENT_SHADER_EXTENSION = ".fs";
+	private final Collection<ISceneNode> nodes = new ArrayList<>(16);
 	private final TMap<String, Program> programs = new THashMap<>();
 	private final String shaderDirectory;
+	private final Camera camera;
 	private final Client engine;
 
 	public Scene(Client engine, Camera camera, String shaderDirectory) {
-		super(camera);
 		this.shaderDirectory = shaderDirectory;
+		this.camera = camera;
 		this.engine = engine;
 		// Create the window
 		createWindow();
@@ -58,12 +62,8 @@ public final class Scene extends AbstractScene {
 		final VertexData mesh = WavefrontOBJLoader.load(Client.class.getResourceAsStream("/models/bunny.obj"));
 
 		// Create the model
-		final Model bunny = new Model(getProgram("basic"), mesh);
-		bunny.getTransform().scale(5.0f);
-
-		// Add the model to the scene
-		final SceneNode modelNode = createNode(bunny);
-		addNode("models", modelNode);
+		final Model bunny = new Model(this, getProgram("basic"), mesh);
+		//bunny.scale(2.5f);
 	}
 
 	public Client getEngine() {
@@ -79,9 +79,28 @@ public final class Scene extends AbstractScene {
 	}
 
 	@Override
+	public Camera getCamera() {
+		return camera;
+	}
+
+	@Override
+	public void addNode(ISceneNode node) {
+		this.nodes.add(node);
+	}
+
+	@Override
+	public void removeNode(ISceneNode node) {
+		this.nodes.remove(node);
+		node.dispose();
+	}
+
+	@Override
 	public void dispose() {
 		this.programs.values().stream().forEach((program) -> {
 			program.dispose();
+		});
+		this.nodes.stream().forEach((node) -> {
+			node.dispose();
 		});
 	}
 
@@ -89,10 +108,17 @@ public final class Scene extends AbstractScene {
 		// Clear the screen
 		GL11.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Get the delta from the scheduler
+		final float delta = getEngine().getScheduler().getDelta();
+
 		// Update the scene
-		update(getEngine().getScheduler().getDelta());
+		this.nodes.parallelStream().forEach((node) -> {
+			node.update(delta);
+		});
 		// Render the scene
-		render();
+		this.nodes.stream().forEach((node) -> {
+			node.render();
+		});
 
 		// Update the display
 		Display.update();

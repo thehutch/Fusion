@@ -127,8 +127,13 @@ public class Scheduler implements IScheduler {
 		this.active = false;
 	}
 
+	/**
+	 * Gets the number of seconds since the last frame
+	 *
+	 * @return Frame time in seconds
+	 */
 	public float getDelta() {
-		return diffTimePerTick;
+		return diffTimePerTick / 1000.0f;
 	}
 
 	@Override

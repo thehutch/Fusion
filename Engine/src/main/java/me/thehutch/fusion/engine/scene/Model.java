@@ -17,19 +17,36 @@
  */
 package me.thehutch.fusion.engine.scene;
 
-import me.thehutch.fusion.api.scene.SceneComponent;
-import me.thehutch.fusion.api.util.Disposable;
+import com.flowpowered.math.imaginary.Quaternionf;
+import com.flowpowered.math.matrix.Matrix4f;
+import com.flowpowered.math.vector.Vector3f;
+import com.flowpowered.math.vector.Vector4f;
+import me.thehutch.fusion.api.scene.Camera;
+import me.thehutch.fusion.api.scene.IModel;
+import me.thehutch.fusion.api.scene.ISceneNode;
 import me.thehutch.fusion.engine.render.Program;
 import me.thehutch.fusion.engine.render.VertexArray;
 import me.thehutch.fusion.engine.render.VertexData;
 
-public class Model extends SceneComponent implements Disposable {
+public class Model implements IModel, ISceneNode {
 	private final VertexArray mesh;
 	private final Program program;
+	private final Camera camera;
+	private Quaternionf rotation;
+	private Vector3f position;
+	private Vector4f scale;
 
-	public Model(Program program, VertexData meshData) {
+	public Model(Scene scene, Program program, VertexData meshData) {
 		this.mesh = new VertexArray(meshData);
 		this.program = program;
+		this.camera = scene.getCamera();
+
+		this.rotation = Quaternionf.IDENTITY;
+		this.position = Vector3f.ZERO;
+		this.scale = Vector4f.ONE;
+
+		// Add the model to the scene
+		scene.addNode(this);
 	}
 
 	@Override
@@ -46,7 +63,9 @@ public class Model extends SceneComponent implements Disposable {
 		this.program.use();
 
 		// Set the matrix uniform
-		this.program.setUniform("modelViewProjection", getTransform().getTransformation());
+		this.program.setUniform("modelMatrix", Matrix4f.createScaling(scale).rotate(rotation).translate(position));
+		this.program.setUniform("viewMatrix", camera.getView());
+		this.program.setUniform("projectionMatrix", camera.getProjection());
 
 		// Draw the mesh
 		this.mesh.draw();
@@ -54,6 +73,100 @@ public class Model extends SceneComponent implements Disposable {
 
 	@Override
 	public void update(float delta) {
-		// Ignore
+	}
+
+	@Override
+	public Vector3f getPosition() {
+		return position;
+	}
+
+	@Override
+	public void setPosition(Vector3f position) {
+		this.position = position;
+	}
+
+	@Override
+	public Vector4f getScale() {
+		return scale;
+	}
+
+	@Override
+	public void setScale(Vector4f scale) {
+		this.scale = scale;
+	}
+
+	@Override
+	public Quaternionf getRotation() {
+		return rotation;
+	}
+
+	@Override
+	public void setRotation(Quaternionf rotation) {
+		this.rotation = rotation;
+	}
+
+	@Override
+	public void moveX(float dx) {
+		move(dx, 0.0f, 0.0f);
+	}
+
+	@Override
+	public void moveY(float dy) {
+		move(0.0f, dy, 0.0f);
+	}
+
+	@Override
+	public void moveZ(float dz) {
+		move(0.0f, 0.0f, dz);
+	}
+
+	@Override
+	public void move(float dx, float dy, float dz) {
+		this.position = position.add(dx, dy, dz);
+	}
+
+	@Override
+	public void scaleX(float scale) {
+		scale(scale, 1.0f, 1.0f);
+	}
+
+	@Override
+	public void scaleY(float scale) {
+		scale(scale, 1.0f, 1.0f);
+	}
+
+	@Override
+	public void scaleZ(float scale) {
+		scale(scale, 1.0f, 1.0f);
+	}
+
+	@Override
+	public void scale(float scale) {
+		scale(scale, scale, scale);
+	}
+
+	@Override
+	public void scale(float scaleX, float scaleY, float scaleZ) {
+		this.scale = scale.mul(scaleX, scaleY, scaleZ, 1.0f);
+	}
+
+	@Override
+	public void rotateX(float angle) {
+		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_X));
+	}
+
+	@Override
+	public void rotateY(float angle) {
+		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_Y));
+	}
+
+	@Override
+	public void rotateZ(float angle) {
+		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_Z));
+	}
+
+	@Override
+	public void rotate(Quaternionf rotation) {
+		this.rotation = rotation.normalize().mul(getRotation());
 	}
 }

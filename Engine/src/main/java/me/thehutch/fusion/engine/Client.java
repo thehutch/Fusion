@@ -17,8 +17,12 @@
  */
 package me.thehutch.fusion.engine;
 
+import com.flowpowered.math.imaginary.Quaternionf;
 import me.thehutch.fusion.api.IClient;
 import me.thehutch.fusion.api.Platform;
+import me.thehutch.fusion.api.event.EventPriority;
+import me.thehutch.fusion.api.input.keyboard.Key;
+import me.thehutch.fusion.api.input.mouse.MouseMotionEvent;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scheduler.TaskPriority;
 import me.thehutch.fusion.engine.input.InputManager;
@@ -40,6 +44,40 @@ public final class Client extends Engine implements IClient {
 		getScheduler().scheduleSyncRepeatingTask(getInputManager()::execute, TaskPriority.CRITICAL, 0L, 1L);
 		// Schedule the scene task
 		getScheduler().scheduleSyncRepeatingTask(getScene()::execute, TaskPriority.HIGHEST, 0L, 1L);
+
+		getInputManager().registerKeyBinding(() -> {
+			getScene().getCamera().moveLocalZ(-getScheduler().getDelta() * 0.5f);
+		}, Key.KEY_W);
+
+		getInputManager().registerKeyBinding(() -> {
+			getScene().getCamera().moveLocalX(-getScheduler().getDelta() * 0.5f);
+		}, Key.KEY_A);
+
+		getInputManager().registerKeyBinding(() -> {
+			getScene().getCamera().moveLocalZ(getScheduler().getDelta() * 0.5f);
+		}, Key.KEY_S);
+
+		getInputManager().registerKeyBinding(() -> {
+			getScene().getCamera().moveLocalX(getScheduler().getDelta() * 0.5f);
+		}, Key.KEY_D);
+
+		getInputManager().registerKeyBinding(() -> {
+			getScene().getCamera().moveLocalY(getScheduler().getDelta() * 0.5f);
+		}, Key.KEY_SPACE);
+
+		getInputManager().registerKeyBinding(() -> {
+			getScene().getCamera().moveLocalY(-getScheduler().getDelta() * 0.5f);
+		}, Key.KEY_LCONTROL);
+
+		getInputManager().registerKeyBinding(() -> {
+			stop("Escape Pressed");
+		}, Key.KEY_ESCAPE);
+
+		getEventManager().registerEvent((MouseMotionEvent event) -> {
+			final Quaternionf yaw = Quaternionf.fromAngleRadAxis(-getScheduler().getDelta() * event.getDX(), getScene().getCamera().getUp());
+			final Quaternionf pitch = Quaternionf.fromAngleRadAxis(getScheduler().getDelta() * event.getDY(), getScene().getCamera().getRight());
+			getScene().getCamera().rotate(pitch.mul(yaw));
+		}, MouseMotionEvent.class, EventPriority.HIGH, true);
 	}
 
 	@Override

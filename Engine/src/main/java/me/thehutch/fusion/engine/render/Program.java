@@ -24,15 +24,15 @@ import static org.lwjgl.opengl.GL20.GL_INFO_LOG_LENGTH;
 import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
 import static org.lwjgl.opengl.GL20.GL_VALIDATE_STATUS;
 
+import com.flowpowered.math.matrix.Matrix4f;
+import com.flowpowered.math.vector.Vector2f;
+import com.flowpowered.math.vector.Vector3f;
+import com.flowpowered.math.vector.Vector4f;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.hash.THashSet;
 import java.nio.FloatBuffer;
 import java.util.Set;
-import me.thehutch.fusion.api.maths.matrix.Matrix4;
-import me.thehutch.fusion.api.maths.vector.Vector2f;
-import me.thehutch.fusion.api.maths.vector.Vector3f;
-import me.thehutch.fusion.api.maths.vector.Vector4f;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.BufferUtils;
@@ -134,9 +134,9 @@ public class Program implements Disposable {
 		GL20.glUniform4f(uniforms.get(name), vec.getX(), vec.getY(), vec.getZ(), vec.getW());
 	}
 
-	public void setUniform(String name, Matrix4 matrix) {
+	public void setUniform(String name, Matrix4f matrix) {
 		final FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
-		buffer.put(matrix.toArray());
+		buffer.put(matrix.toArray(true));
 		buffer.flip();
 		GL20.glUniformMatrix4(uniforms.get(name), false, buffer);
 	}

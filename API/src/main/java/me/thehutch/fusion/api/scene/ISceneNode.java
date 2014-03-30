@@ -15,26 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api;
+package me.thehutch.fusion.api.scene;
 
-import me.thehutch.fusion.api.input.IInputManager;
-import me.thehutch.fusion.api.scene.IScene;
+import me.thehutch.fusion.api.util.Disposable;
 
 /**
  * @author thehutch
  */
-public interface IClient extends IEngine {
+public interface ISceneNode extends Disposable {
 	/**
-	 * Gets the scene used by the client.
-	 *
-	 * @return The scene
+	 * Renders the components and then the children nodes.
 	 */
-	public IScene getScene();
+	public void render();
 
 	/**
-	 * Gets the input manager used by the client.
+	 * Updates the components and then the children nodes.
 	 *
-	 * @return The input manager
+	 * @param delta The time in milliseconds since the last update
 	 */
-	public IInputManager getInputManager();
+	public void update(float delta);
 }

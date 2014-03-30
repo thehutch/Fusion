@@ -15,26 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api;
+package me.thehutch.fusion.api.scene;
 
-import me.thehutch.fusion.api.input.IInputManager;
-import me.thehutch.fusion.api.scene.IScene;
+import me.thehutch.fusion.api.util.Disposable;
 
 /**
  * @author thehutch
  */
-public interface IClient extends IEngine {
-	/**
-	 * Gets the scene used by the client.
-	 *
-	 * @return The scene
-	 */
-	public IScene getScene();
+public interface IScene extends Disposable {
+	public Camera getCamera();
 
-	/**
-	 * Gets the input manager used by the client.
-	 *
-	 * @return The input manager
-	 */
-	public IInputManager getInputManager();
+	public void addNode(ISceneNode node);
+
+	public void removeNode(ISceneNode node);
 }

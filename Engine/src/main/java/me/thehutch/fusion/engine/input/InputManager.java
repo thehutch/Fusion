@@ -92,7 +92,7 @@ public final class InputManager implements IInputManager {
 		if (Display.isCloseRequested()) {
 			this.engine.stop("Displayed Closed");
 		}
-		
+
 		// Check and execute each key binding
 		this.keyBindings.keySet().stream().filter(key -> isKeyDown(key)).map(key -> keyBindings.get(key)).forEach(executors -> {
 			executors.stream().forEach(executor -> {

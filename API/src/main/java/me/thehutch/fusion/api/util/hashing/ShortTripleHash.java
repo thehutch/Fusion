@@ -17,8 +17,8 @@
  */
 package me.thehutch.fusion.api.util.hashing;
 
-import me.thehutch.fusion.api.maths.vector.Vector2f;
-import me.thehutch.fusion.api.maths.vector.Vector3f;
+import com.flowpowered.math.vector.Vector2f;
+import com.flowpowered.math.vector.Vector3f;
 
 /**
  * @author thehutch
