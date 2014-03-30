@@ -25,19 +25,22 @@ import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.IModel;
 import me.thehutch.fusion.api.scene.ISceneNode;
 import me.thehutch.fusion.engine.render.Program;
+import me.thehutch.fusion.engine.render.Texture;
 import me.thehutch.fusion.engine.render.VertexArray;
 import me.thehutch.fusion.engine.render.VertexData;
 
 public class Model implements IModel, ISceneNode {
 	private final VertexArray mesh;
+	private final Texture texture;
 	private final Program program;
 	private final Camera camera;
 	private Quaternionf rotation;
 	private Vector3f position;
 	private Vector4f scale;
 
-	public Model(Scene scene, Program program, VertexData meshData) {
+	public Model(Scene scene, Program program, VertexData meshData, Texture texture) {
 		this.mesh = new VertexArray(meshData);
+		this.texture = texture;
 		this.program = program;
 		this.camera = scene.getCamera();
 
@@ -61,11 +64,11 @@ public class Model implements IModel, ISceneNode {
 	public void render() {
 		// Use the program
 		this.program.use();
+		// Bind the texture
+		this.texture.bind(-1);
 
 		// Set the matrix uniform
-		this.program.setUniform("modelMatrix", Matrix4f.createScaling(scale).rotate(rotation).translate(position));
-		this.program.setUniform("viewMatrix", camera.getView());
-		this.program.setUniform("projectionMatrix", camera.getProjection());
+		this.program.setUniform("transform", camera.getTransformation().mul(Matrix4f.createScaling(scale).rotate(rotation).translate(position)));
 
 		// Draw the mesh
 		this.mesh.draw();

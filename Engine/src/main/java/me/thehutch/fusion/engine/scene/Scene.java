@@ -18,21 +18,28 @@
 package me.thehutch.fusion.engine.scene;
 
 import static me.thehutch.fusion.engine.Engine.ENGINE_VERSION;
+import static org.lwjgl.opengl.GL11.GL_BACK;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import me.thehutch.fusion.api.graphics.ITexture;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.IScene;
 import me.thehutch.fusion.api.scene.ISceneNode;
 import me.thehutch.fusion.engine.Client;
+import me.thehutch.fusion.engine.Engine;
 import me.thehutch.fusion.engine.render.Program;
 import me.thehutch.fusion.engine.render.Shader;
 import me.thehutch.fusion.engine.render.Shader.ShaderType;
+import me.thehutch.fusion.engine.render.Texture;
 import me.thehutch.fusion.engine.render.VertexData;
 import me.thehutch.fusion.engine.util.WavefrontOBJLoader;
 import org.lwjgl.LWJGLException;
@@ -45,7 +52,7 @@ import org.lwjgl.opengl.PixelFormat;
 public final class Scene implements IScene {
 	private static final String VERTEX_SHADER_EXTENSION = ".vs";
 	private static final String FRAGMENT_SHADER_EXTENSION = ".fs";
-	private final Collection<ISceneNode> nodes = new ArrayList<>(16);
+	private final Collection<ISceneNode> nodes = new ArrayList<>();
 	private final TMap<String, Program> programs = new THashMap<>();
 	private final String shaderDirectory;
 	private final Camera camera;
@@ -59,11 +66,22 @@ public final class Scene implements IScene {
 		createWindow();
 		//TODO: Load all programs from the directory
 		// Create the vertex data
-		final VertexData mesh = WavefrontOBJLoader.load(Client.class.getResourceAsStream("/models/bunny.obj"));
+		final VertexData mesh = WavefrontOBJLoader.load(Client.class.getResourceAsStream("/models/teleporter.obj"));
 
 		// Create the model
-		final Model bunny = new Model(this, getProgram("basic"), mesh);
-		//bunny.scale(2.5f);
+		final Model model = new Model(this, getProgram("basic"), mesh, new Texture(Engine.class.getResourceAsStream("/models/teleporter.jpg"), ITexture.Format.RGB));
+		model.scale(0.125f);
+
+		// Disable blending
+		GL11.glDisable(GL_BLEND);
+		// Enable depth mask
+		GL11.glDepthMask(true);
+		// Enable depth testing
+		GL11.glEnable(GL_DEPTH_TEST);
+
+		// Enable backface culling
+		GL11.glEnable(GL_CULL_FACE);
+		GL11.glCullFace(GL_BACK);
 	}
 
 	public Client getEngine() {
@@ -112,11 +130,11 @@ public final class Scene implements IScene {
 		final float delta = getEngine().getScheduler().getDelta();
 
 		// Update the scene
-		this.nodes.parallelStream().forEach((node) -> {
+		this.nodes.stream().forEach(node -> {
 			node.update(delta);
 		});
 		// Render the scene
-		this.nodes.stream().forEach((node) -> {
+		this.nodes.stream().forEach(node -> {
 			node.render();
 		});
 

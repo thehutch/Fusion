@@ -32,18 +32,24 @@ import me.thehutch.fusion.engine.scene.Scene;
  * @author thehutch
  */
 public final class Client extends Engine implements IClient {
+	private static final float MOUSE_SENSITIVITY = 10.0f;
 	private final InputManager inputManager;
 	private final Scene scene;
+
+	private float cameraPitch;
+	private float cameraYaw;
 
 	protected Client(Application application) {
 		super(application);
 		// TODO: Get the window size either from the commandline or config file
-		this.scene = new Scene(this, Camera.createPerspective(70.0f, 800.0f / 600.0f, 0.1f, 1000.0f), "/shaders/");
+		this.scene = new Scene(this, Camera.createPerspective(70.0f, 800.0f / 600.0f, 0.01f, 1000.0f), "/shaders/");
 		this.inputManager = new InputManager(this);
 		// Schedule the input manager task
 		getScheduler().scheduleSyncRepeatingTask(getInputManager()::execute, TaskPriority.CRITICAL, 0L, 1L);
 		// Schedule the scene task
-		getScheduler().scheduleSyncRepeatingTask(getScene()::execute, TaskPriority.HIGHEST, 0L, 1L);
+		getScheduler().scheduleSyncRepeatingTask(getScene()::execute, TaskPriority.CRITICAL, 0L, 1L);
+
+		getInputManager().setMouseGrabbed(true);
 
 		getInputManager().registerKeyBinding(() -> {
 			getScene().getCamera().moveLocalZ(-getScheduler().getDelta() * 0.5f);
@@ -67,16 +73,22 @@ public final class Client extends Engine implements IClient {
 
 		getInputManager().registerKeyBinding(() -> {
 			getScene().getCamera().moveLocalY(-getScheduler().getDelta() * 0.5f);
-		}, Key.KEY_LCONTROL);
+		}, Key.KEY_LSHIFT);
 
 		getInputManager().registerKeyBinding(() -> {
 			stop("Escape Pressed");
 		}, Key.KEY_ESCAPE);
 
 		getEventManager().registerEvent((MouseMotionEvent event) -> {
-			final Quaternionf yaw = Quaternionf.fromAngleRadAxis(-getScheduler().getDelta() * event.getDX(), getScene().getCamera().getUp());
-			final Quaternionf pitch = Quaternionf.fromAngleRadAxis(getScheduler().getDelta() * event.getDY(), getScene().getCamera().getRight());
-			getScene().getCamera().rotate(pitch.mul(yaw));
+			final float sensitivity = MOUSE_SENSITIVITY * getScheduler().getDelta();
+
+			this.cameraPitch += event.getDY() * sensitivity;
+			final Quaternionf pitch = Quaternionf.fromAngleDegAxis(cameraPitch, 1.0f, 0.0f, 0.0f);
+
+			this.cameraYaw -= event.getDX() * sensitivity;
+			final Quaternionf yaw = Quaternionf.fromAngleDegAxis(cameraYaw, 0.0f, 1.0f, 0.0f);
+
+			getScene().getCamera().setRotation(yaw.mul(pitch));
 		}, MouseMotionEvent.class, EventPriority.HIGH, true);
 	}
 

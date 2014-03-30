@@ -18,7 +18,6 @@
 package me.thehutch.fusion.api.input;
 
 import me.thehutch.fusion.api.input.keyboard.Key;
-import me.thehutch.fusion.api.input.mouse.MouseButton;
 
 /**
  * @author thehutch
@@ -45,7 +44,7 @@ public interface IInputManager {
 	 *
 	 * @return True if the mouse button is currently pressed down
 	 */
-	public boolean isMouseDown(MouseButton button);
+	public boolean isMouseDown(int button);
 
 	/**
 	 * Sets the grabbed state of the mouse. A grabbed mouse can not exit the window area.

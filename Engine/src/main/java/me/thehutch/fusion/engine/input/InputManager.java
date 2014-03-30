@@ -24,7 +24,6 @@ import java.util.Set;
 import me.thehutch.fusion.api.input.IInputManager;
 import me.thehutch.fusion.api.input.keyboard.Key;
 import me.thehutch.fusion.api.input.keyboard.KeyboardEvent;
-import me.thehutch.fusion.api.input.mouse.MouseButton;
 import me.thehutch.fusion.api.input.mouse.MouseButtonEvent;
 import me.thehutch.fusion.api.input.mouse.MouseMotionEvent;
 import me.thehutch.fusion.api.input.mouse.MouseWheelMotionEvent;
@@ -68,8 +67,8 @@ public final class InputManager implements IInputManager {
 	}
 
 	@Override
-	public boolean isMouseDown(MouseButton button) {
-		return Mouse.isButtonDown(button.getButtonIndex());
+	public boolean isMouseDown(int button) {
+		return Mouse.isButtonDown(button);
 	}
 
 	@Override
@@ -114,7 +113,7 @@ public final class InputManager implements IInputManager {
 			final int mouseButton = Mouse.getEventButton();
 			if (mouseButton != -1) {
 				// Call the mouse button event
-				this.eventManager.callEvent(new MouseButtonEvent(MouseButton.values()[mouseButton], Mouse.getEventX(), Mouse.getY(), Mouse.getEventButtonState()));
+				this.eventManager.callEvent(new MouseButtonEvent(mouseButton, Mouse.getEventX(), Mouse.getY(), Mouse.getEventButtonState()));
 			}
 			// Check if the mouse has moved
 			if (Mouse.getEventDX() != 0.0f || Mouse.getEventDY() != 0.0f) {

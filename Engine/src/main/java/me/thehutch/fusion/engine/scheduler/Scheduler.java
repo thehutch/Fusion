@@ -29,7 +29,6 @@ import me.thehutch.fusion.api.scheduler.TaskPriority;
  * @author thehutch
  */
 public class Scheduler implements IScheduler {
-
 	private static final float OVERLOAD_FACTOR = 1.5f;
 	private static final long MILLISECOND_TO_SECOND = 1000L;
 	private static final AtomicInteger TASK_ID_COUNTER = new AtomicInteger(0);
@@ -53,8 +52,8 @@ public class Scheduler implements IScheduler {
 	}
 
 	public void execute() {
-		final Queue<Task> asyncTasks = new ArrayDeque<>(0);
-		final Queue<Task> syncTasks = new ArrayDeque<>(0);
+		final Queue<Task> asyncTasks = new ArrayDeque<>();
+		final Queue<Task> syncTasks = new ArrayDeque<>();
 
 		final long timePerTick = MILLISECOND_TO_SECOND / ticksPerSecond;
 
@@ -74,7 +73,7 @@ public class Scheduler implements IScheduler {
 			}
 
 			while (!syncTasks.isEmpty()) {
-				final Task task = syncTasks.poll();
+				final Task task = syncTasks.remove();
 				task.execute();
 				task.setTickTime(upTime + task.getPeriod(), overloaded);
 
@@ -108,9 +107,9 @@ public class Scheduler implements IScheduler {
 				}
 			}
 
-			// Add new task back
+			// Add new tasks
 			while (!pendingQueue.isEmpty()) {
-				this.currentTasks.add(pendingQueue.poll());
+				this.currentTasks.add(pendingQueue.remove());
 			}
 
 			// Exit the scheduler if no tasks to execute
@@ -128,7 +127,7 @@ public class Scheduler implements IScheduler {
 	}
 
 	/**
-	 * Gets the number of seconds since the last frame
+	 * Gets the number of seconds since the last frame.
 	 *
 	 * @return Frame time in seconds
 	 */

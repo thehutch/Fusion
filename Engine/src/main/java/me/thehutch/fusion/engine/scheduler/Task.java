@@ -74,7 +74,7 @@ public class Task implements Comparable<Task> {
 	}
 
 	public void setTickTime(long tick, boolean isOverloaded) {
-		this.time = tick + (isOverloaded ? (getPriority().getMaxDeferred()) : (0L));
+		this.time = tick + (isOverloaded ? getPriority().getMaxDeferred() : 0L);
 	}
 
 	public long getTickTime() {

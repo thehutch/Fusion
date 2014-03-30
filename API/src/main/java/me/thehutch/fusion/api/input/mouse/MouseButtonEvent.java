@@ -25,12 +25,12 @@ import me.thehutch.fusion.api.event.Event;
  * @author thehutch
  */
 public class MouseButtonEvent extends Event {
-	private final MouseButton button;
 	private final boolean state;
+	private final int button;
 	private final int x;
 	private final int y;
 
-	public MouseButtonEvent(MouseButton button, int x, int y, boolean state) {
+	public MouseButtonEvent(int button, int x, int y, boolean state) {
 		this.button = button;
 		this.state = state;
 		this.x = x;
@@ -38,34 +38,34 @@ public class MouseButtonEvent extends Event {
 	}
 
 	/**
-	 * The x-coordinate on the window where the mouse was clicked/released.
+	 * The x-coordinate of the mouse.
 	 *
-	 * @return The x-coordinate of the mouse
+	 * @return The x-coordinate
 	 */
 	public int getX() {
 		return x;
 	}
 
 	/**
-	 * The y-coordinate on the window where the mouse was clicked/released.
+	 * The y-coordinate of the mouse.
 	 *
-	 * @return The y-coordinate of the mouse
+	 * @return The y-coordinate
 	 */
 	public int getY() {
 		return y;
 	}
 
 	/**
-	 * The button which was clicked/released.
+	 * The button used in this event.
 	 *
 	 * @return The event mouse button
 	 */
-	public MouseButton getButton() {
+	public int getButton() {
 		return button;
 	}
 
 	/**
-	 * The current state of the mouse button.
+	 * The state of the mouse button.
 	 *
 	 * @return True if the mouse button is down
 	 */

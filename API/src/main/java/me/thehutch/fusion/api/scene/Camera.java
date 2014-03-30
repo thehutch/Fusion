@@ -27,7 +27,7 @@ import com.flowpowered.math.vector.Vector3f;
 public class Camera {
 	private final Matrix4f projection;
 	private Matrix4f inverseRotation;
-	private Matrix4f viewMatrix;
+	private Matrix4f transformation;
 	private Quaternionf rotation;
 	private Vector3f position;
 	private boolean dirty;
@@ -35,25 +35,21 @@ public class Camera {
 	private Camera(Matrix4f projection) {
 		this.projection = projection;
 		this.inverseRotation = Matrix4f.IDENTITY;
-		this.viewMatrix = Matrix4f.IDENTITY;
+		this.transformation = Matrix4f.IDENTITY;
 		this.rotation = Quaternionf.IDENTITY;
 		this.position = Vector3f.ZERO;
 		this.dirty = true;
 	}
 
-	public Matrix4f getProjection() {
-		return projection;
-	}
-
-	public Matrix4f getView() {
+	public Matrix4f getTransformation() {
 		if (dirty) {
 			this.inverseRotation = Matrix4f.createRotation(rotation);
 			final Matrix4f rotationMatrix = Matrix4f.createRotation(rotation.invert());
 			final Matrix4f positionMatrix = Matrix4f.createTranslation(position.negate());
-			this.viewMatrix = rotationMatrix.mul(positionMatrix);
+			this.transformation = projection.mul(rotationMatrix).mul(positionMatrix);
 			this.dirty = false;
 		}
-		return viewMatrix;
+		return transformation;
 	}
 
 	public Vector3f getPosition() {

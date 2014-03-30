@@ -38,7 +38,7 @@ public class MouseMotionEvent extends Event {
 	}
 
 	/**
-	 * The x-coordinate on the window where the mouse was clicked/released.
+	 * The new x-coordinate of the mouse.
 	 *
 	 * @return The x-coordinate of the mouse
 	 */
@@ -47,7 +47,7 @@ public class MouseMotionEvent extends Event {
 	}
 
 	/**
-	 * The y-coordinate on the window where the mouse was clicked/released.
+	 * The new y-coordinate of the mouse.
 	 *
 	 * @return The y-coordinate of the mouse
 	 */

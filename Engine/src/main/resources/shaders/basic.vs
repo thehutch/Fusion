@@ -1,12 +1,14 @@
 #version 140
 
-in vec3 position;
+attribute vec3 vPosition;
+attribute vec2 vTextureUV;
 
-uniform mat4 modelMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
+varying vec2 textureUV;
+
+uniform mat4 transform;
 
 void main()
 {
-	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1);
+	gl_Position = transform * vec4(vPosition, 1);
+	textureUV = vTextureUV;
 }
