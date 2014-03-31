@@ -1,15 +1,12 @@
-#version 140
-
-varying vec2 textureUV;
+#version 330
 
 uniform sampler2D diffuse;
 
+in vec2 textureUV;
+
+out vec4 fragColour;
+
 void main()
 {
-	vec4 colour = texture2D(diffuse, textureUV);
-	if (colour.a <= 0)
-	{
-		discard;
-	}
-	gl_FragColor = colour;
+	fragColour = texture2D(diffuse, textureUV);;
 }

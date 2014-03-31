@@ -215,6 +215,19 @@ public class MathsHelper {
 	 *
 	 * @return The interpolated value
 	 */
+	public static int lerp(int a, int b, int percentage) {
+		return a + (b - a) * percentage;
+	}
+
+	/**
+	 * Interpolates between the two values given.
+	 *
+	 * @param a          The start value
+	 * @param b          The end value
+	 * @param percentage The amount of interpolate by
+	 *
+	 * @return The interpolated value
+	 */
 	public static float lerp(float a, float b, float percentage) {
 		return a + (b - a) * percentage;
 	}

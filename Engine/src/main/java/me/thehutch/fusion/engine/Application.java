@@ -26,8 +26,8 @@ import me.thehutch.fusion.api.Platform;
  * @author thehutch
  */
 public class Application {
-	protected Platform platform;
-	protected boolean debug;
+	protected final Platform platform;
+	protected final boolean debug;
 
 	private Application(String[] args) {
 		this.platform = Platform.CLIENT;
@@ -35,41 +35,8 @@ public class Application {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// Unpack natives
-		{
-			final String os = System.getProperty("os.name").toLowerCase();
-			final String[] files;
-			final String nativePath;
-			if (os.contains("win")) {
-				nativePath = "windows" + File.separator;
-				files = new String[] { "jinput-dx8.dll", "jinput-dx8_64.dll", "jinput-raw.dll", "jinput-raw_64.dll", "jinput-wintab.dll", "lwjgl.dll", "lwjgl64.dll", "OpenAL32.dll", "OpenAL64.dll" };
-			} else if (os.contains("mac")) {
-				nativePath = "mac" + File.separator;
-				files = new String[] { "libjinput-osx.jnilib", "liblwjgl.jnilib", "openal.dylib" };
-			} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
-				nativePath = "linux" + File.separator;
-				files = new String[] { "liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so" };
-			} else {
-				throw new IllegalStateException("Unknown Operating System: " + os);
-			}
-
-			final File nativesDir = new File(System.getProperty("user.dir"), "natives" + File.separator + nativePath);
-			nativesDir.mkdirs();
-
-			for (String file : files) {
-				final File target = new File(nativesDir, file);
-				if (!target.exists()) {
-					try {
-						Files.copy(Client.class.getResourceAsStream("/" + file), target.toPath());
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
-				}
-			}
-			System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
-			System.setProperty("net.java.games.input.librarypath", nativesDir.getAbsolutePath());
-		}
-
+		// Load natives
+		loadNatives();
 		// Create Application
 		final Application application = new Application(args);
 		final Engine engine;
@@ -84,5 +51,45 @@ public class Application {
 				throw new IllegalStateException("Unknown Platform: " + application.platform);
 		}
 		engine.getScheduler().execute();
+	}
+
+	private static void loadNatives() {
+		// Get the operating system the engine is running on
+		final String os = System.getProperty("os.name").toLowerCase();
+
+		final String[] files;
+		final String nativePath;
+
+		// Check which operating system it is
+		if (os.contains("win")) {
+			nativePath = "windows" + File.separatorChar;
+			files = new String[] { "jinput-dx8.dll", "jinput-dx8_64.dll", "jinput-raw.dll", "jinput-raw_64.dll", "jinput-wintab.dll", "lwjgl.dll", "lwjgl64.dll", "OpenAL32.dll", "OpenAL64.dll" };
+		} else if (os.contains("mac")) {
+			nativePath = "mac" + File.separatorChar;
+			files = new String[] { "libjinput-osx.jnilib", "liblwjgl.jnilib", "openal.dylib" };
+		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+			nativePath = "linux" + File.separatorChar;
+			files = new String[] { "liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so" };
+		} else {
+			throw new IllegalStateException("Unknown Operating System: " + os);
+		}
+
+		// Create the natives directory
+		final File nativesDir = new File(System.getProperty("user.dir"), "natives" + File.separatorChar + nativePath);
+		nativesDir.mkdirs();
+
+		// Copy each native library into the natives directory
+		for (String file : files) {
+			final File target = new File(nativesDir, file);
+			if (!target.exists()) {
+				try {
+					Files.copy(Client.class.getResourceAsStream(File.separatorChar + file), target.toPath());
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
+		System.setProperty("net.java.games.input.librarypath", nativesDir.getAbsolutePath());
 	}
 }

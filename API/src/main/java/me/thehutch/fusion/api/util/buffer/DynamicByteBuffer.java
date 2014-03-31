@@ -26,6 +26,10 @@ public class DynamicByteBuffer {
 		this.buffer = buffer;
 	}
 
+	public ByteBuffer getBuffer() {
+		return buffer;
+	}
+
 	public byte getByte() {
 		return buffer.get();
 	}
@@ -44,6 +48,10 @@ public class DynamicByteBuffer {
 		return buffer.putChar(value);
 	}
 
+	public ByteBuffer putChar(int index, char value) {
+		return buffer.putChar(index, value);
+	}
+
 	public short getShort() {
 		return buffer.getShort();
 	}
@@ -51,6 +59,10 @@ public class DynamicByteBuffer {
 	public ByteBuffer putShort(short value) {
 		ensureCapacity(Short.BYTES);
 		return buffer.putShort(value);
+	}
+
+	public ByteBuffer putShort(int index, short value) {
+		return buffer.putShort(index, value);
 	}
 
 	public int getInt() {
@@ -62,6 +74,10 @@ public class DynamicByteBuffer {
 		return buffer.putInt(value);
 	}
 
+	public ByteBuffer putInt(int index, int value) {
+		return buffer.putInt(index, value);
+	}
+
 	public long getLong() {
 		return buffer.getLong();
 	}
@@ -69,6 +85,10 @@ public class DynamicByteBuffer {
 	public ByteBuffer putLong(long value) {
 		ensureCapacity(Long.BYTES);
 		return buffer.putLong(value);
+	}
+
+	public ByteBuffer putLong(int index, long value) {
+		return buffer.putLong(index, value);
 	}
 
 	public float getFloat() {
@@ -80,6 +100,10 @@ public class DynamicByteBuffer {
 		return buffer.putFloat(value);
 	}
 
+	public ByteBuffer putFloat(int index, float value) {
+		return buffer.putFloat(index, value);
+	}
+
 	public double getDouble() {
 		return buffer.getDouble();
 	}
@@ -89,8 +113,8 @@ public class DynamicByteBuffer {
 		return buffer.putDouble(value);
 	}
 
-	public void flip() {
-		this.buffer.flip();
+	public ByteBuffer putDouble(int index, double value) {
+		return buffer.putDouble(index, value);
 	}
 
 	public int limit() {
@@ -109,8 +133,17 @@ public class DynamicByteBuffer {
 		return buffer.array();
 	}
 
+	public boolean isEmpty() {
+		return buffer.limit() == 0;
+	}
+
 	public boolean hasRemaining() {
 		return buffer.hasRemaining();
+	}
+
+	public DynamicByteBuffer flip() {
+		this.buffer.flip();
+		return this;
 	}
 
 	public DynamicByteBuffer compact() {

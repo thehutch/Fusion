@@ -18,20 +18,20 @@
 package me.thehutch.fusion.engine.render;
 
 import gnu.trove.list.TFloatList;
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 
 /**
  * @author thehutch
  */
 public class VertexAttribute {
-	private final FloatBuffer buffer;
+	private final ByteBuffer buffer;
 	private final int size;
 
 	public VertexAttribute(int size, TFloatList data) {
-		this.buffer = BufferUtils.createFloatBuffer(data.size());
+		this.buffer = BufferUtils.createByteBuffer(data.size() * Float.BYTES);
 		data.forEach((float f) -> {
-			this.buffer.put(f);
+			this.buffer.putFloat(f);
 			return true;
 		});
 		this.buffer.flip();
@@ -47,12 +47,7 @@ public class VertexAttribute {
 		return size;
 	}
 
-	public FloatBuffer getData() {
+	public ByteBuffer getData() {
 		return buffer;
-//		this.buffer.rewind();
-//		final FloatBuffer copy = BufferUtils.createFloatBuffer(buffer.capacity());
-//		copy.put(buffer);
-//		copy.flip();
-//		return copy;
 	}
 }

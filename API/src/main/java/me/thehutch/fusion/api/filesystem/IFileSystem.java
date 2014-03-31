@@ -15,23 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api.graphics;
+package me.thehutch.fusion.api.filesystem;
+
+import java.io.InputStream;
 
 /**
  * @author thehutch
  */
-public interface ITexture {
-	/**
-	 * Get the width of the texture.
-	 *
-	 * @return Width of the texture
-	 */
-	public int getWidth();
+public interface IFileSystem {
+	public <R> R getResource(String scheme, String path);
 
-	/**
-	 * Get the height of the texture.
-	 *
-	 * @return Height of the texture
-	 */
-	public int getHeight();
+	public InputStream getResourceStream(String scheme, String path);
+
+	public void registerLoader(String scheme, IResourceLoader<?> loader);
 }

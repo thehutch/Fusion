@@ -1,11 +1,11 @@
-#version 140
+#version 330
 
-attribute vec3 vPosition;
-attribute vec2 vTextureUV;
-
-varying vec2 textureUV;
+layout(location = 0) in vec3 vPosition;
+layout(location = 1) in vec2 vTextureUV;
 
 uniform mat4 transform;
+
+out vec2 textureUV;
 
 void main()
 {

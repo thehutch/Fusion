@@ -20,19 +20,25 @@ package me.thehutch.fusion.engine.render;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.GL_ACTIVE_UNIFORMS;
 import static org.lwjgl.opengl.GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH;
+import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
 import static org.lwjgl.opengl.GL20.GL_INFO_LOG_LENGTH;
 import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
 import static org.lwjgl.opengl.GL20.GL_VALIDATE_STATUS;
 
+import com.flowpowered.math.matrix.Matrix2f;
+import com.flowpowered.math.matrix.Matrix3f;
 import com.flowpowered.math.matrix.Matrix4f;
 import com.flowpowered.math.vector.Vector2f;
 import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector4f;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.set.hash.THashSet;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.FloatBuffer;
-import java.util.Set;
+import java.util.Scanner;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.BufferUtils;
@@ -40,7 +46,7 @@ import org.lwjgl.opengl.GL20;
 
 public class Program implements Disposable {
 	private final TObjectIntMap<String> uniforms = new TObjectIntHashMap<>();
-	private final Set<Shader> shaders = new THashSet<>();
+	private final TIntList shaders = new TIntArrayList(2, 0);
 	private final int id;
 
 	public Program() {
@@ -52,18 +58,33 @@ public class Program implements Disposable {
 		GL20.glUseProgram(id);
 	}
 
-	public void attachShader(Shader shader) {
-		// Attach the shader
-		GL20.glAttachShader(id, shader.getId());
-		// Add the shader to the program
-		this.shaders.add(shader);
-	}
-
-	public void detachShader(Shader shader) {
-		// Detach the shader
-		GL20.glDetachShader(id, shader.getId());
-		// Remove the shader from the program
-		this.shaders.remove(shader);
+	public void attachShader(InputStream source, int type) {
+		try {
+			// Check that the source is not null
+			if (source == null) {
+				throw new IllegalArgumentException("Shader source can not be null");
+			}
+			// Generate a shader handle
+			final int shaderId = GL20.glCreateShader(type);
+			// Upload the shader's source to the GPU
+			GL20.glShaderSource(shaderId, loadSource(source));
+			// Compile the shader
+			GL20.glCompileShader(shaderId);
+			// Check for a shader compile error
+			if (GL20.glGetShaderi(shaderId, GL_COMPILE_STATUS) == GL_FALSE) {
+				// Get the shader info log length
+				final int logLength = GL20.glGetShaderi(id, GL20.GL_INFO_LOG_LENGTH);
+				throw new IllegalStateException("OpenGL Error: Could not compile shader\n" + GL20.glGetShaderInfoLog(id, logLength));
+			}
+			// Attach the shader
+			GL20.glAttachShader(id, shaderId);
+			// Add the shader to the program
+			this.shaders.add(shaderId);
+			// Check for errors
+			RenderUtil.checkGLError();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public void link() {
@@ -74,8 +95,9 @@ public class Program implements Disposable {
 			final int logLength = GL20.glGetProgrami(id, GL_INFO_LOG_LENGTH);
 			throw new IllegalStateException("Program could not be linked\n" + GL20.glGetProgramInfoLog(id, logLength));
 		}
+		// Check for errors
 		RenderUtil.checkGLError();
-		// TODO: Move validation to debug only
+
 		// Validate the program
 		GL20.glValidateProgram(id);
 		// Check program validation success
@@ -83,22 +105,26 @@ public class Program implements Disposable {
 			final int logLength = GL20.glGetProgrami(id, GL_INFO_LOG_LENGTH);
 			System.err.println("Program validation failed:\n" + GL20.glGetProgramInfoLog(id, logLength));
 		}
+		// Check for errors
 		RenderUtil.checkGLError();
+
 		// Load the program uniforms
 		final int uniformCount = GL20.glGetProgrami(id, GL_ACTIVE_UNIFORMS);
 		for (int i = 0; i < uniformCount; ++i) {
 			final String name = GL20.glGetActiveUniform(id, i, GL20.glGetProgrami(id, GL_ACTIVE_UNIFORM_MAX_LENGTH));
 			this.uniforms.put(name, GL20.glGetUniformLocation(id, name));
 		}
+		// Check for errors
 		RenderUtil.checkGLError();
 	}
 
 	@Override
 	public void dispose() {
-		this.shaders.stream().map((shader) -> {
-			GL20.glDetachShader(id, shader.getId());
-			GL20.glDeleteShader(shader.getId());
-			return shader;
+		// Detach and delete each shader
+		this.shaders.forEach((int shader) -> {
+			GL20.glDetachShader(id, shader);
+			GL20.glDeleteShader(shader);
+			return true;
 		});
 		// Delete the program
 		GL20.glDeleteProgram(id);
@@ -134,10 +160,34 @@ public class Program implements Disposable {
 		GL20.glUniform4f(uniforms.get(name), vec.getX(), vec.getY(), vec.getZ(), vec.getW());
 	}
 
+	public void setUniform(String name, Matrix2f matrix) {
+		final FloatBuffer buffer = BufferUtils.createFloatBuffer(4);
+		buffer.put(matrix.toArray(true));
+		buffer.flip();
+		GL20.glUniformMatrix4(uniforms.get(name), false, buffer);
+	}
+
+	public void setUniform(String name, Matrix3f matrix) {
+		final FloatBuffer buffer = BufferUtils.createFloatBuffer(9);
+		buffer.put(matrix.toArray(true));
+		buffer.flip();
+		GL20.glUniformMatrix4(uniforms.get(name), false, buffer);
+	}
+
 	public void setUniform(String name, Matrix4f matrix) {
 		final FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
 		buffer.put(matrix.toArray(true));
 		buffer.flip();
 		GL20.glUniformMatrix4(uniforms.get(name), false, buffer);
+	}
+
+	private static CharSequence loadSource(InputStream stream) throws IOException {
+		final StringBuilder source = new StringBuilder(stream.available());
+		try (final Scanner scanner = new Scanner(stream)) {
+			while (scanner.hasNextLine()) {
+				source.append(scanner.nextLine()).append('\n');
+			}
+		}
+		return source;
 	}
 }

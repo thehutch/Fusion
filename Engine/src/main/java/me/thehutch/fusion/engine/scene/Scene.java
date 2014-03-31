@@ -24,6 +24,8 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
+import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
@@ -36,8 +38,6 @@ import me.thehutch.fusion.api.scene.ISceneNode;
 import me.thehutch.fusion.engine.Client;
 import me.thehutch.fusion.engine.Engine;
 import me.thehutch.fusion.engine.render.Program;
-import me.thehutch.fusion.engine.render.Shader;
-import me.thehutch.fusion.engine.render.Shader.ShaderType;
 import me.thehutch.fusion.engine.render.Texture;
 import me.thehutch.fusion.engine.render.VertexData;
 import me.thehutch.fusion.engine.util.WavefrontOBJLoader;
@@ -53,6 +53,7 @@ public final class Scene implements IScene {
 	private static final String FRAGMENT_SHADER_EXTENSION = ".fs";
 	private final Collection<ISceneNode> nodes = new ArrayList<>();
 	private final TMap<String, Program> programs = new THashMap<>();
+	private final TMap<String, Texture> textures = new THashMap<>();
 	private final String shaderDirectory;
 	private final Camera camera;
 	private final Client engine;
@@ -93,6 +94,14 @@ public final class Scene implements IScene {
 			return loadProgram(name);
 		}
 		return program;
+	}
+
+	public Texture getTexture(String name) {
+		final Texture texture = textures.get(name);
+		if (texture == null) {
+			// TODO: Load texture
+		}
+		return texture;
 	}
 
 	@Override
@@ -146,7 +155,7 @@ public final class Scene implements IScene {
 			Display.setTitle("Fusion Engine | " + ENGINE_VERSION);
 			Display.setDisplayMode(new DisplayMode(800, 600));
 			Display.setVSyncEnabled(true);
-			Display.create(new PixelFormat(), new ContextAttribs(3, 0).withForwardCompatible(true));
+			Display.create(new PixelFormat(), new ContextAttribs(3, 3).withProfileCore(true));
 		} catch (LWJGLException ex) {
 			ex.printStackTrace();
 		}
@@ -154,29 +163,35 @@ public final class Scene implements IScene {
 	}
 
 	private Program loadProgram(String name) {
+		// Create a new program
+		final Program program = new Program();
+
 		// Get the file path of the shader (Excluding file extension)
 		final String shaderFilePath = shaderDirectory + name;
+
 		// Create an input stream for the vertex shader
 		InputStream inputStream = Client.class.getResourceAsStream(shaderFilePath + VERTEX_SHADER_EXTENSION);
 		if (inputStream == null) {
 			throw new IllegalStateException("Unable to load program: " + name);
 		}
-		final Shader vertexShader = new Shader(inputStream, ShaderType.VERTEX);
+		// Attach the vertex shader
+		program.attachShader(inputStream, GL_VERTEX_SHADER);
+
 		// Create an input stream for the fragment shader
 		inputStream = Client.class.getResourceAsStream(shaderFilePath + FRAGMENT_SHADER_EXTENSION);
 		if (inputStream == null) {
 			throw new IllegalStateException("Unable to load program: " + name);
 		}
-		final Shader fragmentShader = new Shader(inputStream, ShaderType.FRAGMENT);
-		// Create a new program
-		final Program program = new Program();
-		// Attach the shaders
-		program.attachShader(vertexShader);
-		program.attachShader(fragmentShader);
+		// Attach the fragment shader
+		program.attachShader(inputStream, GL_FRAGMENT_SHADER);
+
 		// Link the program
 		program.link();
+
 		// Add the program to the map
 		this.programs.put(name, program);
+
+		// Return the loaded program
 		return program;
 	}
 }

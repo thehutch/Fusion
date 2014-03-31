@@ -24,7 +24,7 @@ import com.flowpowered.math.vector.Vector4f;
 /**
  * @author thehutch
  */
-public interface IModel {
+public interface IModel extends ISceneNode {
 	public Vector3f getPosition();
 
 	public void setPosition(Vector3f position);

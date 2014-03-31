@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import javax.imageio.ImageIO;
-import me.thehutch.fusion.api.graphics.ITexture;
+import me.thehutch.fusion.api.scene.ITexture;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
