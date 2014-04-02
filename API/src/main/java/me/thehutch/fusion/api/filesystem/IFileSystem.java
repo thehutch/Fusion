@@ -18,14 +18,37 @@
 package me.thehutch.fusion.api.filesystem;
 
 import java.io.InputStream;
+import java.nio.file.Path;
 
 /**
  * @author thehutch
  */
 public interface IFileSystem {
-	public <R> R getResource(String scheme, String path);
+	/**
+	 * Retrieves the resource from the file system, if it has not been loaded before then
+	 * the resource will be loaded into memory. To release the resource call {@link #release}.
+	 *
+	 * @param <R>  The type of resource to load
+	 * @param path The path to the resource
+	 *
+	 * @return The loaded resource
+	 */
+	public <R> R getResource(Path path);
 
-	public InputStream getResourceStream(String scheme, String path);
+	/**
+	 * Retrieves an input stream to the resource.
+	 *
+	 * @param path The path to the resource
+	 *
+	 * @return The resource input stream
+	 */
+	public InputStream getResourceStream(Path path);
 
-	public void registerLoader(String scheme, IResourceLoader<?> loader);
+	/**
+	 * Registers the loader with the file system to load any resources using the given extension.
+	 *
+	 * @param extension The file extension this resource loads
+	 * @param loader    The loader
+	 */
+	public void registerLoader(String extension, IResourceLoader<?> loader);
 }

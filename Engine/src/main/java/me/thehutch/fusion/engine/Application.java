@@ -17,10 +17,12 @@
  */
 package me.thehutch.fusion.engine;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import me.thehutch.fusion.api.Platform;
+import me.thehutch.fusion.engine.filesystem.FileSystem;
 
 /**
  * @author thehutch
@@ -53,7 +55,7 @@ public class Application {
 		engine.getScheduler().execute();
 	}
 
-	private static void loadNatives() {
+	private static void loadNatives() throws IOException {
 		// Get the operating system the engine is running on
 		final String os = System.getProperty("os.name").toLowerCase();
 
@@ -62,34 +64,32 @@ public class Application {
 
 		// Check which operating system it is
 		if (os.contains("win")) {
-			nativePath = "windows" + File.separatorChar;
+			nativePath = "windows";
 			files = new String[] { "jinput-dx8.dll", "jinput-dx8_64.dll", "jinput-raw.dll", "jinput-raw_64.dll", "jinput-wintab.dll", "lwjgl.dll", "lwjgl64.dll", "OpenAL32.dll", "OpenAL64.dll" };
 		} else if (os.contains("mac")) {
-			nativePath = "mac" + File.separatorChar;
+			nativePath = "mac";
 			files = new String[] { "libjinput-osx.jnilib", "liblwjgl.jnilib", "openal.dylib" };
 		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
-			nativePath = "linux" + File.separatorChar;
+			nativePath = "linux";
 			files = new String[] { "liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so" };
 		} else {
 			throw new IllegalStateException("Unknown Operating System: " + os);
 		}
 
+		// Locate the natives directory
+		final Path nativesDir = FileSystem.BASE_DIRECTORY.resolve("natives").resolve(nativePath);
 		// Create the natives directory
-		final File nativesDir = new File(System.getProperty("user.dir"), "natives" + File.separatorChar + nativePath);
-		nativesDir.mkdirs();
-
+		Files.createDirectories(nativesDir);
 		// Copy each native library into the natives directory
 		for (String file : files) {
-			final File target = new File(nativesDir, file);
-			if (!target.exists()) {
-				try {
-					Files.copy(Client.class.getResourceAsStream(File.separatorChar + file), target.toPath());
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
+			try {
+				Files.copy(FileSystem.getJarResource(file), nativesDir.resolve(file), StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException ex) {
+				ex.printStackTrace();
 			}
 		}
-		System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
-		System.setProperty("net.java.games.input.librarypath", nativesDir.getAbsolutePath());
+		// Set the library paths
+		System.setProperty("org.lwjgl.librarypath", nativesDir.toAbsolutePath().toString());
+		System.setProperty("net.java.games.input.librarypath", nativesDir.toAbsolutePath().toString());
 	}
 }

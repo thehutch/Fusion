@@ -29,14 +29,16 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.IScene;
 import me.thehutch.fusion.api.scene.ISceneNode;
 import me.thehutch.fusion.engine.Client;
-import me.thehutch.fusion.engine.Engine;
+import me.thehutch.fusion.engine.filesystem.FileSystem;
 import me.thehutch.fusion.engine.render.Program;
 import me.thehutch.fusion.engine.render.Texture;
 import me.thehutch.fusion.engine.render.VertexData;
@@ -54,22 +56,22 @@ public final class Scene implements IScene {
 	private final Collection<ISceneNode> nodes = new ArrayList<>();
 	private final TMap<String, Program> programs = new THashMap<>();
 	private final TMap<String, Texture> textures = new THashMap<>();
-	private final String shaderDirectory;
+	private final Path shaderDirectory;
 	private final Camera camera;
 	private final Client engine;
 
 	public Scene(Client engine, Camera camera, String shaderDirectory) {
-		this.shaderDirectory = shaderDirectory;
+		this.shaderDirectory = FileSystem.DATA_DIRECTORY.resolve(shaderDirectory);
 		this.camera = camera;
 		this.engine = engine;
 		// Create the window
 		createWindow();
 		//TODO: Load all programs from the directory
 		// Create the vertex data
-		final VertexData mesh = WavefrontOBJLoader.load(Client.class.getResourceAsStream("/models/teleporter.obj"));
+		final VertexData mesh = WavefrontOBJLoader.load(engine.getFileSystem().getResourceStream(FileSystem.DATA_DIRECTORY.resolve("models").resolve("teleporter.obj")));
 
 		// Create the model
-		final Model model = new Model(this, getProgram("basic"), mesh, new Texture(Engine.class.getResourceAsStream("/models/teleporter.jpg")));
+		final Model model = new Model(this, getProgram("basic"), mesh, new Texture(engine.getFileSystem().getResourceStream(FileSystem.DATA_DIRECTORY.resolve("models").resolve("teleporter.jpg"))));
 		model.scale(0.125f);
 
 		// Disable blending
@@ -166,24 +168,27 @@ public final class Scene implements IScene {
 		// Create a new program
 		final Program program = new Program();
 
-		// Get the file path of the shader (Excluding file extension)
-		final String shaderFilePath = shaderDirectory + name;
-
 		// Create an input stream for the vertex shader
-		InputStream inputStream = Client.class.getResourceAsStream(shaderFilePath + VERTEX_SHADER_EXTENSION);
-		if (inputStream == null) {
-			throw new IllegalStateException("Unable to load program: " + name);
+		try (final InputStream vertexStream = engine.getFileSystem().getResourceStream(shaderDirectory.resolve(name + VERTEX_SHADER_EXTENSION))) {
+			if (vertexStream == null) {
+				throw new IllegalStateException("Unable to load program: " + name);
+			}
+			// Attach the vertex shader
+			program.attachShader(vertexStream, GL_VERTEX_SHADER);
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
-		// Attach the vertex shader
-		program.attachShader(inputStream, GL_VERTEX_SHADER);
 
 		// Create an input stream for the fragment shader
-		inputStream = Client.class.getResourceAsStream(shaderFilePath + FRAGMENT_SHADER_EXTENSION);
-		if (inputStream == null) {
-			throw new IllegalStateException("Unable to load program: " + name);
+		try (final InputStream fragmentStream = engine.getFileSystem().getResourceStream(shaderDirectory.resolve(name + FRAGMENT_SHADER_EXTENSION))) {
+			if (fragmentStream == null) {
+				throw new IllegalStateException("Unable to load program: " + name);
+			}
+			// Attach the fragment shader
+			program.attachShader(fragmentStream, GL_FRAGMENT_SHADER);
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
-		// Attach the fragment shader
-		program.attachShader(inputStream, GL_FRAGMENT_SHADER);
 
 		// Link the program
 		program.link();

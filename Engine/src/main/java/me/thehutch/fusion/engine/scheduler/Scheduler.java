@@ -17,7 +17,6 @@
  */
 package me.thehutch.fusion.engine.scheduler;
 
-import java.util.ArrayDeque;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -32,7 +31,7 @@ public class Scheduler implements IScheduler {
 	private static final float OVERLOAD_FACTOR = 1.5f;
 	private static final long MILLISECOND_TO_SECOND = 1000L;
 	private static final AtomicInteger TASK_ID_COUNTER = new AtomicInteger(0);
-	private final PriorityQueue<Task> currentTasks = new PriorityQueue<>(1);
+	private final Queue<Task> currentTasks = new PriorityQueue<>(1);
 	private final Queue<Task> pendingQueue = new LinkedBlockingQueue<>();
 	private final SchedulerService service;
 	private final long ticksPerSecond;
@@ -52,35 +51,36 @@ public class Scheduler implements IScheduler {
 	}
 
 	public void execute() {
-		final Queue<Task> asyncTasks = new ArrayDeque<>();
-		final Queue<Task> syncTasks = new ArrayDeque<>();
-
-		final long timePerTick = MILLISECOND_TO_SECOND / ticksPerSecond;
-
 		long diffTime;
-
 		long frameClock;
 		long startClock = System.currentTimeMillis();
 
 		do {
 			frameClock = System.currentTimeMillis();
-			if (!currentTasks.isEmpty()) {
-				getReadyTasks(asyncTasks, syncTasks);
-			}
 
-			while (!asyncTasks.isEmpty()) {
-				this.service.push(asyncTasks.remove());
-			}
+			boolean isExecuted = true;
+			do {
+				final Task task = currentTasks.peek();
+				if (task != null) {
+					isExecuted = task.getTickTime() <= upTime;
 
-			while (!syncTasks.isEmpty()) {
-				final Task task = syncTasks.remove();
-				task.execute();
-				task.setTickTime(upTime + task.getPeriod(), overloaded);
+					if (isExecuted && task.isAlive()) {
+						if (task.isParallel()) {
+							this.service.push(task);
+						} else {
+							task.execute();
+							task.setTickTime(upTime + task.getPeriod(), overloaded);
 
-				if (task.isAlive() && task.isRepeating()) {
-					this.currentTasks.add(task);
+							if (task.isAlive() && task.isRepeating()) {
+								this.pendingQueue.add(task);
+							}
+						}
+						this.currentTasks.remove();
+					} else if (!task.isAlive()) {
+						this.currentTasks.remove();
+					}
 				}
-			}
+			} while (isExecuted && !currentTasks.isEmpty());
 
 			this.diffTimePerTick = System.currentTimeMillis() - frameClock;
 
@@ -99,12 +99,6 @@ public class Scheduler implements IScheduler {
 					}
 				}
 				startClock = System.currentTimeMillis();
-			} else if (diffTimePerTick < timePerTick) {
-				try {
-					Thread.sleep(timePerTick - diffTimePerTick);
-				} catch (InterruptedException ex) {
-					ex.printStackTrace();
-				}
 			}
 
 			// Add new tasks
@@ -171,25 +165,6 @@ public class Scheduler implements IScheduler {
 		this.currentTasks.stream().forEach((task) -> {
 			task.cancel();
 		});
-	}
-
-	private void getReadyTasks(Queue<Task> parallelTasks, Queue<Task> syncedTasks) {
-		boolean isExecuted;
-		do {
-			final Task task = currentTasks.element();
-			isExecuted = task.getTickTime() <= upTime;
-
-			if (isExecuted && task.isAlive()) {
-				if (task.isParallel()) {
-					parallelTasks.add(task);
-				} else {
-					syncedTasks.add(task);
-				}
-				this.currentTasks.remove();
-			} else if (!task.isAlive()) {
-				this.currentTasks.remove();
-			}
-		} while (isExecuted && !currentTasks.isEmpty());
 	}
 
 	private int addTask(Runnable executor, TaskPriority priority, long delay, long period, boolean isParallel) {

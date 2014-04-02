@@ -17,12 +17,22 @@
  */
 package me.thehutch.fusion.api.filesystem;
 
-import java.io.InputStream;
+import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * @author thehutch
  * @param <T>
  */
 public interface IResourceLoader<T> {
-	public T load(InputStream stream);
+	/**
+	 * Loads a resource at the given path.
+	 *
+	 * @param path The path to the resource
+	 *
+	 * @return The loaded resource
+	 *
+	 * @throws java.io.IOException Thrown if an IO error occurs during loading
+	 */
+	public T load(Path path) throws IOException;
 }

@@ -42,7 +42,7 @@ public final class Client extends Engine implements IClient {
 	protected Client(Application application) {
 		super(application);
 		// TODO: Get the window size either from the commandline or config file
-		this.scene = new Scene(this, Camera.createPerspective(70.0f, 800.0f / 600.0f, 0.01f, 1000.0f), "/shaders/");
+		this.scene = new Scene(this, Camera.createPerspective(70.0f, 800.0f / 600.0f, 0.01f, 1000.0f), "shaders/");
 		this.inputManager = new InputManager(this);
 		// Schedule the input manager task
 		getScheduler().scheduleSyncRepeatingTask(getInputManager()::execute, TaskPriority.CRITICAL, 0L, 1L);
