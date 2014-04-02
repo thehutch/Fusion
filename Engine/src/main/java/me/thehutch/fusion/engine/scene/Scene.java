@@ -204,6 +204,7 @@ public final class Scene implements IScene {
 		lines.forEachOrdered((String line) -> {
 			source.append(line).append('\n');
 		});
+		lines.close();
 	}
 
 	private static Path getPath(String line) {

@@ -33,7 +33,6 @@ import me.thehutch.fusion.api.filesystem.IResourceLoader;
 import me.thehutch.fusion.engine.Engine;
 import me.thehutch.fusion.engine.scene.Scene;
 
-
 public class FileSystem implements IFileSystem {
 	public static final Path BASE_DIRECTORY = Paths.get(System.getProperty("user.dir"));
 	public static final Path DATA_DIRECTORY = BASE_DIRECTORY.resolve("data");
