@@ -17,6 +17,7 @@
  */
 package me.thehutch.fusion.api.scene;
 
+import com.flowpowered.math.vector.Vector3f;
 import me.thehutch.fusion.api.util.Disposable;
 
 /**
@@ -28,4 +29,8 @@ public interface IScene extends Disposable {
 	public void addNode(ISceneNode node);
 
 	public void removeNode(ISceneNode node);
+
+	public IModel createModel(String name, Vector3f position);
+
+	public IModel createModel(String name, float x, float y, float z);
 }

@@ -17,10 +17,12 @@
  */
 package me.thehutch.fusion.api.scene;
 
+import me.thehutch.fusion.api.util.Disposable;
+
 /**
  * @author thehutch
  */
-public interface ITexture {
+public interface ITexture extends Disposable {
 	/**
 	 * Get the width of the texture.
 	 *

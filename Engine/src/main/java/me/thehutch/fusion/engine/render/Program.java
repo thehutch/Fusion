@@ -35,10 +35,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.FloatBuffer;
-import java.util.Scanner;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.BufferUtils;
@@ -58,33 +55,29 @@ public class Program implements Disposable {
 		GL20.glUseProgram(id);
 	}
 
-	public void attachShader(InputStream source, int type) {
-		try {
-			// Check that the source is not null
-			if (source == null) {
-				throw new IllegalArgumentException("Shader source can not be null");
-			}
-			// Generate a shader handle
-			final int shaderId = GL20.glCreateShader(type);
-			// Upload the shader's source to the GPU
-			GL20.glShaderSource(shaderId, loadSource(source));
-			// Compile the shader
-			GL20.glCompileShader(shaderId);
-			// Check for a shader compile error
-			if (GL20.glGetShaderi(shaderId, GL_COMPILE_STATUS) == GL_FALSE) {
-				// Get the shader info log length
-				final int logLength = GL20.glGetShaderi(id, GL20.GL_INFO_LOG_LENGTH);
-				throw new IllegalStateException("OpenGL Error: Could not compile shader\n" + GL20.glGetShaderInfoLog(id, logLength));
-			}
-			// Attach the shader
-			GL20.glAttachShader(id, shaderId);
-			// Add the shader to the program
-			this.shaders.add(shaderId);
-			// Check for errors
-			RenderUtil.checkGLError();
-		} catch (IOException ex) {
-			ex.printStackTrace();
+	public void attachShader(CharSequence source, int type) {
+		// Check that the source is not null
+		if (source == null) {
+			throw new IllegalArgumentException("Shader source can not be null");
 		}
+		// Generate a shader handle
+		final int shaderId = GL20.glCreateShader(type);
+		// Upload the shader's source to the GPU
+		GL20.glShaderSource(shaderId, source);
+		// Compile the shader
+		GL20.glCompileShader(shaderId);
+		// Check for a shader compile error
+		if (GL20.glGetShaderi(shaderId, GL_COMPILE_STATUS) == GL_FALSE) {
+			// Get the shader info log length
+			final int logLength = GL20.glGetShaderi(id, GL20.GL_INFO_LOG_LENGTH);
+			throw new IllegalStateException("OpenGL Error: Could not compile shader\n" + GL20.glGetShaderInfoLog(id, logLength));
+		}
+		// Attach the shader
+		GL20.glAttachShader(id, shaderId);
+		// Add the shader to the program
+		this.shaders.add(shaderId);
+		// Check for errors
+		RenderUtil.checkGLError();
 	}
 
 	public void link() {
@@ -179,15 +172,5 @@ public class Program implements Disposable {
 		buffer.put(matrix.toArray(true));
 		buffer.flip();
 		GL20.glUniformMatrix4(uniforms.get(name), false, buffer);
-	}
-
-	private static CharSequence loadSource(InputStream stream) throws IOException {
-		final StringBuilder source = new StringBuilder(stream.available());
-		try (final Scanner scanner = new Scanner(stream)) {
-			while (scanner.hasNextLine()) {
-				source.append(scanner.nextLine()).append('\n');
-			}
-		}
-		return source;
 	}
 }

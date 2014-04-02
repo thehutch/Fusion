@@ -21,8 +21,11 @@ import gnu.trove.list.TFloatList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.list.array.TIntArrayList;
-import java.io.InputStream;
-import java.util.Scanner;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
+import me.thehutch.fusion.engine.render.VertexArray;
 import me.thehutch.fusion.engine.render.VertexAttribute;
 import me.thehutch.fusion.engine.render.VertexData;
 
@@ -43,21 +46,25 @@ public class WavefrontOBJLoader {
 	private WavefrontOBJLoader() {
 	}
 
-	public static VertexData load(InputStream stream) {
-		// Create the lists to store the vertex data
-		final TFloatList positions = new TFloatArrayList();
-		final TFloatList texcoords = new TFloatArrayList();
-		final TFloatList normals = new TFloatArrayList();
-		final TIntList indices = new TIntArrayList();
-		// Load the raw vertex data into the lists
-		load(stream, positions, texcoords, normals, indices);
+	public static VertexArray load(Path path) {
+		try {
+			// Create the lists to store the vertex data
+			final TFloatList positions = new TFloatArrayList();
+			final TFloatList texcoords = new TFloatArrayList();
+			final TFloatList normals = new TFloatArrayList();
+			final TIntList indices = new TIntArrayList();
+			// Load the raw vertex data into the lists
+			load(Files.lines(path), positions, texcoords, normals, indices);
 
-		// Create the vertex data and add the attributes
-		final VertexData data = new VertexData(indices);
-		data.addAttribute(new VertexAttribute(POSITION_SIZE, positions));
-		data.addAttribute(new VertexAttribute(TEXCOORD_SIZE, texcoords));
-		data.addAttribute(new VertexAttribute(NORMAL_SIZE, normals));
-		return data;
+			// Create the vertex data and add the attributes
+			final VertexData data = new VertexData(indices);
+			data.addAttribute(new VertexAttribute(POSITION_SIZE, positions));
+			data.addAttribute(new VertexAttribute(TEXCOORD_SIZE, texcoords));
+			data.addAttribute(new VertexAttribute(NORMAL_SIZE, normals));
+			return new VertexArray(data);
+		} catch (IOException ex) {
+			throw new IllegalArgumentException("Unable to load mesh: " + path, ex);
+		}
 	}
 
 	/**
@@ -73,73 +80,73 @@ public class WavefrontOBJLoader {
 	 *
 	 * @throws MalformedOBJFileException If any errors occur during loading
 	 */
-	private static void load(InputStream stream, TFloatList positions, TFloatList textureCoords, TFloatList normals, TIntList indices) {
+	private static void load(Stream<String> lines, TFloatList positions, TFloatList textureCoords, TFloatList normals, TIntList indices) {
 		final TFloatList rawTextureCoords = new TFloatArrayList();
 		final TFloatList rawNormalComponents = new TFloatArrayList();
 		final TIntList textureCoordIndices = new TIntArrayList();
 		final TIntList normalIndices = new TIntArrayList();
-		String line = null;
-		try (Scanner scanner = new Scanner(stream)) {
-			while (scanner.hasNextLine()) {
-				line = scanner.nextLine();
-				if (line.startsWith(POSITION_PREFIX + COMPONENT_SEPARATOR)) {
-					parseComponents(positions, line);
-				} else if (line.startsWith(TEXTURE_PREFIX + COMPONENT_SEPARATOR)) {
-					parseComponents(rawTextureCoords, line);
-				} else if (line.startsWith(NORMAL_PREFIX + COMPONENT_SEPARATOR)) {
-					parseComponents(rawNormalComponents, line);
-				} else if (line.startsWith(INDEX_PREFIX + COMPONENT_SEPARATOR)) {
-					parseIndices(indices, textureCoordIndices, normalIndices, line);
+
+		// Iterate over each line and parse them
+		lines.forEachOrdered((String line) -> {
+			if (line.startsWith(POSITION_PREFIX + COMPONENT_SEPARATOR)) {
+				parseComponents(positions, line);
+			} else if (line.startsWith(TEXTURE_PREFIX + COMPONENT_SEPARATOR)) {
+				parseComponents(rawTextureCoords, line);
+			} else if (line.startsWith(NORMAL_PREFIX + COMPONENT_SEPARATOR)) {
+				parseComponents(rawNormalComponents, line);
+			} else if (line.startsWith(INDEX_PREFIX + COMPONENT_SEPARATOR)) {
+				parseIndices(indices, textureCoordIndices, normalIndices, line);
+			}
+		});
+		// Close the stream
+		lines.close();
+
+		final boolean hasTextureCoords;
+		final boolean hasNormals;
+		if (!textureCoordIndices.isEmpty() && !rawTextureCoords.isEmpty()) {
+			textureCoords.fill(0, positions.size() / POSITION_SIZE * TEXCOORD_SIZE, 0);
+			hasTextureCoords = true;
+		} else {
+			hasTextureCoords = false;
+		}
+		if (!normalIndices.isEmpty() && !rawNormalComponents.isEmpty()) {
+			normals.fill(0, positions.size() / POSITION_SIZE * NORMAL_SIZE, 0);
+			hasNormals = true;
+		} else {
+			hasNormals = false;
+		}
+		if (hasTextureCoords) {
+			for (int i = 0; i < textureCoordIndices.size(); i++) {
+				final int textureCoordIndex = textureCoordIndices.get(i) * TEXCOORD_SIZE;
+				final int positionIndex = indices.get(i) * TEXCOORD_SIZE;
+				for (int ii = 0; ii < TEXCOORD_SIZE; ii++) {
+					textureCoords.set(positionIndex + ii, rawTextureCoords.get(textureCoordIndex + ii));
 				}
 			}
-			line = null;
-			final boolean hasTextureCoords;
-			final boolean hasNormals;
-			if (!textureCoordIndices.isEmpty() && !rawTextureCoords.isEmpty()) {
-				textureCoords.fill(0, positions.size() / POSITION_SIZE * TEXCOORD_SIZE, 0);
-				hasTextureCoords = true;
-			} else {
-				hasTextureCoords = false;
-			}
-			if (!normalIndices.isEmpty() && !rawNormalComponents.isEmpty()) {
-				normals.fill(0, positions.size() / POSITION_SIZE * NORMAL_SIZE, 0);
-				hasNormals = true;
-			} else {
-				hasNormals = false;
-			}
-			if (hasTextureCoords) {
-				for (int i = 0; i < textureCoordIndices.size(); i++) {
-					final int textureCoordIndex = textureCoordIndices.get(i) * TEXCOORD_SIZE;
-					final int positionIndex = indices.get(i) * TEXCOORD_SIZE;
-					for (int ii = 0; ii < TEXCOORD_SIZE; ii++) {
-						textureCoords.set(positionIndex + ii, rawTextureCoords.get(textureCoordIndex + ii));
-					}
+		}
+		if (hasNormals) {
+			for (int i = 0; i < normalIndices.size(); i++) {
+				final int normalIndex = normalIndices.get(i) * NORMAL_SIZE;
+				final int positionIndex = indices.get(i) * NORMAL_SIZE;
+				for (int ii = 0; ii < NORMAL_SIZE; ii++) {
+					normals.set(positionIndex + ii, rawNormalComponents.get(normalIndex + ii));
 				}
 			}
-			if (hasNormals) {
-				for (int i = 0; i < normalIndices.size(); i++) {
-					final int normalIndex = normalIndices.get(i) * NORMAL_SIZE;
-					final int positionIndex = indices.get(i) * NORMAL_SIZE;
-					for (int ii = 0; ii < NORMAL_SIZE; ii++) {
-						normals.set(positionIndex + ii, rawNormalComponents.get(normalIndex + ii));
-					}
-				}
-			}
-		} catch (Exception ex) {
-			throw new MalformedOBJFileException(line, ex);
 		}
 	}
 
 	private static void parseComponents(TFloatList destination, String line) {
 		final String[] components = line.split(COMPONENT_SEPARATOR);
-		for (int i = 1; i < components.length; i++) {
+		final int componentsLength = components.length;
+		for (int i = 1; i < componentsLength; i++) {
 			destination.add(Float.parseFloat(components[i]));
 		}
 	}
 
 	private static void parseIndices(TIntList positions, TIntList textureCoords, TIntList normals, String line) {
 		final String[] indicesGroup = line.split(COMPONENT_SEPARATOR);
-		for (int i = 1; i < indicesGroup.length; i++) {
+		final int indicesLength = indicesGroup.length;
+		for (int i = 1; i < indicesLength; i++) {
 			final String[] indices = indicesGroup[i].split(INDEX_SEPARATOR);
 			positions.add(Integer.parseInt(indices[0]) - 1);
 			if (indices.length > 1 && !indices[1].isEmpty()) {
@@ -148,21 +155,6 @@ public class WavefrontOBJLoader {
 			if (indices.length > 2) {
 				normals.add(Integer.parseInt(indices[2]) - 1);
 			}
-		}
-	}
-
-	private static class MalformedOBJFileException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-
-		/**
-		 * Creates an new exception from the line at which the error occured and the cause.
-		 * If the error did not occur on a line, the line can be passed as null.
-		 *
-		 * @param line  The line the error occured on
-		 * @param cause The cause of the exception
-		 */
-		private MalformedOBJFileException(String line, Throwable cause) {
-			super(line != null ? "For line \"" + line + "\"" : null, cause);
 		}
 	}
 }

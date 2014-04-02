@@ -1,0 +1,9 @@
+# Shaders
+vertex_shader: shaders/basic_vs.glsl
+fragment_shader: shaders/basic_fs.glsl
+
+# Mesh
+mesh: meshes/teleporter.obj
+
+# Texture
+texture: textures/teleporter.jpg

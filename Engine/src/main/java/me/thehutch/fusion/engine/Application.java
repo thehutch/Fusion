@@ -82,11 +82,7 @@ public class Application {
 		Files.createDirectories(nativesDir);
 		// Copy each native library into the natives directory
 		for (String file : files) {
-			try {
-				Files.copy(FileSystem.getJarResource(file), nativesDir.resolve(file), StandardCopyOption.REPLACE_EXISTING);
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
+			Files.copy(FileSystem.getJarResource(file), nativesDir.resolve(file), StandardCopyOption.REPLACE_EXISTING);
 		}
 		// Set the library paths
 		System.setProperty("org.lwjgl.librarypath", nativesDir.toAbsolutePath().toString());

@@ -31,6 +31,7 @@ import java.nio.file.StandardOpenOption;
 import me.thehutch.fusion.api.filesystem.IFileSystem;
 import me.thehutch.fusion.api.filesystem.IResourceLoader;
 import me.thehutch.fusion.engine.Engine;
+import me.thehutch.fusion.engine.scene.Scene;
 
 
 public class FileSystem implements IFileSystem {
@@ -39,10 +40,14 @@ public class FileSystem implements IFileSystem {
 	private final TMap<String, IResourceLoader<?>> loaders = new THashMap<>();
 
 	public FileSystem() {
-		// Extract the engine models
-		extractDirectory("models", DATA_DIRECTORY.resolve("models"));
+		// Extract the engine meshes
+		extractDirectory("meshes", Scene.MESH_DIRECTORY);
 		// Extract the engine shaders
-		extractDirectory("shaders", DATA_DIRECTORY.resolve("shaders"));
+		extractDirectory("shaders", Scene.SHADER_DIRECTORY);
+		// Extract the engine textures
+		extractDirectory("textures", Scene.TEXTURE_DIRECTORY);
+		// Extract the engine models
+		extractDirectory("models", Scene.MODELS_DIRECTORY);
 	}
 
 	@Override
@@ -89,14 +94,15 @@ public class FileSystem implements IFileSystem {
 			final Path sourcePath = Paths.get(Engine.class.getResource('/' + source).toURI());
 
 			// Obtain a directory stream to extract each file
-			final DirectoryStream<Path> stream = Files.newDirectoryStream(sourcePath);
-			stream.forEach((Path path) -> {
-				try {
-					Files.copy(path, dest.resolve(path.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-			});
+			try (final DirectoryStream<Path> stream = Files.newDirectoryStream(sourcePath)) {
+				stream.forEach((Path path) -> {
+					try {
+						Files.copy(path, dest.resolve(path.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
+				});
+			}
 		} catch (IOException | URISyntaxException ex) {
 			ex.printStackTrace();
 		}

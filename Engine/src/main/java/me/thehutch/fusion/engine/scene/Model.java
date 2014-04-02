@@ -24,54 +24,47 @@ import com.flowpowered.math.vector.Vector4f;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.IModel;
 import me.thehutch.fusion.api.scene.ISceneNode;
+import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.render.Program;
 import me.thehutch.fusion.engine.render.Texture;
 import me.thehutch.fusion.engine.render.VertexArray;
-import me.thehutch.fusion.engine.render.VertexData;
 
 public class Model implements IModel, ISceneNode {
-	private final VertexArray mesh;
-	private final Texture texture;
-	private final Program program;
+	private final ModelData data;
 	private final Camera camera;
 	private Quaternionf rotation;
 	private Vector3f position;
 	private Vector4f scale;
 
-	public Model(Scene scene, Program program, VertexData meshData, Texture texture) {
-		this.mesh = new VertexArray(meshData);
-		this.texture = texture;
-		this.program = program;
-		this.camera = scene.getCamera();
+	Model(Camera camera, ModelData data) {
+		this.camera = camera;
+		this.data = data;
 
 		this.rotation = Quaternionf.IDENTITY;
 		this.position = Vector3f.ZERO;
 		this.scale = Vector4f.ONE;
-
-		// Add the model to the scene
-		scene.addNode(this);
 	}
 
 	@Override
 	public void dispose() {
 		// Dispose the program
-		this.program.dispose();
+		this.data.program.dispose();
 		// Dispose the mesh
-		this.mesh.dispose();
+		this.data.mesh.dispose();
 	}
 
 	@Override
 	public void render() {
 		// Use the program
-		this.program.use();
+		this.data.program.use();
 		// Bind the texture
-		this.texture.bind(-1);
+		this.data.texture.bind(0);
 
 		// Set the matrix uniform
-		this.program.setUniform("transform", camera.getTransformation().mul(Matrix4f.createScaling(scale).rotate(rotation).translate(position)));
+		this.data.program.setUniform("transform", camera.getTransformation().mul(Matrix4f.createScaling(scale).rotate(rotation).translate(position)));
 
 		// Draw the mesh
-		this.mesh.draw();
+		this.data.mesh.draw();
 	}
 
 	@Override
@@ -171,5 +164,21 @@ public class Model implements IModel, ISceneNode {
 	@Override
 	public void rotate(Quaternionf rotation) {
 		this.rotation = rotation.normalize().mul(getRotation());
+	}
+
+	static class ModelData implements Disposable {
+		VertexArray mesh;
+		Texture texture;
+		Program program;
+
+		@Override
+		public void dispose() {
+			// Dispose the mesh
+			this.mesh.dispose();
+			// Dispose the texture
+			this.texture.dispose();
+			// Dispose the program
+			this.program.dispose();
+		}
 	}
 }

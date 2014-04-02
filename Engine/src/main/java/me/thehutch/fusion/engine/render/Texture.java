@@ -52,9 +52,14 @@ public class Texture implements ITexture {
 
 	public Texture(InputStream stream) {
 		try {
+			// Read in the image data from the stream
 			final BufferedImage image = ImageIO.read(stream);
+			// Close the stream
+			stream.close();
+
 			this.width = image.getWidth();
 			this.height = image.getHeight();
+
 			final int type = image.getType();
 			final int[] pixels;
 			if (type == BufferedImage.TYPE_INT_ARGB || type == BufferedImage.TYPE_INT_RGB) {
@@ -63,9 +68,9 @@ public class Texture implements ITexture {
 				pixels = new int[width * height];
 				image.getRGB(0, 0, width, height, pixels, 0, width);
 			}
+
 			final int numComponents = image.getColorModel().getNumComponents();
 			final ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * numComponents);
-
 			for (int h = height - 1; h >= 0; --h) {
 				for (int w = 0; w < width; ++w) {
 					final int pixel = pixels[w + h * width];
@@ -115,5 +120,11 @@ public class Texture implements ITexture {
 	@Override
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public void dispose() {
+		// Delete the texture
+		GL11.glDeleteTextures(id);
 	}
 }

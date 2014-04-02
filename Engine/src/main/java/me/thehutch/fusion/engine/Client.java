@@ -23,6 +23,7 @@ import me.thehutch.fusion.api.Platform;
 import me.thehutch.fusion.api.event.EventPriority;
 import me.thehutch.fusion.api.input.keyboard.Key;
 import me.thehutch.fusion.api.input.mouse.MouseMotionEvent;
+import me.thehutch.fusion.api.maths.MathsHelper;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scheduler.TaskPriority;
 import me.thehutch.fusion.engine.input.InputManager;
@@ -42,7 +43,7 @@ public final class Client extends Engine implements IClient {
 	protected Client(Application application) {
 		super(application);
 		// TODO: Get the window size either from the commandline or config file
-		this.scene = new Scene(this, Camera.createPerspective(70.0f, 800.0f / 600.0f, 0.01f, 1000.0f), "shaders/");
+		this.scene = new Scene(this, Camera.createPerspective(70.0f, 800.0f / 600.0f, 0.01f, 1000.0f));
 		this.inputManager = new InputManager(this);
 		// Schedule the input manager task
 		getScheduler().scheduleSyncRepeatingTask(getInputManager()::execute, TaskPriority.CRITICAL, 0L, 1L);
@@ -83,9 +84,11 @@ public final class Client extends Engine implements IClient {
 			final float sensitivity = MOUSE_SENSITIVITY * getScheduler().getDelta();
 
 			this.cameraPitch += event.getDY() * sensitivity;
+			this.cameraPitch = MathsHelper.clamp(cameraPitch, -90.0f, 90.0f);
 			final Quaternionf pitch = Quaternionf.fromAngleDegAxis(cameraPitch, 1.0f, 0.0f, 0.0f);
 
 			this.cameraYaw -= event.getDX() * sensitivity;
+			this.cameraYaw %= 360;
 			final Quaternionf yaw = Quaternionf.fromAngleDegAxis(cameraYaw, 0.0f, 1.0f, 0.0f);
 
 			getScene().getCamera().setRotation(yaw.mul(pitch));
@@ -105,5 +108,13 @@ public final class Client extends Engine implements IClient {
 	@Override
 	public Platform getPlatform() {
 		return Platform.CLIENT;
+	}
+
+	@Override
+	public void stop(String reason) {
+		// Dispose of the scene
+		getScene().dispose();
+		// Stop the engine
+		super.stop(reason);
 	}
 }

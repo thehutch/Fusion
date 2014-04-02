@@ -79,7 +79,7 @@ public abstract class Engine implements IEngine {
 	}
 
 	@Override
-	public final void stop(String reason) {
+	public void stop(String reason) {
 		// Terminate the Scheduler
 		getScheduler().stop();
 
