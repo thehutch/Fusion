@@ -30,14 +30,8 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
-import javax.imageio.ImageIO;
-import me.thehutch.fusion.api.scene.ITexture;
-import org.lwjgl.BufferUtils;
+import me.thehutch.fusion.api.util.Disposable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
@@ -45,64 +39,26 @@ import org.lwjgl.opengl.GL13;
  *
  * @author thehutch
  */
-public class Texture implements ITexture {
-	private final int width;
-	private final int height;
+public class Texture implements Disposable {
 	private final int id;
 
-	public Texture(InputStream stream) {
-		try {
-			// Read in the image data from the stream
-			final BufferedImage image = ImageIO.read(stream);
-			// Close the stream
-			stream.close();
+	public Texture(ByteBuffer buffer, int width, int height, int components) {
+		// Generate a texture handle
+		this.id = GL11.glGenTextures();
+		// Bind the texture
+		GL11.glBindTexture(GL_TEXTURE_2D, id);
 
-			this.width = image.getWidth();
-			this.height = image.getHeight();
+		// Set the texture parameters
+		GL11.glTexParameteri(GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+		GL11.glTexParameteri(GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 
-			final int type = image.getType();
-			final int[] pixels;
-			if (type == BufferedImage.TYPE_INT_ARGB || type == BufferedImage.TYPE_INT_RGB) {
-				pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-			} else {
-				pixels = new int[width * height];
-				image.getRGB(0, 0, width, height, pixels, 0, width);
-			}
+		GL11.glTexParameteri(GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 
-			final int numComponents = image.getColorModel().getNumComponents();
-			final ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * numComponents);
-			for (int h = height - 1; h >= 0; --h) {
-				for (int w = 0; w < width; ++w) {
-					final int pixel = pixels[w + h * width];
-					buffer.put((byte) ((pixel >> 16) & 0xFF));
-					buffer.put((byte) ((pixel >> 8) & 0xFF));
-					buffer.put((byte) (pixel & 0xFF));
-					if (numComponents == 4) {
-						buffer.put((byte) ((pixel >> 24) & 0xFF));
-					}
-				}
-			}
-			buffer.flip();
+		GL11.glTexImage2D(GL_TEXTURE_2D, 0, components == 4 ? GL_RGBA8 : GL_RGB8, width, height, 0, components == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, buffer);
 
-			// Generate a texture handle
-			this.id = GL11.glGenTextures();
-			// Bind the texture
-			GL11.glBindTexture(GL_TEXTURE_2D, id);
-
-			// Set the texture parameters
-			GL11.glTexParameteri(GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-			GL11.glTexParameteri(GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-
-			GL11.glTexParameteri(GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-			GL11.glTexParameteri(GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-
-			GL11.glTexImage2D(GL_TEXTURE_2D, 0, numComponents == 4 ? GL_RGBA8 : GL_RGB8, width, height, 0, numComponents == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, buffer);
-
-			// Unbind the texture
-			GL11.glBindTexture(GL_TEXTURE_2D, 0);
-		} catch (IOException ex) {
-			throw new IllegalArgumentException("Unable to read texture image data", ex);
-		}
+		// Unbind the texture
+		GL11.glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	public void bind(int unit) {
@@ -110,16 +66,6 @@ public class Texture implements ITexture {
 			GL13.glActiveTexture(GL_TEXTURE0 + unit);
 		}
 		GL11.glBindTexture(GL_TEXTURE_2D, id);
-	}
-
-	@Override
-	public int getWidth() {
-		return width;
-	}
-
-	@Override
-	public int getHeight() {
-		return height;
 	}
 
 	@Override

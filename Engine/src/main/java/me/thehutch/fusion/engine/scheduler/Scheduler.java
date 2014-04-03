@@ -28,10 +28,10 @@ import me.thehutch.fusion.api.scheduler.TaskPriority;
  * @author thehutch
  */
 public class Scheduler implements IScheduler {
-	private static final float OVERLOAD_FACTOR = 1.5f;
+	private static final float OVERLOAD_FACTOR = 1.25f;
 	private static final long MILLISECOND_TO_SECOND = 1000L;
 	private static final AtomicInteger TASK_ID_COUNTER = new AtomicInteger(0);
-	private final Queue<Task> currentTasks = new PriorityQueue<>(1);
+	private final Queue<Task> currentTasks = new PriorityQueue<>();
 	private final Queue<Task> pendingQueue = new LinkedBlockingQueue<>();
 	private final SchedulerService service;
 	private final long ticksPerSecond;
@@ -41,9 +41,9 @@ public class Scheduler implements IScheduler {
 	private long upTime;
 	private long tick;
 
-	public Scheduler(long ticksPersSecond) {
+	public Scheduler(long ticksPerSecond) {
 		this.service = new SchedulerService(Runtime.getRuntime().availableProcessors() - 1);
-		this.ticksPerSecond = ticksPersSecond;
+		this.ticksPerSecond = ticksPerSecond;
 		this.overloaded = false;
 		this.active = true;
 		this.upTime = 0L;
@@ -59,28 +59,25 @@ public class Scheduler implements IScheduler {
 			frameClock = System.currentTimeMillis();
 
 			boolean isExecuted = true;
-			do {
+			while (isExecuted && !currentTasks.isEmpty()) {
 				final Task task = currentTasks.peek();
-				if (task != null) {
-					isExecuted = task.getTickTime() <= upTime;
+				isExecuted = task.getTickTime() <= upTime;
+				if (isExecuted && task.isAlive()) {
+					if (task.isParallel()) {
+						this.service.push(task);
+					} else {
+						task.execute();
+						task.setTickTime(upTime + task.getPeriod(), overloaded);
 
-					if (isExecuted && task.isAlive()) {
-						if (task.isParallel()) {
-							this.service.push(task);
-						} else {
-							task.execute();
-							task.setTickTime(upTime + task.getPeriod(), overloaded);
-
-							if (task.isAlive() && task.isRepeating()) {
-								this.pendingQueue.add(task);
-							}
+						if (task.isAlive() && task.isRepeating()) {
+							this.pendingQueue.add(task);
 						}
-						this.currentTasks.remove();
-					} else if (!task.isAlive()) {
-						this.currentTasks.remove();
 					}
+					this.currentTasks.remove();
+				} else if (!task.isAlive()) {
+					this.currentTasks.remove();
 				}
-			} while (isExecuted && !currentTasks.isEmpty());
+			}
 
 			this.diffTimePerTick = System.currentTimeMillis() - frameClock;
 
@@ -103,7 +100,7 @@ public class Scheduler implements IScheduler {
 
 			// Add new tasks
 			while (!pendingQueue.isEmpty()) {
-				this.currentTasks.add(pendingQueue.remove());
+				this.currentTasks.add(pendingQueue.poll());
 			}
 
 			// Exit the scheduler if no tasks to execute

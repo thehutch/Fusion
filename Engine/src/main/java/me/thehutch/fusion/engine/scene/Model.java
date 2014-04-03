@@ -23,20 +23,19 @@ import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector4f;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.IModel;
-import me.thehutch.fusion.api.scene.ISceneNode;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.render.Program;
 import me.thehutch.fusion.engine.render.Texture;
 import me.thehutch.fusion.engine.render.VertexArray;
 
-public class Model implements IModel, ISceneNode {
+public class Model implements IModel {
 	private final ModelData data;
 	private final Camera camera;
 	private Quaternionf rotation;
 	private Vector3f position;
 	private Vector4f scale;
 
-	Model(Camera camera, ModelData data) {
+	protected Model(Camera camera, ModelData data) {
 		this.camera = camera;
 		this.data = data;
 
@@ -47,10 +46,6 @@ public class Model implements IModel, ISceneNode {
 
 	@Override
 	public void dispose() {
-		// Dispose the program
-		this.data.program.dispose();
-		// Dispose the mesh
-		this.data.mesh.dispose();
 	}
 
 	@Override
@@ -166,10 +161,10 @@ public class Model implements IModel, ISceneNode {
 		this.rotation = rotation.normalize().mul(getRotation());
 	}
 
-	static class ModelData implements Disposable {
-		VertexArray mesh;
-		Texture texture;
-		Program program;
+	public static class ModelData implements Disposable {
+		public VertexArray mesh;
+		public Texture texture;
+		public Program program;
 
 		@Override
 		public void dispose() {

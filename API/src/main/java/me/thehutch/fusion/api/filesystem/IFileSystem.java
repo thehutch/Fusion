@@ -45,10 +45,10 @@ public interface IFileSystem {
 	public InputStream getResourceStream(Path path);
 
 	/**
-	 * Registers the loader with the file system to load any resources using the given extension.
+	 * Registers the loader with the file system to load any resources using the given extensions.
 	 *
-	 * @param extension The file extension this resource loads
-	 * @param loader    The loader
+	 * @param loader     The loader
+	 * @param extensions The file extensions which require this loader
 	 */
-	public void registerLoader(String extension, IResourceLoader<?> loader);
+	public void registerLoader(ResourceLoader<?> loader, String... extensions);
 }

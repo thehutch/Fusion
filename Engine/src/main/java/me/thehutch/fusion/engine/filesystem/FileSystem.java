@@ -29,14 +29,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import me.thehutch.fusion.api.filesystem.IFileSystem;
-import me.thehutch.fusion.api.filesystem.IResourceLoader;
+import me.thehutch.fusion.api.filesystem.ResourceLoader;
 import me.thehutch.fusion.engine.Engine;
 import me.thehutch.fusion.engine.scene.Scene;
 
 public class FileSystem implements IFileSystem {
 	public static final Path BASE_DIRECTORY = Paths.get(System.getProperty("user.dir"));
 	public static final Path DATA_DIRECTORY = BASE_DIRECTORY.resolve("data");
-	private final TMap<String, IResourceLoader<?>> loaders = new THashMap<>();
+	private final TMap<String, ResourceLoader<?>> loaders = new THashMap<>();
 
 	public FileSystem() {
 		// Extract the engine meshes
@@ -53,13 +53,8 @@ public class FileSystem implements IFileSystem {
 	public <R> R getResource(Path path) {
 		// Calculate the file extension
 		final String extension = path.toString().substring(path.toString().lastIndexOf('.') + 1);
-		try {
-			// Retrieve the loader for the file extension
-			return (R) loaders.get(extension).load(path);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		return null;
+		// Retrieve the loader for the file extension
+		return (R) loaders.get(extension).get(path);
 	}
 
 	@Override
@@ -67,14 +62,15 @@ public class FileSystem implements IFileSystem {
 		try {
 			return Files.newInputStream(path, StandardOpenOption.READ);
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			throw new IllegalArgumentException("Unable to obtain input stream for resource: " + path, ex);
 		}
-		return null;
 	}
 
 	@Override
-	public void registerLoader(String extension, IResourceLoader<?> loader) {
-		this.loaders.put(extension, loader);
+	public void registerLoader(ResourceLoader<?> loader, String... extensions) {
+		for (String extension : extensions) {
+			this.loaders.put(extension, loader);
+		}
 	}
 
 	/**

@@ -17,22 +17,40 @@
  */
 package me.thehutch.fusion.api.filesystem;
 
-import java.io.IOException;
+import gnu.trove.map.TMap;
+import gnu.trove.map.hash.THashMap;
 import java.nio.file.Path;
+import me.thehutch.fusion.api.util.Disposable;
 
 /**
  * @author thehutch
  * @param <T>
  */
-public interface IResourceLoader<T> {
+public abstract class ResourceLoader<T> implements Disposable {
+	protected final TMap<Path, T> resources = new THashMap<>();
+
+	/**
+	 * Retrieves the resource located at the given path either from the resource cache
+	 * or if it has not been loaded then it will be loaded.
+	 *
+	 * @param path The path to the resource
+	 *
+	 * @return The resource
+	 */
+	public T get(Path path) {
+		final T resource = resources.get(path);
+		if (resource == null) {
+			return load(path);
+		}
+		return resource;
+	}
+
 	/**
 	 * Loads a resource at the given path.
 	 *
 	 * @param path The path to the resource
 	 *
 	 * @return The loaded resource
-	 *
-	 * @throws java.io.IOException Thrown if an IO error occurs during loading
 	 */
-	public T load(Path path) throws IOException;
+	protected abstract T load(Path path);
 }
