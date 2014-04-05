@@ -1,6 +1,5 @@
-# Shaders
-vertex_shader: shaders/basic_vs.glsl
-fragment_shader: shaders/basic_fs.glsl
+# Program
+program: programs/basic_light.fprg
 
 # Mesh
 mesh: meshes/teleporter.obj

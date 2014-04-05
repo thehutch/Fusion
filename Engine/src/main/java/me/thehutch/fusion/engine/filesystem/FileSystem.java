@@ -45,6 +45,8 @@ public class FileSystem implements IFileSystem {
 		extractDirectory("shaders", Scene.SHADER_DIRECTORY);
 		// Extract the engine textures
 		extractDirectory("textures", Scene.TEXTURE_DIRECTORY);
+		// Extract the engine program
+		extractDirectory("programs", Scene.PROGRAM_DIRECTORY);
 		// Extract the engine models
 		extractDirectory("models", Scene.MODELS_DIRECTORY);
 	}

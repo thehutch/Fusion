@@ -17,33 +17,15 @@
  */
 package me.thehutch.fusion.api.scene;
 
-import com.flowpowered.math.imaginary.Quaternionf;
-import com.flowpowered.math.vector.Vector3f;
 import com.flowpowered.math.vector.Vector4f;
 
 /**
  * @author thehutch
  */
 public interface IModel extends ISceneNode {
-	public Vector3f getPosition();
-
-	public void setPosition(Vector3f position);
-
 	public Vector4f getScale();
 
 	public void setScale(Vector4f scale);
-
-	public Quaternionf getRotation();
-
-	public void setRotation(Quaternionf rotation);
-
-	public void moveX(float dx);
-
-	public void moveY(float dy);
-
-	public void moveZ(float dz);
-
-	public void move(float dx, float dy, float dz);
 
 	public void scaleX(float scale);
 
@@ -54,12 +36,4 @@ public interface IModel extends ISceneNode {
 	public void scale(float scale);
 
 	public void scale(float scaleX, float scaleY, float scaleZ);
-
-	public void rotateX(float angle);
-
-	public void rotateY(float angle);
-
-	public void rotateZ(float angle);
-
-	public void rotate(Quaternionf rotation);
 }

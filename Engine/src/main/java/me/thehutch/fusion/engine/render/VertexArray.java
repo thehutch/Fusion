@@ -69,10 +69,12 @@ public class VertexArray implements Disposable {
 			final VertexAttribute attrib = data.getAttribute(i);
 			// Set the attribute data to the vao
 			GL15.glBufferData(GL_ARRAY_BUFFER, attrib.getData(), GL_STATIC_DRAW);
-			{
-				GL20.glEnableVertexAttribArray(i);
-				GL20.glVertexAttribPointer(i, attrib.getSize(), GL_FLOAT, false, 0, 0L);
-			}
+			// Enable the vertex attribute
+			GL20.glEnableVertexAttribArray(i);
+			// Set the vertex attribute settings
+			GL20.glVertexAttribPointer(i, attrib.getSize(), GL_FLOAT, false, 0, 0L);
+			// Disable the vertex attribute
+			GL20.glDisableVertexAttribArray(i);
 			// Unbind the attribute buffer
 			GL15.glBindBuffer(GL_ARRAY_BUFFER, 0);
 		}
@@ -85,12 +87,20 @@ public class VertexArray implements Disposable {
 	public void draw() {
 		//Bind the vertex array object
 		GL30.glBindVertexArray(vao);
+		// Enable the vertex attributes
+		for (int i = 0; i < attributeIds.length; ++i) {
+			GL20.glEnableVertexAttribArray(i);
+		}
 		// Bind the index buffer
 		GL15.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		// Draw the vertex elements
 		GL11.glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0L);
 		// Unbind the index buffer
 		GL15.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		// Disable the vertex attributes
+		for (int i = 0; i < attributeIds.length; ++i) {
+			GL20.glDisableVertexAttribArray(i);
+		}
 		// Unbind the vertex array object
 		GL30.glBindVertexArray(0);
 	}

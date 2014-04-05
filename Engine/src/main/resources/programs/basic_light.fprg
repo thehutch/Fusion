@@ -1,0 +1,2 @@
+vertex_shader: shaders/basic_vs.glsl
+fragment_shader: shaders/basic_fs.glsl

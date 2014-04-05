@@ -1,14 +1,23 @@
 #version 330
 
-layout(location = 0) in vec3 vPosition;
-layout(location = 1) in vec2 vTextureUV;
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 texcoord;
+layout(location = 2) in vec3 normal;
 
-uniform mat4 transform;
+uniform mat4 camera;
+uniform mat4 model;
 
-out vec2 textureUV;
+out vec3 position0;
+out vec2 texcoord0;
+out vec3 normal0;
 
 void main()
 {
-	gl_Position = transform * vec4(vPosition, 1);
-	textureUV = vTextureUV;
+	// Forward the data to the fragment shader
+	position0 = position;
+	texcoord0 = texcoord;
+	normal0 = normal;
+
+	// Apply transformation to the model
+	gl_Position = camera * model * vec4(position, 1.0);
 }

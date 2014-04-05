@@ -69,8 +69,8 @@ public class Program implements Disposable {
 		// Check for a shader compile error
 		if (GL20.glGetShaderi(shaderId, GL_COMPILE_STATUS) == GL_FALSE) {
 			// Get the shader info log length
-			final int logLength = GL20.glGetShaderi(id, GL20.GL_INFO_LOG_LENGTH);
-			throw new IllegalStateException("OpenGL Error: Could not compile shader\n" + GL20.glGetShaderInfoLog(id, logLength));
+			final int logLength = GL20.glGetShaderi(shaderId, GL20.GL_INFO_LOG_LENGTH);
+			throw new IllegalStateException("OpenGL Error: Could not compile shader\n" + GL20.glGetShaderInfoLog(shaderId, logLength));
 		}
 		// Attach the shader
 		GL20.glAttachShader(id, shaderId);

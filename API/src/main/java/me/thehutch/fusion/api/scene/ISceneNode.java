@@ -17,21 +17,47 @@
  */
 package me.thehutch.fusion.api.scene;
 
+import com.flowpowered.math.imaginary.Quaternionf;
+import com.flowpowered.math.vector.Vector3f;
 import me.thehutch.fusion.api.util.Disposable;
 
 /**
  * @author thehutch
  */
 public interface ISceneNode extends Disposable {
-	/**
-	 * Renders the components and then the children nodes.
-	 */
-	public void render();
+	public Vector3f getPosition();
 
-	/**
-	 * Updates the components and then the children nodes.
-	 *
-	 * @param delta The time in milliseconds since the last update
-	 */
-	public void update(float delta);
+	public void setPosition(Vector3f position);
+
+	public Quaternionf getRotation();
+
+	public void setRotation(Quaternionf rotation);
+
+	public void moveX(float dx);
+
+	public void moveLocalX(float dx);
+
+	public void moveY(float dy);
+
+	public void moveLocalY(float dy);
+
+	public void moveZ(float dz);
+
+	public void moveLocalZ(float dz);
+
+	public void move(float dx, float dy, float dz);
+
+	public void rotateX(float angle);
+
+	public void rotateLocalX(float angle);
+
+	public void rotateY(float angle);
+
+	public void rotateLocalY(float angle);
+
+	public void rotateZ(float angle);
+
+	public void rotateLocalZ(float angle);
+
+	public void rotate(Quaternionf rotation);
 }

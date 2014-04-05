@@ -19,11 +19,11 @@ package me.thehutch.fusion.engine.scene;
 
 import static me.thehutch.fusion.engine.Engine.ENGINE_VERSION;
 import static org.lwjgl.opengl.GL11.GL_BACK;
-import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_LEQUAL;
 
 import com.flowpowered.math.vector.Vector3f;
 import java.nio.file.Path;
@@ -31,11 +31,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.IScene;
-import me.thehutch.fusion.api.scene.ISceneNode;
 import me.thehutch.fusion.engine.Client;
 import me.thehutch.fusion.engine.filesystem.FileSystem;
 import me.thehutch.fusion.engine.filesystem.loaders.ModelLoader;
+import me.thehutch.fusion.engine.filesystem.loaders.ProgramLoader;
 import me.thehutch.fusion.engine.filesystem.loaders.TextureLoader;
+import me.thehutch.fusion.engine.scene.lights.Light;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -45,20 +46,25 @@ import org.lwjgl.opengl.PixelFormat;
 
 public final class Scene implements IScene {
 	public static final Path TEXTURE_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("textures");
+	public static final Path PROGRAM_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("programs");
 	public static final Path SHADER_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("shaders");
 	public static final Path MODELS_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("models");
 	public static final Path MESH_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("meshes");
-	private final Collection<ISceneNode> nodes = new ArrayList<>();
+	private final Collection<SceneNode> nodes = new ArrayList<>();
+	private final Collection<Light> lights = new ArrayList<>();
 	private final Camera camera;
 	private final Client engine;
 
 	public Scene(Client engine, Camera camera) {
 		this.camera = camera;
+		camera.setPosition(new Vector3f(0.0f, 0.25f, 1.0f));
 		this.engine = engine;
 		// Register the model loader
 		engine.getFileSystem().registerLoader(new ModelLoader(engine.getFileSystem()), "fmdl");
 		// Register the texture loader
 		engine.getFileSystem().registerLoader(new TextureLoader(), "jpg", "png");
+		// Register the program loader
+		engine.getFileSystem().registerLoader(new ProgramLoader(), "fprg");
 
 		// Create the window
 		createWindow();
@@ -67,12 +73,12 @@ public final class Scene implements IScene {
 		final Model model = createModel("teleporter.fmdl", 0.0f, 0.0f, 0.0f);
 		model.scale(0.125f);
 
-		// Disable blending
-		GL11.glDisable(GL_BLEND);
-		// Enable depth mask
-		GL11.glDepthMask(true);
+		// Create a default light
+		createLight(camera.getPosition(), Vector3f.ONE, 0.2f, 0.05f);
+
 		// Enable depth testing
 		GL11.glEnable(GL_DEPTH_TEST);
+		GL11.glDepthFunc(GL_LEQUAL);
 
 		// Enable backface culling
 		GL11.glEnable(GL_CULL_FACE);
@@ -85,27 +91,26 @@ public final class Scene implements IScene {
 	}
 
 	@Override
-	public void addNode(ISceneNode node) {
-		this.nodes.add(node);
-	}
-
-	@Override
-	public void removeNode(ISceneNode node) {
-		this.nodes.remove(node);
-		node.dispose();
-	}
-
-	@Override
 	public Model createModel(String name, Vector3f position) {
-		final Model model = new Model(camera, engine.getFileSystem().getResource(MODELS_DIRECTORY.resolve(name)));
+		final Model model = new Model(engine.getFileSystem().getResource(MODELS_DIRECTORY.resolve(name)));
 		model.setPosition(position);
-		addNode(model);
+		this.nodes.add(model);
 		return model;
 	}
 
 	@Override
 	public Model createModel(String name, float x, float y, float z) {
 		return createModel(name, new Vector3f(x, y, z));
+	}
+
+	public Light createLight(Vector3f position, Vector3f colour, float ambientCoeff, float attenuation) {
+		final Light light = new Light(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("basic_light.fprg")), position, colour, ambientCoeff, attenuation);
+		this.lights.add(light);
+		return light;
+	}
+
+	public void removeLight(Light light) {
+		this.lights.remove(light);
 	}
 
 	@Override
@@ -122,13 +127,21 @@ public final class Scene implements IScene {
 		// Get the delta from the scheduler
 		final float delta = engine.getScheduler().getDelta();
 
-		// Update the scene
-		this.nodes.stream().forEach(node -> {
+		// Update each scene node
+		this.nodes.stream().forEach((SceneNode node) -> {
 			node.update(delta);
 		});
-		// Render the scene
-		this.nodes.stream().forEach(node -> {
-			node.render();
+
+		// For each light, render the scene
+		this.lights.stream().forEach((Light light) -> {
+			light.uploadUniforms();
+			// Set the camera matrix
+			light.getProgram().setUniform("camera", camera.getProjectionMatrix().mul(camera.getViewMatrix()));
+			// Set the camera position
+			light.getProgram().setUniform("cameraPos", camera.getPosition());
+			this.nodes.stream().forEach((SceneNode node) -> {
+				node.render(light.getProgram());
+			});
 		});
 
 		// Update the display
@@ -144,6 +157,5 @@ public final class Scene implements IScene {
 		} catch (LWJGLException ex) {
 			ex.printStackTrace();
 		}
-		GL11.glClearColor(0.0f, 0.50f, 0.75f, 1.0f);
 	}
 }

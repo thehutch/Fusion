@@ -8,5 +8,6 @@
 /API/dependency-reduced-pom.xml
 /Engine/target/
 /Engine/natives/
+/Engine/data/
 /Engine/dependency-reduced-pom.xml
 /target/

@@ -55,7 +55,10 @@ public class WavefrontOBJLoader {
 			final TIntList indices = new TIntArrayList();
 			// Load the raw vertex data into the lists
 			load(Files.lines(path), positions, texcoords, normals, indices);
-
+			// Calculate the normals if the model does not have any
+			if (normals.isEmpty()) {
+				calculateNormals(positions, indices, normals);
+			}
 			// Create the vertex data and add the attributes
 			final VertexData data = new VertexData(indices);
 			data.addAttribute(new VertexAttribute(POSITION_SIZE, positions));
@@ -155,6 +158,73 @@ public class WavefrontOBJLoader {
 			if (indices.length > 2) {
 				normals.add(Integer.parseInt(indices[2]) - 1);
 			}
+		}
+	}
+
+	private static void calculateNormals(TFloatList positions, TIntList indices, TFloatList normals) {
+		// Initialise the normals to (0, 0, 0)
+		normals.fill(0, positions.size(), 0.0f);
+		// Calculate the normal of each vertex
+		for (int i = 0; i < indices.size(); i += 3) {
+			// Triangle position indices
+			final int pos0 = indices.get(i) * 3;
+			final int pos1 = indices.get(i + 1) * 3;
+			final int pos2 = indices.get(i + 2) * 3;
+			// First triangle vertex position
+			final float x0 = positions.get(pos0);
+			final float y0 = positions.get(pos0 + 1);
+			final float z0 = positions.get(pos0 + 2);
+			// Second triangle vertex position
+			final float x1 = positions.get(pos1);
+			final float y1 = positions.get(pos1 + 1);
+			final float z1 = positions.get(pos1 + 2);
+			// First triangle vertex position
+			final float x2 = positions.get(pos2);
+			final float y2 = positions.get(pos2 + 1);
+			final float z2 = positions.get(pos2 + 2);
+			// First edge position difference
+			final float x10 = x1 - x0;
+			final float y10 = y1 - y0;
+			final float z10 = z1 - z0;
+			// Second edge position difference
+			final float x20 = x2 - x0;
+			final float y20 = y2 - y0;
+			final float z20 = z2 - z0;
+			// Cross both edges to obtain normal
+			final float nx = y10 * z20 - z10 * y20;
+			final float ny = z10 * x20 - x10 * z20;
+			final float nz = x10 * y20 - y10 * x20;
+			// Add the normal to the first vertex
+			normals.set(pos0, normals.get(pos0) + nx);
+			normals.set(pos0 + 1, normals.get(pos0 + 1) + ny);
+			normals.set(pos0 + 2, normals.get(pos0 + 2) + nz);
+			// Add the normal to the second vertex
+			normals.set(pos1, normals.get(pos1) + nx);
+			normals.set(pos1 + 1, normals.get(pos1 + 1) + ny);
+			normals.set(pos1 + 2, normals.get(pos1 + 2) + nz);
+			// Add the normal to the third vertex
+			normals.set(pos2, normals.get(pos2) + nx);
+			normals.set(pos2 + 1, normals.get(pos2 + 1) + ny);
+			normals.set(pos2 + 2, normals.get(pos2 + 2) + nz);
+		}
+		// Iterate over all normals
+		for (int i = 0; i < indices.size(); ++i) {
+			// Index for the normal
+			final int nor = indices.get(i) * 3;
+			// Get the normal
+			float nx = normals.get(nor);
+			float ny = normals.get(nor + 1);
+			float nz = normals.get(nor + 2);
+			// Length of the normal
+			final float length = (float) Math.sqrt(nx * nx + ny * ny + nz * nz);
+			// Normal the normal
+			nx /= length;
+			nx /= length;
+			nx /= length;
+			// Update the normal
+			normals.set(nor, nx);
+			normals.set(nor + 1, ny);
+			normals.set(nor + 2, nz);
 		}
 	}
 }

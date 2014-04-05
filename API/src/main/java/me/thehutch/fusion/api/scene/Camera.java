@@ -24,10 +24,10 @@ import com.flowpowered.math.vector.Vector3f;
 /**
  * @author thehutch
  */
-public class Camera {
+public class Camera implements ISceneNode {
 	private final Matrix4f projection;
 	private Matrix4f inverseRotation;
-	private Matrix4f transformation;
+	private Matrix4f viewMatrix;
 	private Quaternionf rotation;
 	private Vector3f position;
 	private boolean dirty;
@@ -35,100 +35,126 @@ public class Camera {
 	private Camera(Matrix4f projection) {
 		this.projection = projection;
 		this.inverseRotation = Matrix4f.IDENTITY;
-		this.transformation = Matrix4f.IDENTITY;
+		this.viewMatrix = Matrix4f.IDENTITY;
 		this.rotation = Quaternionf.IDENTITY;
 		this.position = Vector3f.ZERO;
 		this.dirty = true;
 	}
 
-	public Matrix4f getTransformation() {
+	public Matrix4f getProjectionMatrix() {
+		return projection;
+	}
+
+	public Matrix4f getViewMatrix() {
 		if (dirty) {
 			this.inverseRotation = Matrix4f.createRotation(rotation);
 			final Matrix4f rotationMatrix = Matrix4f.createRotation(rotation.invert());
 			final Matrix4f positionMatrix = Matrix4f.createTranslation(position.negate());
-			this.transformation = projection.mul(rotationMatrix).mul(positionMatrix);
+			this.viewMatrix = rotationMatrix.mul(positionMatrix);
 			this.dirty = false;
 		}
-		return transformation;
+		return viewMatrix;
 	}
 
+	@Override
 	public Vector3f getPosition() {
 		return position;
 	}
 
+	@Override
 	public void setPosition(Vector3f position) {
 		this.position = position;
 		this.dirty = true;
 	}
 
+	@Override
 	public Quaternionf getRotation() {
 		return rotation;
 	}
 
+	@Override
 	public void setRotation(Quaternionf rotation) {
 		this.rotation = rotation;
 		this.dirty = true;
 	}
 
+	@Override
 	public void moveX(float dx) {
 		move(dx, 0.0f, 0.0f);
 	}
 
+	@Override
 	public void moveLocalX(float dx) {
 		this.position = getPosition().add(getRight().mul(dx));
 		this.dirty = true;
 	}
 
+	@Override
 	public void moveY(float dy) {
 		move(0.0f, dy, 0.0f);
 	}
 
+	@Override
 	public void moveLocalY(float dy) {
 		this.position = getPosition().add(getUp().mul(dy));
 		this.dirty = true;
 	}
 
+	@Override
 	public void moveZ(float dz) {
 		move(0.0f, 0.0f, dz);
 	}
 
+	@Override
 	public void moveLocalZ(float dz) {
 		this.position = getPosition().add(getForward().mul(dz));
 		this.dirty = true;
 	}
 
+	@Override
 	public void move(float dx, float dy, float dz) {
 		this.position = getPosition().add(dx, dy, dz);
 		this.dirty = true;
 	}
 
+	@Override
 	public void rotateX(float angle) {
 		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_X));
 	}
 
+	@Override
 	public void rotateLocalX(float angle) {
 		rotate(Quaternionf.fromAngleRadAxis(angle, toCamera(getRight())));
 	}
 
+	@Override
 	public void rotateY(float angle) {
 		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_Y));
 	}
 
+	@Override
 	public void rotateLocalY(float angle) {
 		rotate(Quaternionf.fromAngleRadAxis(angle, toCamera(getUp())));
 	}
 
+	@Override
 	public void rotateZ(float angle) {
 		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_Z));
 	}
 
+	@Override
 	public void rotateLocalZ(float angle) {
 		rotate(Quaternionf.fromAngleRadAxis(angle, toCamera(getForward())));
 	}
 
+	@Override
 	public void rotate(Quaternionf rotation) {
 		this.rotation = rotation.normalize().mul(getRotation());
 		this.dirty = true;
+	}
+
+	@Override
+	public void dispose() {
 	}
 
 	public Vector3f getForward() {

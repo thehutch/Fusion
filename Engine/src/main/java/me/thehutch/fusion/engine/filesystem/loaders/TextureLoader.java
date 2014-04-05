@@ -60,7 +60,7 @@ public class TextureLoader extends ResourceLoader<Texture> {
 				pixels = new int[width * height];
 				image.getRGB(0, 0, width, height, pixels, 0, width);
 			}
-
+			// Convert the pixels array into a byte buffer
 			final int numComponents = image.getColorModel().getNumComponents();
 			final ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * numComponents);
 			for (int h = height - 1; h >= 0; --h) {
@@ -74,8 +74,13 @@ public class TextureLoader extends ResourceLoader<Texture> {
 					}
 				}
 			}
+			// Flip the buffer
 			buffer.flip();
-			return new Texture(buffer, width, height, numComponents);
+			// Create the texture
+			final Texture texture = new Texture(buffer, width, height, numComponents);
+			// Add the texture to the cache
+			this.resources.put(path, texture);
+			return texture;
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to load image: " + path, ex);
 		}
