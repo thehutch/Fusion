@@ -29,14 +29,14 @@ import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
 import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 
-import com.flowpowered.math.matrix.Matrix4f;
-import com.flowpowered.math.vector.Vector3f;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import me.thehutch.fusion.api.event.EventPriority;
 import me.thehutch.fusion.api.input.keyboard.Key;
 import me.thehutch.fusion.api.input.keyboard.KeyboardEvent;
+import me.thehutch.fusion.api.maths.Matrix4;
+import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scene.IScene;
 import me.thehutch.fusion.engine.Client;
@@ -70,7 +70,7 @@ public final class Scene implements IScene {
 
 	public Scene(Client engine, Camera camera) {
 		this.camera = camera;
-		camera.setPosition(new Vector3f(0.0f, 0.25f, 1.0f));
+		camera.setPosition(new Vector3(0.0f, 0.25f, 1.0f));
 		this.engine = engine;
 		// Register the model loader
 		engine.getFileSystem().registerLoader(new ModelLoader(engine.getFileSystem()), "fmdl");
@@ -102,7 +102,7 @@ public final class Scene implements IScene {
 
 		engine.getEventManager().registerEvent((KeyboardEvent event) -> {
 			if (event.getKeycode() == Key.KEY_L && event.getState() && !event.isRepeat()) {
-				createPointLight(camera.getPosition(), Vector3f.ONE, 0.0625f);
+				createPointLight(camera.getPosition(), Vector3.ONE, 0.0625f);
 			}
 		}, KeyboardEvent.class, EventPriority.HIGH, true);
 	}
@@ -113,7 +113,7 @@ public final class Scene implements IScene {
 	}
 
 	@Override
-	public Model createModel(String name, Vector3f position) {
+	public Model createModel(String name, Vector3 position) {
 		final Model model = new Model(engine.getFileSystem().getResource(MODELS_DIRECTORY.resolve(name)), new Material(50.0f));
 		model.setPosition(position);
 		this.models.add(model);
@@ -122,10 +122,10 @@ public final class Scene implements IScene {
 
 	@Override
 	public Model createModel(String name, float x, float y, float z) {
-		return createModel(name, new Vector3f(x, y, z));
+		return createModel(name, new Vector3(x, y, z));
 	}
 
-	public PointLight createPointLight(Vector3f position, Vector3f colour, float attenuation) {
+	public PointLight createPointLight(Vector3 position, Vector3 colour, float attenuation) {
 		final PointLight light = new PointLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("point.fprg")), position, colour, attenuation);
 		this.lights.add(light);
 		return light;
@@ -155,7 +155,7 @@ public final class Scene implements IScene {
 		});
 
 		// Calculate the camera matrix (projection * view)
-		final Matrix4f cameraMatrix = camera.getProjectionMatrix().mul(camera.getViewMatrix());
+		final Matrix4 cameraMatrix = camera.getProjectionMatrix().mul(camera.getViewMatrix());
 
 		// Render the first pass of the scene for the ambient light
 		this.ambientLight.getProgram().bind();

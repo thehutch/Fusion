@@ -17,15 +17,15 @@
  */
 package me.thehutch.fusion.engine.scene.lights;
 
-import com.flowpowered.math.vector.Vector3f;
+import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.engine.render.Program;
 
 public class PointLight extends Light {
 	private final float attenuation;
-	private Vector3f position;
-	private Vector3f colour;
+	private Vector3 position;
+	private Vector3 colour;
 
-	public PointLight(Program program, Vector3f position, Vector3f colour, float attenuation) {
+	public PointLight(Program program, Vector3 position, Vector3 colour, float attenuation) {
 		super(program);
 		this.position = position;
 		this.colour = colour;
@@ -36,19 +36,19 @@ public class PointLight extends Light {
 		return attenuation;
 	}
 
-	public Vector3f getPosition() {
+	public Vector3 getPosition() {
 		return position;
 	}
 
-	public void setPosition(Vector3f position) {
+	public void setPosition(Vector3 position) {
 		this.position = position;
 	}
 
-	public Vector3f getColour() {
+	public Vector3 getColour() {
 		return colour;
 	}
 
-	public void setColour(Vector3f colour) {
+	public void setColour(Vector3 colour) {
 		this.colour = colour;
 	}
 

@@ -17,39 +17,40 @@
  */
 package me.thehutch.fusion.api.scene;
 
-import com.flowpowered.math.imaginary.Quaternionf;
-import com.flowpowered.math.matrix.Matrix4f;
-import com.flowpowered.math.vector.Vector3f;
+import me.thehutch.fusion.api.maths.Matrix4;
+import me.thehutch.fusion.api.maths.Quaternion;
+import me.thehutch.fusion.api.maths.Vector3;
+import me.thehutch.fusion.api.maths.Vector4;
 
 /**
  * @author thehutch
  */
 public class Camera implements ISceneNode {
-	private final Matrix4f projection;
-	private Matrix4f inverseRotation;
-	private Matrix4f viewMatrix;
-	private Quaternionf rotation;
-	private Vector3f position;
+	private final Matrix4 projection;
+	private Matrix4 inverseRotation;
+	private Matrix4 viewMatrix;
+	private Quaternion rotation;
+	private Vector3 position;
 	private boolean dirty;
 
-	private Camera(Matrix4f projection) {
+	private Camera(Matrix4 projection) {
 		this.projection = projection;
-		this.inverseRotation = Matrix4f.IDENTITY;
-		this.viewMatrix = Matrix4f.IDENTITY;
-		this.rotation = Quaternionf.IDENTITY;
-		this.position = Vector3f.ZERO;
+		this.inverseRotation = Matrix4.IDENTITY;
+		this.viewMatrix = Matrix4.IDENTITY;
+		this.rotation = Quaternion.IDENTITY;
+		this.position = Vector3.ZERO;
 		this.dirty = true;
 	}
 
-	public Matrix4f getProjectionMatrix() {
+	public Matrix4 getProjectionMatrix() {
 		return projection;
 	}
 
-	public Matrix4f getViewMatrix() {
+	public Matrix4 getViewMatrix() {
 		if (dirty) {
-			this.inverseRotation = Matrix4f.createRotation(rotation);
-			final Matrix4f rotationMatrix = Matrix4f.createRotation(rotation.invert());
-			final Matrix4f positionMatrix = Matrix4f.createTranslation(position.negate());
+			this.inverseRotation = Matrix4.createRotation(rotation);
+			final Matrix4 rotationMatrix = Matrix4.createRotation(rotation.invert());
+			final Matrix4 positionMatrix = Matrix4.createTranslation(position.negate());
 			this.viewMatrix = rotationMatrix.mul(positionMatrix);
 			this.dirty = false;
 		}
@@ -57,23 +58,23 @@ public class Camera implements ISceneNode {
 	}
 
 	@Override
-	public Vector3f getPosition() {
+	public Vector3 getPosition() {
 		return position;
 	}
 
 	@Override
-	public void setPosition(Vector3f position) {
+	public void setPosition(Vector3 position) {
 		this.position = position;
 		this.dirty = true;
 	}
 
 	@Override
-	public Quaternionf getRotation() {
+	public Quaternion getRotation() {
 		return rotation;
 	}
 
 	@Override
-	public void setRotation(Quaternionf rotation) {
+	public void setRotation(Quaternion rotation) {
 		this.rotation = rotation;
 		this.dirty = true;
 	}
@@ -119,37 +120,37 @@ public class Camera implements ISceneNode {
 
 	@Override
 	public void rotateX(float angle) {
-		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_X));
+		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_X, angle));
 	}
 
 	@Override
 	public void rotateLocalX(float angle) {
-		rotate(Quaternionf.fromAngleRadAxis(angle, toCamera(getRight())));
+		rotate(Quaternion.fromAxisAngleRad(toCamera(getRight()), angle));
 	}
 
 	@Override
 	public void rotateY(float angle) {
-		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_Y));
+		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_Y, angle));
 	}
 
 	@Override
 	public void rotateLocalY(float angle) {
-		rotate(Quaternionf.fromAngleRadAxis(angle, toCamera(getUp())));
+		rotate(Quaternion.fromAxisAngleRad(toCamera(getUp()), angle));
 	}
 
 	@Override
 	public void rotateZ(float angle) {
-		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_Z));
+		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_Z, angle));
 	}
 
 	@Override
 	public void rotateLocalZ(float angle) {
-		rotate(Quaternionf.fromAngleRadAxis(angle, toCamera(getForward())));
+		rotate(Quaternion.fromAxisAngleRad(toCamera(getForward()), angle));
 	}
 
 	@Override
-	public void rotate(Quaternionf rotation) {
-		this.rotation = rotation.normalize().mul(getRotation());
+	public void rotate(Quaternion rotation) {
+		this.rotation = rotation.normalise().mul(getRotation());
 		this.dirty = true;
 	}
 
@@ -157,27 +158,28 @@ public class Camera implements ISceneNode {
 	public void dispose() {
 	}
 
-	public Vector3f getForward() {
-		return toCamera(Vector3f.FORWARD);
+	public Vector3 getForward() {
+		return toCamera(Vector3.UNIT_Z);
 	}
 
-	public Vector3f getUp() {
-		return toCamera(Vector3f.UP);
+	public Vector3 getUp() {
+		return toCamera(Vector3.UNIT_Y);
 	}
 
-	public Vector3f getRight() {
-		return toCamera(Vector3f.RIGHT);
+	public Vector3 getRight() {
+		return toCamera(Vector3.UNIT_X);
 	}
 
-	private Vector3f toCamera(Vector3f vec) {
-		return inverseRotation.transform(vec.getX(), vec.getY(), vec.getZ(), 1.0f).toVector3();
+	private Vector3 toCamera(Vector3 vec) {
+		final Vector4 transform = inverseRotation.transform(vec.getX(), vec.getY(), vec.getZ(), 1.0f);
+		return new Vector3(transform.getX(), transform.getY(), transform.getZ());
 	}
 
 	public static Camera createPerspective(float fov, float aspectRatio, float near, float far) {
-		return new Camera(Matrix4f.createPerspective(fov, aspectRatio, near, far));
+		return new Camera(Matrix4.createPerspective(fov, aspectRatio, near, far));
 	}
 
 	public static Camera createOrthographic(float right, float left, float top, float bottom, float near, float far) {
-		return new Camera(Matrix4f.createOrthographic(right, left, top, bottom, near, far));
+		return new Camera(Matrix4.createOrthographic(right, left, top, bottom, near, far));
 	}
 }

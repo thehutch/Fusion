@@ -17,9 +17,9 @@
  */
 package me.thehutch.fusion.api.util.hashing;
 
-import com.flowpowered.math.vector.Vector2f;
-import com.flowpowered.math.vector.Vector3f;
-import com.flowpowered.math.vector.Vector4f;
+import me.thehutch.fusion.api.maths.Vector2;
+import me.thehutch.fusion.api.maths.Vector3;
+import me.thehutch.fusion.api.maths.Vector4;
 
 /**
  * @author thehutch
@@ -28,15 +28,15 @@ public class ShortQuadHash {
 	private ShortQuadHash() {
 	}
 
-	public static short hash(Vector2f vec) {
+	public static short hash(Vector2 vec) {
 		return hash(vec.getFloorX(), vec.getFloorY(), 0, 0);
 	}
 
-	public static short hash(Vector3f vec) {
+	public static short hash(Vector3 vec) {
 		return hash(vec.getFloorX(), vec.getFloorY(), vec.getFloorZ(), 0);
 	}
 
-	public static short hash(Vector4f vec) {
+	public static short hash(Vector4 vec) {
 		return hash(vec.getFloorX(), vec.getFloorY(), vec.getFloorZ(), vec.getFloorW());
 	}
 

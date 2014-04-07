@@ -17,8 +17,8 @@
  */
 package me.thehutch.fusion.engine.scene;
 
-import com.flowpowered.math.imaginary.Quaternionf;
-import com.flowpowered.math.vector.Vector3f;
+import me.thehutch.fusion.api.maths.Quaternion;
+import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.scene.ISceneNode;
 import me.thehutch.fusion.engine.render.Program;
 
@@ -26,30 +26,30 @@ import me.thehutch.fusion.engine.render.Program;
  * @author thehutch
  */
 public abstract class SceneNode implements ISceneNode {
-	protected Quaternionf rotation;
-	protected Vector3f position;
+	protected Quaternion rotation;
+	protected Vector3 position;
 
 	public abstract void update(float delta);
 
 	public abstract void render(Program program);
 
 	@Override
-	public Vector3f getPosition() {
+	public Vector3 getPosition() {
 		return position;
 	}
 
 	@Override
-	public void setPosition(Vector3f position) {
+	public void setPosition(Vector3 position) {
 		this.position = position;
 	}
 
 	@Override
-	public Quaternionf getRotation() {
+	public Quaternion getRotation() {
 		return rotation;
 	}
 
 	@Override
-	public void setRotation(Quaternionf rotation) {
+	public void setRotation(Quaternion rotation) {
 		this.rotation = rotation;
 	}
 
@@ -90,7 +90,7 @@ public abstract class SceneNode implements ISceneNode {
 
 	@Override
 	public void rotateX(float angle) {
-		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_X));
+		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_X, angle));
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public abstract class SceneNode implements ISceneNode {
 
 	@Override
 	public void rotateY(float angle) {
-		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_Y));
+		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_Y, angle));
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public abstract class SceneNode implements ISceneNode {
 
 	@Override
 	public void rotateZ(float angle) {
-		rotate(Quaternionf.fromAngleRadAxis(angle, Vector3f.UNIT_Z));
+		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_Z, angle));
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public abstract class SceneNode implements ISceneNode {
 	}
 
 	@Override
-	public void rotate(Quaternionf rotation) {
-		this.rotation = rotation.normalize().mul(getRotation());
+	public void rotate(Quaternion rotation) {
+		this.rotation = rotation.normalise().mul(getRotation());
 	}
 }

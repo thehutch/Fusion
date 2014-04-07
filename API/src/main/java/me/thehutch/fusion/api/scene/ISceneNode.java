@@ -17,21 +17,21 @@
  */
 package me.thehutch.fusion.api.scene;
 
-import com.flowpowered.math.imaginary.Quaternionf;
-import com.flowpowered.math.vector.Vector3f;
+import me.thehutch.fusion.api.maths.Quaternion;
+import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.util.Disposable;
 
 /**
  * @author thehutch
  */
 public interface ISceneNode extends Disposable {
-	public Vector3f getPosition();
+	public Vector3 getPosition();
 
-	public void setPosition(Vector3f position);
+	public void setPosition(Vector3 position);
 
-	public Quaternionf getRotation();
+	public Quaternion getRotation();
 
-	public void setRotation(Quaternionf rotation);
+	public void setRotation(Quaternion rotation);
 
 	public void moveX(float dx);
 
@@ -59,5 +59,5 @@ public interface ISceneNode extends Disposable {
 
 	public void rotateLocalZ(float angle);
 
-	public void rotate(Quaternionf rotation);
+	public void rotate(Quaternion rotation);
 }

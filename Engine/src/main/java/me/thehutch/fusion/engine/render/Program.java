@@ -25,17 +25,15 @@ import static org.lwjgl.opengl.GL20.GL_INFO_LOG_LENGTH;
 import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
 import static org.lwjgl.opengl.GL20.GL_VALIDATE_STATUS;
 
-import com.flowpowered.math.matrix.Matrix2f;
-import com.flowpowered.math.matrix.Matrix3f;
-import com.flowpowered.math.matrix.Matrix4f;
-import com.flowpowered.math.vector.Vector2f;
-import com.flowpowered.math.vector.Vector3f;
-import com.flowpowered.math.vector.Vector4f;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import java.nio.FloatBuffer;
+import me.thehutch.fusion.api.maths.Matrix4;
+import me.thehutch.fusion.api.maths.Vector2;
+import me.thehutch.fusion.api.maths.Vector3;
+import me.thehutch.fusion.api.maths.Vector4;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.BufferUtils;
@@ -145,33 +143,19 @@ public class Program implements Disposable {
 		GL20.glUniform1f(uniforms.get(name), f);
 	}
 
-	public void setUniform(String name, Vector2f vec) {
+	public void setUniform(String name, Vector2 vec) {
 		GL20.glUniform2f(uniforms.get(name), vec.getX(), vec.getY());
 	}
 
-	public void setUniform(String name, Vector3f vec) {
+	public void setUniform(String name, Vector3 vec) {
 		GL20.glUniform3f(uniforms.get(name), vec.getX(), vec.getY(), vec.getZ());
 	}
 
-	public void setUniform(String name, Vector4f vec) {
+	public void setUniform(String name, Vector4 vec) {
 		GL20.glUniform4f(uniforms.get(name), vec.getX(), vec.getY(), vec.getZ(), vec.getW());
 	}
 
-	public void setUniform(String name, Matrix2f matrix) {
-		final FloatBuffer buffer = BufferUtils.createFloatBuffer(4);
-		buffer.put(matrix.toArray(true));
-		buffer.flip();
-		GL20.glUniformMatrix4(uniforms.get(name), false, buffer);
-	}
-
-	public void setUniform(String name, Matrix3f matrix) {
-		final FloatBuffer buffer = BufferUtils.createFloatBuffer(9);
-		buffer.put(matrix.toArray(true));
-		buffer.flip();
-		GL20.glUniformMatrix4(uniforms.get(name), false, buffer);
-	}
-
-	public void setUniform(String name, Matrix4f matrix) {
+	public void setUniform(String name, Matrix4 matrix) {
 		final FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
 		buffer.put(matrix.toArray(true));
 		buffer.flip();

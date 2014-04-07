@@ -17,13 +17,14 @@
  */
 package me.thehutch.fusion.engine;
 
-import com.flowpowered.math.imaginary.Quaternionf;
 import me.thehutch.fusion.api.IClient;
 import me.thehutch.fusion.api.Platform;
 import me.thehutch.fusion.api.event.EventPriority;
 import me.thehutch.fusion.api.input.keyboard.Key;
 import me.thehutch.fusion.api.input.mouse.MouseMotionEvent;
 import me.thehutch.fusion.api.maths.MathsHelper;
+import me.thehutch.fusion.api.maths.Quaternion;
+import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scheduler.TaskPriority;
 import me.thehutch.fusion.engine.input.InputManager;
@@ -85,11 +86,11 @@ public final class Client extends Engine implements IClient {
 
 			this.cameraPitch += event.getDY() * sensitivity;
 			this.cameraPitch = MathsHelper.clamp(cameraPitch, -90.0f, 90.0f);
-			final Quaternionf pitch = Quaternionf.fromAngleDegAxis(cameraPitch, 1.0f, 0.0f, 0.0f);
+			final Quaternion pitch = Quaternion.fromAxisAngleDeg(Vector3.UNIT_X, cameraPitch);
 
 			this.cameraYaw -= event.getDX() * sensitivity;
 			this.cameraYaw %= 360;
-			final Quaternionf yaw = Quaternionf.fromAngleDegAxis(cameraYaw, 0.0f, 1.0f, 0.0f);
+			final Quaternion yaw = Quaternion.fromAxisAngleDeg(Vector3.UNIT_Y, cameraYaw);
 
 			getScene().getCamera().setRotation(yaw.mul(pitch));
 		}, MouseMotionEvent.class, EventPriority.HIGH, true);

@@ -17,15 +17,15 @@
  */
 package me.thehutch.fusion.api.scene;
 
-import com.flowpowered.math.vector.Vector4f;
+import me.thehutch.fusion.api.maths.Vector4;
 
 /**
  * @author thehutch
  */
 public interface IModel extends ISceneNode {
-	public Vector4f getScale();
+	public Vector4 getScale();
 
-	public void setScale(Vector4f scale);
+	public void setScale(Vector4 scale);
 
 	public void scaleX(float scale);
 

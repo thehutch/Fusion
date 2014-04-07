@@ -17,8 +17,8 @@
  */
 package me.thehutch.fusion.api.util.hashing;
 
-import com.flowpowered.math.vector.Vector2f;
-import com.flowpowered.math.vector.Vector3f;
+import me.thehutch.fusion.api.maths.Vector2;
+import me.thehutch.fusion.api.maths.Vector3;
 
 /**
  * @author thehutch
@@ -27,11 +27,11 @@ public class ShortTripleHash {
 	private ShortTripleHash() {
 	}
 
-	public static short hash(Vector2f vec) {
+	public static short hash(Vector2 vec) {
 		return hash(vec.getFloorX(), vec.getFloorY(), 0);
 	}
 
-	public static short hash(Vector3f vec) {
+	public static short hash(Vector3 vec) {
 		return hash(vec.getFloorX(), vec.getFloorY(), vec.getFloorZ());
 	}
 

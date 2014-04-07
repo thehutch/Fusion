@@ -17,10 +17,10 @@
  */
 package me.thehutch.fusion.engine.scene;
 
-import com.flowpowered.math.imaginary.Quaternionf;
-import com.flowpowered.math.matrix.Matrix4f;
-import com.flowpowered.math.vector.Vector3f;
-import com.flowpowered.math.vector.Vector4f;
+import me.thehutch.fusion.api.maths.Matrix4;
+import me.thehutch.fusion.api.maths.Quaternion;
+import me.thehutch.fusion.api.maths.Vector3;
+import me.thehutch.fusion.api.maths.Vector4;
 import me.thehutch.fusion.api.scene.IModel;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.render.Program;
@@ -30,15 +30,15 @@ import me.thehutch.fusion.engine.render.VertexArray;
 public class Model extends SceneNode implements IModel {
 	private final Material material;
 	private final ModelData data;
-	private Vector4f scale;
+	private Vector4 scale;
 
 	protected Model(ModelData data, Material material) {
 		this.data = data;
 		this.material = material;
 
-		this.rotation = Quaternionf.IDENTITY;
-		this.position = Vector3f.ZERO;
-		this.scale = Vector4f.ONE;
+		this.rotation = Quaternion.IDENTITY;
+		this.position = Vector3.ZERO;
+		this.scale = Vector4.ONE;
 	}
 
 	public Material getMaterial() {
@@ -51,7 +51,7 @@ public class Model extends SceneNode implements IModel {
 		this.data.texture.bind(0);
 
 		// Set the model matrix
-		program.setUniform("model", Matrix4f.createScaling(scale).rotate(rotation).translate(position));
+		program.setUniform("model", Matrix4.createScale(scale).rotate(rotation).translate(position));
 
 		// Draw the mesh
 		this.data.mesh.draw();
@@ -66,12 +66,12 @@ public class Model extends SceneNode implements IModel {
 	}
 
 	@Override
-	public Vector4f getScale() {
+	public Vector4 getScale() {
 		return scale;
 	}
 
 	@Override
-	public void setScale(Vector4f scale) {
+	public void setScale(Vector4 scale) {
 		this.scale = scale;
 	}
 

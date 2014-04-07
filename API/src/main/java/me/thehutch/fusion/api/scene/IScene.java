@@ -17,7 +17,7 @@
  */
 package me.thehutch.fusion.api.scene;
 
-import com.flowpowered.math.vector.Vector3f;
+import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.util.Disposable;
 
 /**
@@ -26,7 +26,7 @@ import me.thehutch.fusion.api.util.Disposable;
 public interface IScene extends Disposable {
 	public Camera getCamera();
 
-	public IModel createModel(String name, Vector3f position);
+	public IModel createModel(String name, Vector3 position);
 
 	public IModel createModel(String name, float x, float y, float z);
 }
