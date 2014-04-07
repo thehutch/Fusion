@@ -28,15 +28,21 @@ import me.thehutch.fusion.engine.render.Texture;
 import me.thehutch.fusion.engine.render.VertexArray;
 
 public class Model extends SceneNode implements IModel {
+	private final Material material;
 	private final ModelData data;
 	private Vector4f scale;
 
-	protected Model(ModelData data) {
+	protected Model(ModelData data, Material material) {
 		this.data = data;
+		this.material = material;
 
 		this.rotation = Quaternionf.IDENTITY;
 		this.position = Vector3f.ZERO;
 		this.scale = Vector4f.ONE;
+	}
+
+	public Material getMaterial() {
+		return material;
 	}
 
 	@Override
@@ -44,13 +50,8 @@ public class Model extends SceneNode implements IModel {
 		// Bind the texture
 		this.data.texture.bind(0);
 
-		final Matrix4f modelMatrix = Matrix4f.createScaling(scale).rotate(rotation).translate(position);
 		// Set the model matrix
-		program.setUniform("model", modelMatrix);
-
-		// Set the material uniforms
-		program.setUniform("materialShininess", 80.f);
-		program.setUniform("materialSpecularColour", Vector3f.ONE);
+		program.setUniform("model", Matrix4f.createScaling(scale).rotate(rotation).translate(position));
 
 		// Draw the mesh
 		this.data.mesh.draw();

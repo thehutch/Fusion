@@ -1,0 +1,2 @@
+vertex_shader: shaders/ambient_vertex_shader.glsl
+fragment_shader: shaders/ambient_fragment_shader.glsl

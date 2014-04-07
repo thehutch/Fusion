@@ -51,8 +51,12 @@ public class Program implements Disposable {
 		this.id = GL20.glCreateProgram();
 	}
 
-	public void use() {
+	public void bind() {
 		GL20.glUseProgram(id);
+	}
+
+	public void unbind() {
+		GL20.glUseProgram(0);
 	}
 
 	public void attachShader(CharSequence source, int type) {

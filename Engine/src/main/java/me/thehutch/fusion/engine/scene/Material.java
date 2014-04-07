@@ -15,21 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.engine.scene.lights;
+package me.thehutch.fusion.engine.scene;
 
 import me.thehutch.fusion.engine.render.Program;
 
+/**
+ * @author thehutch
+ */
+public class Material {
+	private final float shininess;
 
-public abstract class Light {
-	protected final Program program;
-
-	public Light(Program program) {
-		this.program = program;
+	public Material(float shininess) {
+		this.shininess = shininess;
 	}
 
-	public Program getProgram() {
-		return program;
+	public void uploadUniforms(Program program) {
+		program.setUniform("materialShininess", shininess);
 	}
-
-	public abstract void uploadUniforms();
 }

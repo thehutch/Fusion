@@ -19,17 +19,20 @@ package me.thehutch.fusion.engine.scene.lights;
 
 import me.thehutch.fusion.engine.render.Program;
 
+/**
+ * @author thehutch
+ */
+public class AmbientLight extends Light {
+	private final float ambient;
 
-public abstract class Light {
-	protected final Program program;
-
-	public Light(Program program) {
-		this.program = program;
+	public AmbientLight(Program program, float ambient) {
+		super(program);
+		this.ambient = ambient;
 	}
 
-	public Program getProgram() {
-		return program;
+	@Override
+	public void uploadUniforms() {
+		// Set the uniforms
+		this.program.setUniform("ambient", ambient);
 	}
-
-	public abstract void uploadUniforms();
 }
