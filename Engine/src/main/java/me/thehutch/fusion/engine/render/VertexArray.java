@@ -81,7 +81,7 @@ public class VertexArray implements Disposable {
 		// Unbind the vertex array object
 		GL30.glBindVertexArray(0);
 		// Check for errors
-		RenderUtil.checkGLError();
+		RenderUtil.checkGLError(true);
 	}
 
 	public void draw() {

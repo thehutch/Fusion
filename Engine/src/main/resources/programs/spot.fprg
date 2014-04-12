@@ -1,0 +1,2 @@
+vertex_shader: shaders/spot_vertex_shader.glsl
+fragment_shader: shaders/spot_fragment_shader.glsl

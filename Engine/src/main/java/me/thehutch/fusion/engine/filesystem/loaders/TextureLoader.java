@@ -50,6 +50,7 @@ public class TextureLoader extends ResourceLoader<Texture> {
 			// Obtain the image dimensions
 			final int width = image.getWidth();
 			final int height = image.getHeight();
+			final boolean hasAlpha = image.getColorModel().hasAlpha();
 
 			// Get the pixel information
 			final int type = image.getType();
@@ -60,29 +61,48 @@ public class TextureLoader extends ResourceLoader<Texture> {
 				pixels = new int[width * height];
 				image.getRGB(0, 0, width, height, pixels, 0, width);
 			}
+
 			// Convert the pixels array into a byte buffer
-			final int numComponents = image.getColorModel().getNumComponents();
-			final ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * numComponents);
-			for (int h = height - 1; h >= 0; --h) {
-				for (int w = 0; w < width; ++w) {
-					final int pixel = pixels[w + h * width];
-					buffer.put((byte) ((pixel >> 16) & 0xFF));
-					buffer.put((byte) ((pixel >> 8) & 0xFF));
-					buffer.put((byte) (pixel & 0xFF));
-					if (numComponents == 4) {
-						buffer.put((byte) ((pixel >> 24) & 0xFF));
-					}
-				}
+			final ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * image.getColorModel().getNumComponents());
+			if (hasAlpha) {
+				loadRGBA(buffer, pixels, width, height);
+			} else {
+				loadRGB(buffer, pixels, width, height);
 			}
-			// Flip the buffer
 			buffer.flip();
+
 			// Create the texture
-			final Texture texture = new Texture(buffer, width, height, numComponents);
+			final Texture texture = new Texture(buffer, width, height, hasAlpha);
 			// Add the texture to the cache
 			this.resources.put(path, texture);
 			return texture;
 		} catch (IOException ex) {
-			throw new IllegalArgumentException("Unable to load image: " + path, ex);
+			throw new IllegalArgumentException("Unable to load texture: " + path, ex);
+		}
+	}
+
+	private static void loadRGB(ByteBuffer buffer, int[] pixels, int width, int height) {
+		int h, w;
+		for (h = height - 1; h >= 0; --h) {
+			for (w = 0; w < width; ++w) {
+				final int pixel = pixels[w + h * width];
+				buffer.put((byte) ((pixel >> 16) & 0xFF));
+				buffer.put((byte) ((pixel >> 8) & 0xFF));
+				buffer.put((byte) (pixel & 0xFF));
+			}
+		}
+	}
+
+	private static void loadRGBA(ByteBuffer buffer, int[] pixels, int width, int height) {
+		int h, w;
+		for (h = height - 1; h >= 0; --h) {
+			for (w = 0; w < width; ++w) {
+				final int pixel = pixels[w + h * width];
+				buffer.put((byte) ((pixel >> 16) & 0xFF));
+				buffer.put((byte) ((pixel >> 8) & 0xFF));
+				buffer.put((byte) (pixel & 0xFF));
+				buffer.put((byte) ((pixel >> 24) & 0xFF));
+			}
 		}
 	}
 }

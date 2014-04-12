@@ -70,11 +70,11 @@ public final class Client extends Engine implements IClient {
 		}, Key.KEY_D);
 
 		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveLocalY(getScheduler().getDelta() * 0.5f);
+			getScene().getCamera().moveY(getScheduler().getDelta() * 0.5f);
 		}, Key.KEY_SPACE);
 
 		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveLocalY(-getScheduler().getDelta() * 0.5f);
+			getScene().getCamera().moveY(-getScheduler().getDelta() * 0.5f);
 		}, Key.KEY_LSHIFT);
 
 		getInputManager().registerKeyBinding(() -> {

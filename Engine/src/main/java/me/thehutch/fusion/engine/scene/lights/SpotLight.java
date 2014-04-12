@@ -20,20 +20,35 @@ package me.thehutch.fusion.engine.scene.lights;
 import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.engine.render.Program;
 
-public class PointLight extends Light {
+/**
+ * @author thehutch
+ */
+public class SpotLight extends Light {
 	private final float attenuation;
+	private Vector3 direction;
 	private Vector3 position;
 	private Vector3 colour;
+	private float cutoff;
 
-	public PointLight(Program program, Vector3 position, Vector3 colour, float attenuation) {
+	public SpotLight(Program program, Vector3 direction, Vector3 position, Vector3 colour, float attenuation, float cutoff) {
 		super(program);
+		this.direction = direction;
 		this.position = position;
 		this.colour = colour;
 		this.attenuation = attenuation;
+		this.cutoff = cutoff;
 	}
 
 	public float getAttenuation() {
 		return attenuation;
+	}
+
+	public Vector3 getDirection() {
+		return direction;
+	}
+
+	public void setDirection(Vector3 direction) {
+		this.direction = direction;
 	}
 
 	public Vector3 getPosition() {
@@ -52,11 +67,21 @@ public class PointLight extends Light {
 		this.colour = colour;
 	}
 
+	public float getCutoff() {
+		return cutoff;
+	}
+
+	public void setCutoff(float cutoff) {
+		this.cutoff = cutoff;
+	}
+
 	@Override
 	public void uploadUniforms() {
 		// Set the uniforms
+		this.program.setUniform("light.direction", direction);
 		this.program.setUniform("light.position", position);
 		this.program.setUniform("light.colour", colour);
 		this.program.setUniform("light.attenuation", attenuation);
+		this.program.setUniform("light.cutoff", (float) Math.cos(cutoff));
 	}
 }

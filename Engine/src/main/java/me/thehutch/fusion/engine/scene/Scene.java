@@ -35,6 +35,7 @@ import java.util.Collection;
 import me.thehutch.fusion.api.event.EventPriority;
 import me.thehutch.fusion.api.input.keyboard.Key;
 import me.thehutch.fusion.api.input.keyboard.KeyboardEvent;
+import me.thehutch.fusion.api.maths.MathsHelper;
 import me.thehutch.fusion.api.maths.Matrix4;
 import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.scene.Camera;
@@ -47,6 +48,7 @@ import me.thehutch.fusion.engine.filesystem.loaders.TextureLoader;
 import me.thehutch.fusion.engine.scene.lights.AmbientLight;
 import me.thehutch.fusion.engine.scene.lights.Light;
 import me.thehutch.fusion.engine.scene.lights.PointLight;
+import me.thehutch.fusion.engine.scene.lights.SpotLight;
 import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextAttribs;
@@ -65,6 +67,7 @@ public final class Scene implements IScene {
 	private final Collection<Model> models = new ArrayList<>();
 	private final Collection<Light> lights = new ArrayList<>();
 	private final Light ambientLight;
+	private final SpotLight spotLight;
 	private final Camera camera;
 	private final Client engine;
 
@@ -88,6 +91,8 @@ public final class Scene implements IScene {
 
 		// Set the ambient light
 		this.ambientLight = new AmbientLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("ambient.fprg")), 0.125f);
+		// Create a spot light (torch)
+		this.spotLight = createSpotLight(camera.getPosition(), camera.getForward(), Vector3.ONE, 0.0125f, 25.0f);
 
 		// Enable depth testing
 		GL11.glEnable(GL_DEPTH_TEST);
@@ -98,11 +103,11 @@ public final class Scene implements IScene {
 		GL11.glEnable(GL_CULL_FACE);
 		GL11.glCullFace(GL_BACK);
 
-		RenderUtil.checkGLError();
+		RenderUtil.checkGLError(true);
 
 		engine.getEventManager().registerEvent((KeyboardEvent event) -> {
 			if (event.getKeycode() == Key.KEY_L && event.getState() && !event.isRepeat()) {
-				createPointLight(camera.getPosition(), Vector3.ONE, 0.0625f);
+				createPointLight(camera.getPosition(), Vector3.ONE, 0.75f);
 			}
 		}, KeyboardEvent.class, EventPriority.HIGH, true);
 	}
@@ -127,6 +132,12 @@ public final class Scene implements IScene {
 
 	public PointLight createPointLight(Vector3 position, Vector3 colour, float attenuation) {
 		final PointLight light = new PointLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("point.fprg")), position, colour, attenuation);
+		this.lights.add(light);
+		return light;
+	}
+
+	public SpotLight createSpotLight(Vector3 position, Vector3 direction, Vector3 colour, float attenutation, float angle) {
+		final SpotLight light = new SpotLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("spot.fprg")), direction, position, colour, attenutation, MathsHelper.toRadians(angle));
 		this.lights.add(light);
 		return light;
 	}
@@ -160,7 +171,7 @@ public final class Scene implements IScene {
 		// Render the first pass of the scene for the ambient light
 		this.ambientLight.getProgram().bind();
 		this.ambientLight.uploadUniforms();
-		this.ambientLight.getProgram().setUniform("camera", cameraMatrix);
+		this.ambientLight.getProgram().setUniform("cameraMatrix", cameraMatrix);
 		this.models.stream().forEach((Model model) -> {
 			model.render(ambientLight.getProgram());
 		});
@@ -172,12 +183,15 @@ public final class Scene implements IScene {
 		GL11.glBlendFunc(GL_ONE, GL_ONE);
 		GL11.glDepthMask(false);
 
+		this.spotLight.setDirection(camera.getForward().negate());
+		this.spotLight.setPosition(camera.getPosition());
+
 		// For each light, render the scene
 		this.lights.stream().forEach((Light light) -> {
 			light.getProgram().bind();
 			light.uploadUniforms();
 			// Set the camera matrix
-			light.getProgram().setUniform("camera", cameraMatrix);
+			light.getProgram().setUniform("cameraMatrix", cameraMatrix);
 			// Set the camera position
 			light.getProgram().setUniform("cameraPos", camera.getPosition());
 			this.models.stream().forEach((Model model) -> {
@@ -193,6 +207,9 @@ public final class Scene implements IScene {
 
 		// Update the display
 		Display.update();
+
+		// Check for errors
+		RenderUtil.checkGLError(true);
 	}
 
 	private void createWindow() {

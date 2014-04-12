@@ -26,6 +26,7 @@ import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.render.Program;
 import me.thehutch.fusion.engine.render.Texture;
 import me.thehutch.fusion.engine.render.VertexArray;
+import me.thehutch.fusion.engine.util.RenderUtil;
 
 public class Model extends SceneNode implements IModel {
 	private final Material material;
@@ -50,9 +51,12 @@ public class Model extends SceneNode implements IModel {
 		// Bind the texture
 		this.data.texture.bind(0);
 
+		final Matrix4 modelMatrix = Matrix4.createScale(scale).rotate(rotation).translate(position);
 		// Set the model matrix
-		program.setUniform("model", Matrix4.createScale(scale).rotate(rotation).translate(position));
-
+		program.setUniform("modelMatrix", modelMatrix);
+		RenderUtil.checkGLError(true);
+		program.setUniform("normalMatrix", modelMatrix.invert().transpose().toMatrix3());
+		RenderUtil.checkGLError(false);
 		// Draw the mesh
 		this.data.mesh.draw();
 	}

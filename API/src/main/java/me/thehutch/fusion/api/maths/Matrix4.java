@@ -59,65 +59,6 @@ public class Matrix4 {
 		this.m33 = m33;
 	}
 
-	public float get(int row, int col) {
-		switch (row) {
-			case 0:
-				switch (col) {
-					case 0:
-						return m00;
-					case 1:
-						return m01;
-					case 2:
-						return m02;
-					case 3:
-						return m03;
-				}
-			case 1:
-				switch (col) {
-					case 0:
-						return m10;
-					case 1:
-						return m11;
-					case 2:
-						return m12;
-					case 3:
-						return m13;
-				}
-			case 2:
-				switch (col) {
-					case 0:
-						return m20;
-					case 1:
-						return m21;
-					case 2:
-						return m22;
-					case 3:
-						return m23;
-				}
-			case 3:
-				switch (col) {
-					case 0:
-						return m30;
-					case 1:
-						return m31;
-					case 2:
-						return m32;
-					case 3:
-						return m33;
-				}
-		}
-		throw new IllegalArgumentException((row < 0 || row > 2 ? "Row must be between 0 and 3 (inclusive). " : "")
-										   + (col < 0 || col > 2 ? "Column must be between 0 and 3 (inclusive)." : ""));
-	}
-
-	public Vector4 getRow(int row) {
-		return new Vector4(get(row, 0), get(row, 1), get(row, 2), get(row, 3));
-	}
-
-	public Vector4 getColumn(int col) {
-		return new Vector4(get(0, col), get(1, col), get(2, col), get(3, col));
-	}
-
 	public Matrix4 add(Matrix4 m) {
 		return new Matrix4(m00 + m.m00, m01 + m.m01, m02 + m.m02, m03 + m.m03,
 						   m10 + m.m10, m11 + m.m11, m12 + m.m12, m13 + m.m13,
@@ -224,7 +165,7 @@ public class Matrix4 {
 
 	public Matrix4 invert() {
 		final float det = determinant();
-		if (det == 0) {
+		if (det == 0.0f) {
 			return null;
 		}
 		return new Matrix4(det3(m11, m21, m31, m12, m22, m32, m13, m23, m33) / det, -det3(m01, m21, m31, m02, m22, m32, m03, m23, m33) / det,
@@ -253,6 +194,17 @@ public class Matrix4 {
 				m30, m31, m32, m33
 			};
 		}
+	}
+
+	public Matrix2 toMatrix2() {
+		return new Matrix2(m00, m01,
+						   m10, m11);
+	}
+
+	public Matrix3 toMatrix3() {
+		return new Matrix3(m00, m01, m02,
+						   m10, m11, m12,
+						   m20, m21, m22);
 	}
 
 	@Override

@@ -231,4 +231,27 @@ public class MathsHelper {
 	public static float lerp(float a, float b, float percentage) {
 		return a + (b - a) * percentage;
 	}
+
+	public static Quaternion slerp(Quaternion a, Quaternion b, float percent) {
+		final float EPSILON = 1e-3f;
+		final float inverted;
+		float cos = a.dot(b);
+		if (cos < 0.0f) {
+			cos = -cos;
+			inverted = -1.0f;
+		} else {
+			inverted = 1.0f;
+		}
+
+		if (1 - cos < EPSILON) {
+			return a.mul(1 - percent).add(b.mul(percent * inverted));
+		}
+
+		final float theta = (float) Math.acos(cos);
+		final float sinTheta = (float) Math.sin(theta);
+
+		final float coeff1 = (float) (Math.sin((1 - percent) * theta) / sinTheta);
+		final float coeff2 = (float) (Math.sin(percent * theta) / sinTheta * inverted);
+		return a.mul(coeff1).add(b.mul(coeff2));
+	}
 }

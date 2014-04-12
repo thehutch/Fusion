@@ -30,6 +30,8 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import java.nio.FloatBuffer;
+import me.thehutch.fusion.api.maths.Matrix2;
+import me.thehutch.fusion.api.maths.Matrix3;
 import me.thehutch.fusion.api.maths.Matrix4;
 import me.thehutch.fusion.api.maths.Vector2;
 import me.thehutch.fusion.api.maths.Vector3;
@@ -79,7 +81,7 @@ public class Program implements Disposable {
 		// Add the shader to the program
 		this.shaders.add(shaderId);
 		// Check for errors
-		RenderUtil.checkGLError();
+		RenderUtil.checkGLError(true);
 	}
 
 	public void link() {
@@ -91,7 +93,7 @@ public class Program implements Disposable {
 			throw new IllegalStateException("Program could not be linked\n" + GL20.glGetProgramInfoLog(id, logLength));
 		}
 		// Check for errors
-		RenderUtil.checkGLError();
+		RenderUtil.checkGLError(true);
 
 		// Validate the program
 		GL20.glValidateProgram(id);
@@ -101,7 +103,7 @@ public class Program implements Disposable {
 			System.err.println("Program validation failed:\n" + GL20.glGetProgramInfoLog(id, logLength));
 		}
 		// Check for errors
-		RenderUtil.checkGLError();
+		RenderUtil.checkGLError(true);
 
 		// Load the program uniforms
 		final int uniformCount = GL20.glGetProgrami(id, GL_ACTIVE_UNIFORMS);
@@ -110,7 +112,7 @@ public class Program implements Disposable {
 			this.uniforms.put(name, GL20.glGetUniformLocation(id, name));
 		}
 		// Check for errors
-		RenderUtil.checkGLError();
+		RenderUtil.checkGLError(true);
 	}
 
 	@Override
@@ -128,7 +130,7 @@ public class Program implements Disposable {
 		// Clear the uniforms map
 		this.uniforms.clear();
 		// Check for errors
-		RenderUtil.checkGLError();
+		RenderUtil.checkGLError(true);
 	}
 
 	public void setUniform(String name, boolean b) {
@@ -155,9 +157,53 @@ public class Program implements Disposable {
 		GL20.glUniform4f(uniforms.get(name), vec.getX(), vec.getY(), vec.getZ(), vec.getW());
 	}
 
+	public void setUniform(String name, Matrix2 matrix) {
+		final FloatBuffer buffer = BufferUtils.createFloatBuffer(4);
+		buffer.put(matrix.toArray(true));
+		buffer.flip();
+		GL20.glUniformMatrix2(uniforms.get(name), false, buffer);
+	}
+
+	public void setUniform(String name, Matrix2[] matrix) {
+		final int length = matrix.length;
+		final FloatBuffer buffer = BufferUtils.createFloatBuffer(4 * length);
+		for (int i = 0; i < length; ++i) {
+			buffer.put(matrix[i].toArray(true));
+		}
+		buffer.flip();
+		GL20.glUniformMatrix2(uniforms.get(name), false, buffer);
+	}
+
+	public void setUniform(String name, Matrix3 matrix) {
+		final FloatBuffer buffer = BufferUtils.createFloatBuffer(9);
+		buffer.put(matrix.toArray(true));
+		buffer.flip();
+		GL20.glUniformMatrix3(uniforms.get(name), false, buffer);
+	}
+
+	public void setUniform(String name, Matrix3[] matrix) {
+		final int length = matrix.length;
+		final FloatBuffer buffer = BufferUtils.createFloatBuffer(9 * length);
+		for (int i = 0; i < length; ++i) {
+			buffer.put(matrix[i].toArray(true));
+		}
+		buffer.flip();
+		GL20.glUniformMatrix3(uniforms.get(name), false, buffer);
+	}
+
 	public void setUniform(String name, Matrix4 matrix) {
 		final FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
 		buffer.put(matrix.toArray(true));
+		buffer.flip();
+		GL20.glUniformMatrix4(uniforms.get(name), false, buffer);
+	}
+
+	public void setUniform(String name, Matrix4[] matrix) {
+		final int length = matrix.length;
+		final FloatBuffer buffer = BufferUtils.createFloatBuffer(16 * length);
+		for (int i = 0; i < length; ++i) {
+			buffer.put(matrix[i].toArray(true));
+		}
 		buffer.flip();
 		GL20.glUniformMatrix4(uniforms.get(name), false, buffer);
 	}
