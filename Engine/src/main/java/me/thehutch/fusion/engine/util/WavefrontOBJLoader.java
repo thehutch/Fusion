@@ -25,9 +25,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
-import me.thehutch.fusion.engine.render.VertexArray;
+import me.thehutch.fusion.engine.render.VertexArrayObject;
 import me.thehutch.fusion.engine.render.VertexAttribute;
-import me.thehutch.fusion.engine.render.VertexData;
 
 /**
  * @author thehutch
@@ -46,7 +45,7 @@ public class WavefrontOBJLoader {
 	private WavefrontOBJLoader() {
 	}
 
-	public static VertexArray load(Path path) {
+	public static VertexArrayObject load(Path path) {
 		try {
 			// Create the lists to store the vertex data
 			final TFloatList positions = new TFloatArrayList();
@@ -59,12 +58,11 @@ public class WavefrontOBJLoader {
 			if (normals.isEmpty()) {
 				calculateNormals(positions, indices, normals);
 			}
-			// Create the vertex data and add the attributes
-			final VertexData data = new VertexData(indices);
-			data.addAttribute(new VertexAttribute(POSITION_SIZE, positions));
-			data.addAttribute(new VertexAttribute(TEXCOORD_SIZE, texcoords));
-			data.addAttribute(new VertexAttribute(NORMAL_SIZE, normals));
-			return new VertexArray(data);
+			// Create the vertex array object
+			return new VertexArrayObject(indices,
+								   new VertexAttribute(POSITION_SIZE, positions),
+								   new VertexAttribute(TEXCOORD_SIZE, texcoords),
+								   new VertexAttribute(NORMAL_SIZE, normals));
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to load mesh: " + path, ex);
 		}

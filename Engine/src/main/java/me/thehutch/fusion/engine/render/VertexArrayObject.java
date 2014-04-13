@@ -24,8 +24,11 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 
+import gnu.trove.list.TIntList;
+import java.nio.IntBuffer;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.util.RenderUtil;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -34,14 +37,22 @@ import org.lwjgl.opengl.GL30;
 /**
  * @author thehutch
  */
-public class VertexArray implements Disposable {
+public class VertexArrayObject implements Disposable {
 	private final int[] attributeIds;
-	private final int numIndices;
+	private final int drawCount;
 	private final int vao;
 	private final int ibo;
 
-	public VertexArray(VertexData data) {
-		this.numIndices = data.getIndicesCount();
+	public VertexArrayObject(TIntList indices, VertexAttribute... attributes) {
+		// Put the indices into an IntBuffer
+		final IntBuffer indicesBuffer = BufferUtils.createIntBuffer(indices.size());
+		indices.forEach((int i) -> {
+			indicesBuffer.put(i);
+			return true;
+		});
+		indicesBuffer.flip();
+		this.drawCount = indices.size();
+
 		// Create the vertex array object
 		this.vao = GL30.glGenVertexArrays();
 		// Bind the vertex array
@@ -52,12 +63,12 @@ public class VertexArray implements Disposable {
 		// Bind the index buffer
 		GL15.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		// Set the indices data to the vao from the vertex data
-		GL15.glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.getIndices(), GL_STATIC_DRAW);
+		GL15.glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
 		// Unbind the index buffer
 		GL15.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 		// Get the attributes from the vertex data
-		this.attributeIds = new int[data.getAttributeCount()];
+		this.attributeIds = new int[attributes.length];
 
 		// Create each attribute
 		for (int i = 0; i < attributeIds.length; ++i) {
@@ -65,14 +76,12 @@ public class VertexArray implements Disposable {
 			this.attributeIds[i] = GL15.glGenBuffers();
 			// Bind the attribute
 			GL15.glBindBuffer(GL_ARRAY_BUFFER, attributeIds[i]);
-			// Get the next attribute
-			final VertexAttribute attrib = data.getAttribute(i);
 			// Set the attribute data to the vao
-			GL15.glBufferData(GL_ARRAY_BUFFER, attrib.getData(), GL_STATIC_DRAW);
+			GL15.glBufferData(GL_ARRAY_BUFFER, attributes[i].getData(), GL_STATIC_DRAW);
 			// Enable the vertex attribute
 			GL20.glEnableVertexAttribArray(i);
 			// Set the vertex attribute settings
-			GL20.glVertexAttribPointer(i, attrib.getSize(), GL_FLOAT, false, 0, 0L);
+			GL20.glVertexAttribPointer(i, attributes[i].getSize(), GL_FLOAT, false, 0, 0L);
 			// Disable the vertex attribute
 			GL20.glDisableVertexAttribArray(i);
 			// Unbind the attribute buffer
@@ -94,7 +103,7 @@ public class VertexArray implements Disposable {
 		// Bind the index buffer
 		GL15.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		// Draw the vertex elements
-		GL11.glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0L);
+		GL11.glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0L);
 		// Unbind the index buffer
 		GL15.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		// Disable the vertex attributes

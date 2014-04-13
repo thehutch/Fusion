@@ -60,10 +60,6 @@ public class Program implements Disposable {
 	}
 
 	public void attachShader(CharSequence source, int type) {
-		// Check that the source is not null
-		if (source == null) {
-			throw new IllegalArgumentException("Shader source can not be null");
-		}
 		// Generate a shader handle
 		final int shaderId = GL20.glCreateShader(type);
 		// Upload the shader's source to the GPU

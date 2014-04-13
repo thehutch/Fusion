@@ -25,7 +25,7 @@ import me.thehutch.fusion.api.scene.IModel;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.render.Program;
 import me.thehutch.fusion.engine.render.Texture;
-import me.thehutch.fusion.engine.render.VertexArray;
+import me.thehutch.fusion.engine.render.VertexArrayObject;
 import me.thehutch.fusion.engine.util.RenderUtil;
 
 public class Model extends SceneNode implements IModel {
@@ -105,7 +105,7 @@ public class Model extends SceneNode implements IModel {
 	}
 
 	public static class ModelData implements Disposable {
-		public VertexArray mesh;
+		public VertexArrayObject mesh;
 		public Texture texture;
 
 		@Override

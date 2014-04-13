@@ -17,6 +17,9 @@
  */
 package me.thehutch.fusion.engine.filesystem.loaders;
 
+import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.GL_REPEAT;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
@@ -72,7 +75,12 @@ public class TextureLoader extends ResourceLoader<Texture> {
 			buffer.flip();
 
 			// Create the texture
-			final Texture texture = new Texture(buffer, width, height, hasAlpha);
+			final Texture texture = new Texture();
+			texture.bind(0);
+			texture.setWrapMode(GL_REPEAT, GL_REPEAT);
+			texture.setFiltering(GL_NEAREST, GL_NEAREST);
+			texture.setTextureData(buffer, width, height, hasAlpha);
+			texture.unbind();
 			// Add the texture to the cache
 			this.resources.put(path, texture);
 			return texture;

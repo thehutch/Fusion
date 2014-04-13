@@ -22,8 +22,6 @@
  */
 package me.thehutch.fusion.engine.render;
 
-import static org.lwjgl.opengl.GL11.GL_NEAREST;
-import static org.lwjgl.opengl.GL11.GL_REPEAT;
 import static org.lwjgl.opengl.GL11.GL_RGB;
 import static org.lwjgl.opengl.GL11.GL_RGB8;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
@@ -43,41 +41,44 @@ import org.lwjgl.opengl.GL13;
 
 
 public class Texture implements Disposable {
-	private final int id;
+	private final int texture;
 
-	public Texture(int width, int height, boolean hasAlpha) {
-		this(null, width, height, hasAlpha);
-	}
-
-	public Texture(ByteBuffer buffer, int width, int height, boolean hasAlpha) {
+	public Texture() {
 		// Generate a texture handle
-		this.id = GL11.glGenTextures();
-		// Bind the texture
-		GL11.glBindTexture(GL_TEXTURE_2D, id);
-
-		// Set the texture parameters
-		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		GL11.glTexImage2D(GL_TEXTURE_2D, 0, hasAlpha ? GL_RGBA8 : GL_RGB8, width, height, 0, hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, buffer);
-
-		// Unbind the texture
-		GL11.glBindTexture(GL_TEXTURE_2D, 0);
+		this.texture = GL11.glGenTextures();
 	}
 
 	public void bind(int unit) {
 		if (unit >= 0) {
 			GL13.glActiveTexture(GL_TEXTURE0 + unit);
 		}
-		GL11.glBindTexture(GL_TEXTURE_2D, id);
+		GL11.glBindTexture(GL_TEXTURE_2D, texture);
+	}
+
+	public void unbind() {
+		GL11.glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	public void setWrapMode(int wrapS, int wrapT) {
+		// Set the texture wrap parameters
+		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
+		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
+	}
+
+	public void setFiltering(int minFilter, int magFilter) {
+		// Set the texture filter parameters
+		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+	}
+
+	public void setTextureData(ByteBuffer pixels, int width, int height, boolean hasAlpha) {
+		// Upload the pixel data to the GPU
+		GL11.glTexImage2D(GL_TEXTURE_2D, 0, hasAlpha ? GL_RGBA8 : GL_RGB8, width, height, 0, hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, pixels);
 	}
 
 	@Override
 	public void dispose() {
 		// Delete the texture
-		GL11.glDeleteTextures(id);
+		GL11.glDeleteTextures(texture);
 	}
 }
