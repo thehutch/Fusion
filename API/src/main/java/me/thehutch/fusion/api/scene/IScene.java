@@ -18,6 +18,7 @@
 package me.thehutch.fusion.api.scene;
 
 import me.thehutch.fusion.api.maths.Vector3;
+import me.thehutch.fusion.api.scene.lights.ILight;
 import me.thehutch.fusion.api.scene.lights.IPointLight;
 import me.thehutch.fusion.api.scene.lights.ISpotLight;
 import me.thehutch.fusion.api.util.Disposable;
@@ -32,6 +33,8 @@ public interface IScene extends Disposable {
 
 	public IModel createModel(String name, float x, float y, float z);
 
+	public void removeModel(IModel model);
+
 	public float getAmbientLevel();
 
 	public void setAmbientLevel(float ambientLevel);
@@ -39,4 +42,6 @@ public interface IScene extends Disposable {
 	public IPointLight createPointLight(Vector3 position, Vector3 colour, float attenuation);
 
 	public ISpotLight createSpotLight(Vector3 position, Vector3 colour, Vector3 direction, float attenutation, float angle);
+
+	public void removeLight(ILight light);
 }

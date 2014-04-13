@@ -207,6 +207,36 @@ public class MathsHelper {
 	}
 
 	/**
+	 * Remaps the value given from the current range to a new range.
+	 *
+	 * @param value The value to be remapped
+	 * @param min1  The min boundary of the current range
+	 * @param max1  The max boundary of the current range
+	 * @param min2  The min boundary of the new range
+	 * @param max2  The max boundary of the new range
+	 *
+	 * @return The remapped value
+	 */
+	public static int remap(int value, int min1, int max1, int min2, int max2) {
+		return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+	}
+
+	/**
+	 * Remaps the value given from the current range to a new range.
+	 *
+	 * @param value The value to be remapped
+	 * @param min1  The min boundary of the current range
+	 * @param max1  The max boundary of the current range
+	 * @param min2  The min boundary of the new range
+	 * @param max2  The max boundary of the new range
+	 *
+	 * @return The remapped value
+	 */
+	public static float remap(float value, float min1, float max1, float min2, float max2) {
+		return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+	}
+
+	/**
 	 * Interpolates between the two values given.
 	 *
 	 * @param a          The start value

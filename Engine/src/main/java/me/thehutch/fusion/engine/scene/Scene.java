@@ -39,7 +39,9 @@ import me.thehutch.fusion.api.maths.MathsHelper;
 import me.thehutch.fusion.api.maths.Matrix4;
 import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.scene.Camera;
+import me.thehutch.fusion.api.scene.IModel;
 import me.thehutch.fusion.api.scene.IScene;
+import me.thehutch.fusion.api.scene.lights.ILight;
 import me.thehutch.fusion.engine.Client;
 import me.thehutch.fusion.engine.filesystem.FileSystem;
 import me.thehutch.fusion.engine.filesystem.loaders.ModelLoader;
@@ -89,7 +91,6 @@ public final class Scene implements IScene {
 		final Model teleporter = createModel("teleporter.fmdl", 0.0f, 0.0f, 0.0f);
 		teleporter.scale(0.125f);
 
-
 		// Set the ambient light
 		this.ambientLight = new AmbientLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("ambient.fprg")), 0.25f);
 		// Create a spot light (torch)
@@ -132,6 +133,12 @@ public final class Scene implements IScene {
 	}
 
 	@Override
+	public void removeModel(IModel model) {
+		this.models.remove((Model) model);
+		model.dispose();
+	}
+
+	@Override
 	public float getAmbientLevel() {
 		return ambientLight.getAmbientLevel();
 	}
@@ -155,8 +162,10 @@ public final class Scene implements IScene {
 		return light;
 	}
 
-	public void removeLight(Light light) {
-		this.lights.remove(light);
+	@Override
+	public void removeLight(ILight light) {
+		this.lights.remove((Light) light);
+		light.dispose();
 	}
 
 	@Override

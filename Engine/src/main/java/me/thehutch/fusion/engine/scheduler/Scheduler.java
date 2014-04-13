@@ -89,6 +89,8 @@ public class Scheduler implements IScheduler {
 				this.overloaded = diffTime > NANOSECOND_TO_SECOND * OVERLOAD_FACTOR;
 
 				startClock = System.nanoTime();
+
+				System.out.format("Up Time: %d%n", upTime);
 			}
 
 			// Add new tasks
@@ -147,12 +149,6 @@ public class Scheduler implements IScheduler {
 	@Override
 	public void cancelTask(int taskId) {
 		this.currentTasks.stream().filter((task) -> (task.getId() == taskId)).forEach((task) -> {
-			task.cancel();
-		});
-	}
-
-	public void cancelAllTasks() {
-		this.currentTasks.stream().forEach((task) -> {
 			task.cancel();
 		});
 	}

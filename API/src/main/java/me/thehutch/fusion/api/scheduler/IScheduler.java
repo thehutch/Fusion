@@ -22,8 +22,8 @@ package me.thehutch.fusion.api.scheduler;
  */
 public interface IScheduler {
 	/**
-	 * Schedules a one off task.
-	 * This task will be executed by the main thread.
+	 * Schedules a one off task to be executed as soon as possible.
+	 * This task will be executed synchronously.
 	 *
 	 * @param task     Task to be executed
 	 * @param priority Priority of the task
@@ -33,8 +33,8 @@ public interface IScheduler {
 	public int scheduleSyncTask(Runnable task, TaskPriority priority);
 
 	/**
-	 * Schedules a one off task.
-	 * This task will be executed by the main thread.
+	 * Schedules a one off task and executed after the delay given has passed.
+	 * This task will be executed synchronously.
 	 *
 	 * @param task     Task to be executed
 	 * @param priority Priority of the task
@@ -46,7 +46,7 @@ public interface IScheduler {
 
 	/**
 	 * Schedules a task which will be executed at a ticking interval of period.
-	 * This task will be executed by the main thread.
+	 * This task will be executed synchronously.
 	 *
 	 * @param task     Task to be executed
 	 * @param priority Priority of the task
@@ -58,8 +58,8 @@ public interface IScheduler {
 	public int scheduleSyncRepeatingTask(Runnable task, TaskPriority priority, long delay, long period);
 
 	/**
-	 * Schedules a once off short lived task to occur as soon as possible. This
-	 * task will be executed by a thread managed by the scheduler.
+	 * Schedules a once off short lived task to occur as soon as possible.
+	 * This task will be executed asynchronously.
 	 *
 	 * @param task     Task to be executed
 	 * @param priority Priority of the task
@@ -69,8 +69,8 @@ public interface IScheduler {
 	public int scheduleAsyncTask(Runnable task, TaskPriority priority);
 
 	/**
-	 * Schedules a once off short lived task to occur as soon as possible. This
-	 * task will be executed by a thread managed by the scheduler.
+	 * Schedules a once off short lived task to occur in the number of ticks given.
+	 * This task will be executed asynchronously.
 	 *
 	 * @param task     Task to be executed
 	 * @param priority Priority of the task
