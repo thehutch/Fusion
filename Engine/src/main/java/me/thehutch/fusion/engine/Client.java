@@ -21,6 +21,7 @@ import me.thehutch.fusion.api.IClient;
 import me.thehutch.fusion.api.Platform;
 import me.thehutch.fusion.api.event.EventPriority;
 import me.thehutch.fusion.api.input.keyboard.Key;
+import me.thehutch.fusion.api.input.keyboard.KeyboardEvent;
 import me.thehutch.fusion.api.input.mouse.MouseMotionEvent;
 import me.thehutch.fusion.api.maths.MathsHelper;
 import me.thehutch.fusion.api.maths.Quaternion;
@@ -81,18 +82,26 @@ public final class Client extends Engine implements IClient {
 			stop("Escape Pressed");
 		}, Key.KEY_ESCAPE);
 
+		getEventManager().registerEvent((KeyboardEvent event) -> {
+			if (event.getKeycode() == Key.KEY_GRAVE && event.getState() && !event.isRepeat()) {
+				getInputManager().toggleMouseGrab();
+			}
+		}, KeyboardEvent.class, EventPriority.MEDIUM, true);
+
 		getEventManager().registerEvent((MouseMotionEvent event) -> {
-			final float sensitivity = MOUSE_SENSITIVITY * getScheduler().getDelta();
+			if (getInputManager().isMouseGrabbed()) {
+				final float sensitivity = MOUSE_SENSITIVITY * getScheduler().getDelta();
 
-			this.cameraPitch += event.getDY() * sensitivity;
-			this.cameraPitch = MathsHelper.clamp(cameraPitch, -90.0f, 90.0f);
-			final Quaternion pitch = Quaternion.fromAxisAngleDeg(Vector3.UNIT_X, cameraPitch);
+				this.cameraPitch += event.getDY() * sensitivity;
+				this.cameraPitch = MathsHelper.clamp(cameraPitch, -90.0f, 90.0f);
+				final Quaternion pitch = Quaternion.fromAxisAngleDeg(Vector3.UNIT_X, cameraPitch);
 
-			this.cameraYaw -= event.getDX() * sensitivity;
-			this.cameraYaw %= 360;
-			final Quaternion yaw = Quaternion.fromAxisAngleDeg(Vector3.UNIT_Y, cameraYaw);
+				this.cameraYaw -= event.getDX() * sensitivity;
+				this.cameraYaw %= 360;
+				final Quaternion yaw = Quaternion.fromAxisAngleDeg(Vector3.UNIT_Y, cameraYaw);
 
-			getScene().getCamera().setRotation(yaw.mul(pitch));
+				getScene().getCamera().setRotation(yaw.mul(pitch));
+			}
 		}, MouseMotionEvent.class, EventPriority.HIGH, true);
 	}
 

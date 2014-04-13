@@ -47,11 +47,24 @@ public interface IInputManager {
 	public boolean isMouseDown(int button);
 
 	/**
+	 * Returns the current state of the mouse grab.
+	 *
+	 * @return True if the mouse is currently grabbed
+	 */
+	public boolean isMouseGrabbed();
+
+	/**
 	 * Sets the grabbed state of the mouse. A grabbed mouse can not exit the window area.
 	 *
 	 * @param grabbed true to set the mouse as grabbed
 	 */
 	public void setMouseGrabbed(boolean grabbed);
+
+	/**
+	 * Flips the state of the mouse grab. If the mouse is currently grabbed it will be
+	 * ungrabbed and vicer-versa.
+	 */
+	public void toggleMouseGrab();
 
 	/**
 	 * Gets the current state of the key.

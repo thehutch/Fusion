@@ -29,7 +29,7 @@ import me.thehutch.fusion.api.scheduler.TaskPriority;
  */
 public class Scheduler implements IScheduler {
 	private static final float OVERLOAD_FACTOR = 1.25f;
-	private static final long MILLISECOND_TO_SECOND = 1000L;
+	private static final long NANOSECOND_TO_SECOND = 1000000000L;
 	private static final AtomicInteger TASK_ID_COUNTER = new AtomicInteger(0);
 	private final Queue<Task> currentTasks = new PriorityQueue<>();
 	private final Queue<Task> pendingQueue = new LinkedBlockingQueue<>();
@@ -53,10 +53,10 @@ public class Scheduler implements IScheduler {
 	public void execute() {
 		long diffTime;
 		long frameClock;
-		long startClock = System.currentTimeMillis();
+		long startClock = System.nanoTime();
 
 		do {
-			frameClock = System.currentTimeMillis();
+			frameClock = System.nanoTime();
 
 			boolean isExecuted = true;
 			while (isExecuted && !currentTasks.isEmpty()) {
@@ -79,23 +79,16 @@ public class Scheduler implements IScheduler {
 				}
 			}
 
-			this.diffTimePerTick = System.currentTimeMillis() - frameClock;
+			this.diffTimePerTick = System.nanoTime() - frameClock;
 
 			if (++upTime == tick) {
 				this.tick += ticksPerSecond;
 
-				diffTime = System.currentTimeMillis() - startClock;
+				diffTime = System.nanoTime() - startClock;
 
-				this.overloaded = diffTime > MILLISECOND_TO_SECOND * OVERLOAD_FACTOR;
+				this.overloaded = diffTime > NANOSECOND_TO_SECOND * OVERLOAD_FACTOR;
 
-				if (diffTime < MILLISECOND_TO_SECOND) {
-					try {
-						Thread.sleep(MILLISECOND_TO_SECOND - diffTime);
-					} catch (InterruptedException ex) {
-						ex.printStackTrace();
-					}
-				}
-				startClock = System.currentTimeMillis();
+				startClock = System.nanoTime();
 			}
 
 			// Add new tasks
@@ -123,7 +116,7 @@ public class Scheduler implements IScheduler {
 	 * @return Frame time in seconds
 	 */
 	public float getDelta() {
-		return diffTimePerTick / 1000.0f;
+		return diffTimePerTick / (float) NANOSECOND_TO_SECOND;
 	}
 
 	@Override

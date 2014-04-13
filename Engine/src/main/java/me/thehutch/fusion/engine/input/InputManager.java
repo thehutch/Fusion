@@ -72,8 +72,18 @@ public final class InputManager implements IInputManager {
 	}
 
 	@Override
+	public boolean isMouseGrabbed() {
+		return Mouse.isGrabbed();
+	}
+
+	@Override
 	public void setMouseGrabbed(boolean grabbed) {
 		Mouse.setGrabbed(grabbed);
+	}
+
+	@Override
+	public void toggleMouseGrab() {
+		setMouseGrabbed(!isMouseGrabbed());
 	}
 
 	@Override
@@ -84,6 +94,21 @@ public final class InputManager implements IInputManager {
 	@Override
 	public void enableRepeatKeyEvents(boolean enable) {
 		Keyboard.enableRepeatEvents(enable);
+	}
+
+	@Override
+	public void registerKeyBinding(Runnable function, Key... keys) {
+		if (keys.length == 0) {
+			throw new IllegalArgumentException("Can not register key binding with no keys bound.");
+		}
+		for (int i = 0; i < keys.length; ++i) {
+			Set<Runnable> functions = keyBindings.get(keys[i]);
+			if (functions == null) {
+				functions = new THashSet<>();
+			}
+			functions.add(function);
+			this.keyBindings.put(keys[i], functions);
+		}
 	}
 
 	public void execute() {
@@ -127,20 +152,5 @@ public final class InputManager implements IInputManager {
 			}
 		}
 		//TODO: Possibilty of other input devices (Joystick, Touchscreen etc...)
-	}
-
-	@Override
-	public void registerKeyBinding(Runnable function, Key... keys) {
-		if (keys.length == 0) {
-			throw new IllegalArgumentException("Can not register key binding with no keys bound.");
-		}
-		for (int i = 0; i < keys.length; ++i) {
-			Set<Runnable> functions = keyBindings.get(keys[i]);
-			if (functions == null) {
-				functions = new THashSet<>();
-			}
-			functions.add(function);
-			this.keyBindings.put(keys[i], functions);
-		}
 	}
 }

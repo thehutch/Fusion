@@ -85,14 +85,15 @@ public final class Scene implements IScene {
 		// Create the window
 		createWindow();
 
-		// Create the model
-		final Model model = createModel("teleporter.fmdl", 0.0f, 0.0f, 0.0f);
-		model.scale(0.125f);
+		// Create scene models
+		final Model teleporter = createModel("teleporter.fmdl", 0.0f, 0.0f, 0.0f);
+		teleporter.scale(0.125f);
+
 
 		// Set the ambient light
-		this.ambientLight = new AmbientLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("ambient.fprg")), 0.125f);
+		this.ambientLight = new AmbientLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("ambient.fprg")), 0.25f);
 		// Create a spot light (torch)
-		this.spotLight = createSpotLight(camera.getPosition(), camera.getForward(), Vector3.ONE, 0.0125f, 25.0f);
+		this.spotLight = createSpotLight(camera.getPosition(), Vector3.ONE, camera.getForward(), 0.0125f, 25.0f);
 
 		// Enable depth testing
 		GL11.glEnable(GL_DEPTH_TEST);
@@ -168,14 +169,6 @@ public final class Scene implements IScene {
 	public void execute() {
 		// Clear the screen
 		GL11.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Get the delta from the scheduler
-		final float delta = engine.getScheduler().getDelta();
-
-		// Update each scene node
-		this.models.stream().forEach((SceneNode node) -> {
-			node.update(delta);
-		});
 
 		// Calculate the camera matrix (projection * view)
 		final Matrix4 cameraMatrix = camera.getProjectionMatrix().mul(camera.getViewMatrix());

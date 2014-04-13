@@ -1,6 +1,3 @@
-# Program
-program: programs/basic_light.fprg
-
 # Mesh
 mesh: meshes/teleporter.obj
 
