@@ -26,7 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 import me.thehutch.fusion.engine.render.VertexArrayObject;
-import me.thehutch.fusion.engine.render.VertexAttribute;
 
 /**
  * @author thehutch
@@ -59,10 +58,12 @@ public class WavefrontOBJLoader {
 				calculateNormals(positions, indices, normals);
 			}
 			// Create the vertex array object
-			return new VertexArrayObject(indices,
-								   new VertexAttribute(POSITION_SIZE, positions),
-								   new VertexAttribute(TEXCOORD_SIZE, texcoords),
-								   new VertexAttribute(NORMAL_SIZE, normals));
+			final VertexArrayObject vao = new VertexArrayObject();
+			vao.setIndices(indices);
+			vao.addAttribute(0, POSITION_SIZE, positions);
+			vao.addAttribute(1, TEXCOORD_SIZE, texcoords);
+			vao.addAttribute(2, NORMAL_SIZE, normals);
+			return vao;
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to load mesh: " + path, ex);
 		}
