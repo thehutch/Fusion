@@ -18,70 +18,46 @@
 package me.thehutch.fusion.engine.scene.lights;
 
 import me.thehutch.fusion.api.maths.Vector3;
+import me.thehutch.fusion.api.scene.lights.ISpotLight;
 import me.thehutch.fusion.engine.render.Program;
 
 /**
  * @author thehutch
  */
-public class SpotLight extends Light {
-	private final float attenuation;
+public class SpotLight extends PointLight implements ISpotLight {
 	private Vector3 direction;
-	private Vector3 position;
-	private Vector3 colour;
-	private float cutoff;
+	private float angle;
 
-	public SpotLight(Program program, Vector3 direction, Vector3 position, Vector3 colour, float attenuation, float cutoff) {
-		super(program);
+	public SpotLight(Program program, Vector3 direction, Vector3 position, Vector3 colour, float attenuation, float angle) {
+		super(program, position, colour, attenuation);
 		this.direction = direction;
-		this.position = position;
-		this.colour = colour;
-		this.attenuation = attenuation;
-		this.cutoff = cutoff;
+		this.angle = angle;
 	}
 
-	public float getAttenuation() {
-		return attenuation;
-	}
-
+	@Override
 	public Vector3 getDirection() {
 		return direction;
 	}
 
+	@Override
 	public void setDirection(Vector3 direction) {
 		this.direction = direction;
 	}
 
-	public Vector3 getPosition() {
-		return position;
+	@Override
+	public float getAngle() {
+		return angle;
 	}
 
-	public void setPosition(Vector3 position) {
-		this.position = position;
-	}
-
-	public Vector3 getColour() {
-		return colour;
-	}
-
-	public void setColour(Vector3 colour) {
-		this.colour = colour;
-	}
-
-	public float getCutoff() {
-		return cutoff;
-	}
-
-	public void setCutoff(float cutoff) {
-		this.cutoff = cutoff;
+	@Override
+	public void setAngle(float angle) {
+		this.angle = angle;
 	}
 
 	@Override
 	public void uploadUniforms() {
-		// Set the uniforms
 		this.program.setUniform("light.direction", direction);
-		this.program.setUniform("light.position", position);
-		this.program.setUniform("light.colour", colour);
-		this.program.setUniform("light.attenuation", attenuation);
-		this.program.setUniform("light.cutoff", (float) Math.cos(cutoff));
+		this.program.setUniform("light.cutoff", (float) Math.cos(angle));
+		super.uploadUniforms();
 	}
 }

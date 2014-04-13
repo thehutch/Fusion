@@ -1,5 +1,5 @@
 /*
- * This file is part of Engine.
+ * This file is part of API.
  *
  * Copyright (c) 2014 thehutch.
  *
@@ -15,32 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.engine.scene.lights;
+package me.thehutch.fusion.api.scene.lights;
 
 import me.thehutch.fusion.api.maths.Vector3;
-import me.thehutch.fusion.engine.render.Program;
+import me.thehutch.fusion.api.scene.ISceneNode;
 
 /**
  * @author thehutch
  */
-public class AmbientLight extends Light {
-	private float ambientLevel;
+public interface ILight extends ISceneNode {
+	public Vector3 getColour();
 
-	public AmbientLight(Program program, float ambientLevel) {
-		super(program, Vector3.ZERO, Vector3.ZERO);
-		this.ambientLevel = ambientLevel;
-	}
-
-	public float getAmbientLevel() {
-		return ambientLevel;
-	}
-
-	public void setAmbientLevel(float ambientLevel) {
-		this.ambientLevel = ambientLevel;
-	}
-
-	@Override
-	public void uploadUniforms() {
-		this.program.setUniform("ambient", ambientLevel);
-	}
+	public void setColour(Vector3 colour);
 }

@@ -66,7 +66,7 @@ public final class Scene implements IScene {
 	public static final Path MESH_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("meshes");
 	private final Collection<Model> models = new ArrayList<>();
 	private final Collection<Light> lights = new ArrayList<>();
-	private final Light ambientLight;
+	private final AmbientLight ambientLight;
 	private final SpotLight spotLight;
 	private final Camera camera;
 	private final Client engine;
@@ -130,13 +130,25 @@ public final class Scene implements IScene {
 		return createModel(name, new Vector3(x, y, z));
 	}
 
+	@Override
+	public float getAmbientLevel() {
+		return ambientLight.getAmbientLevel();
+	}
+
+	@Override
+	public void setAmbientLevel(float ambientLevel) {
+		this.ambientLight.setAmbientLevel(ambientLevel);
+	}
+
+	@Override
 	public PointLight createPointLight(Vector3 position, Vector3 colour, float attenuation) {
 		final PointLight light = new PointLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("point.fprg")), position, colour, attenuation);
 		this.lights.add(light);
 		return light;
 	}
 
-	public SpotLight createSpotLight(Vector3 position, Vector3 direction, Vector3 colour, float attenutation, float angle) {
+	@Override
+	public SpotLight createSpotLight(Vector3 position, Vector3 colour, Vector3 direction, float attenutation, float angle) {
 		final SpotLight light = new SpotLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("spot.fprg")), direction, position, colour, attenutation, MathsHelper.toRadians(angle));
 		this.lights.add(light);
 		return light;

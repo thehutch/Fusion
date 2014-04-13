@@ -18,45 +18,30 @@
 package me.thehutch.fusion.engine.scene.lights;
 
 import me.thehutch.fusion.api.maths.Vector3;
+import me.thehutch.fusion.api.scene.lights.IPointLight;
 import me.thehutch.fusion.engine.render.Program;
 
-public class PointLight extends Light {
-	private final float attenuation;
-	private Vector3 position;
-	private Vector3 colour;
+public class PointLight extends Light implements IPointLight {
+	private float attenuation;
 
 	public PointLight(Program program, Vector3 position, Vector3 colour, float attenuation) {
-		super(program);
-		this.position = position;
-		this.colour = colour;
+		super(program, position, colour);
 		this.attenuation = attenuation;
 	}
 
+	@Override
 	public float getAttenuation() {
 		return attenuation;
 	}
 
-	public Vector3 getPosition() {
-		return position;
-	}
-
-	public void setPosition(Vector3 position) {
-		this.position = position;
-	}
-
-	public Vector3 getColour() {
-		return colour;
-	}
-
-	public void setColour(Vector3 colour) {
-		this.colour = colour;
+	@Override
+	public void setAttenuation(float attenuation) {
+		this.attenuation = attenuation;
 	}
 
 	@Override
 	public void uploadUniforms() {
-		// Set the uniforms
-		this.program.setUniform("light.position", position);
-		this.program.setUniform("light.colour", colour);
 		this.program.setUniform("light.attenuation", attenuation);
+		super.uploadUniforms();
 	}
 }
