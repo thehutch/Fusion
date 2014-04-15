@@ -89,8 +89,6 @@ public class Scheduler implements IScheduler {
 				this.overloaded = diffTime > NANOSECOND_TO_SECOND * OVERLOAD_FACTOR;
 
 				startClock = System.nanoTime();
-
-				System.out.format("Up Time: %d%n", upTime);
 			}
 
 			// Add new tasks

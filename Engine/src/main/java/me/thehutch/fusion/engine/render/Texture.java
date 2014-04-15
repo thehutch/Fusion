@@ -22,10 +22,6 @@
  */
 package me.thehutch.fusion.engine.render;
 
-import static org.lwjgl.opengl.GL11.GL_RGB;
-import static org.lwjgl.opengl.GL11.GL_RGB8;
-import static org.lwjgl.opengl.GL11.GL_RGBA;
-import static org.lwjgl.opengl.GL11.GL_RGBA8;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
@@ -39,13 +35,20 @@ import me.thehutch.fusion.api.util.Disposable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
-
+/**
+ * @author thehutch
+ */
 public class Texture implements Disposable {
 	private final int texture;
 
 	public Texture() {
-		// Generate a texture handle
+		// Generate and bind the texture
 		this.texture = GL11.glGenTextures();
+		GL11.glBindTexture(GL_TEXTURE_2D, texture);
+	}
+
+	public int getID() {
+		return texture;
 	}
 
 	public void bind(int unit) {
@@ -71,9 +74,9 @@ public class Texture implements Disposable {
 		GL11.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
 	}
 
-	public void setTextureData(ByteBuffer pixels, int width, int height, boolean hasAlpha) {
+	public void setTextureData(ByteBuffer pixels, int width, int height, int internalFormat, int format) {
 		// Upload the pixel data to the GPU
-		GL11.glTexImage2D(GL_TEXTURE_2D, 0, hasAlpha ? GL_RGBA8 : GL_RGB8, width, height, 0, hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, pixels);
+		GL11.glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, pixels);
 	}
 
 	@Override

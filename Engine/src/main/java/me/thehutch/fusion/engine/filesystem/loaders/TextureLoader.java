@@ -19,9 +19,13 @@ package me.thehutch.fusion.engine.filesystem.loaders;
 
 import static org.lwjgl.opengl.GL11.GL_NEAREST;
 import static org.lwjgl.opengl.GL11.GL_REPEAT;
+import static org.lwjgl.opengl.GL11.GL_RGB8;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_RGBA8;
+import static org.lwjgl.opengl.GL12.GL_BGR;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
+import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -31,6 +35,7 @@ import java.nio.file.StandardOpenOption;
 import javax.imageio.ImageIO;
 import me.thehutch.fusion.api.filesystem.ResourceLoader;
 import me.thehutch.fusion.engine.render.Texture;
+import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.BufferUtils;
 
 /**
@@ -53,64 +58,47 @@ public class TextureLoader extends ResourceLoader<Texture> {
 			// Obtain the image dimensions
 			final int width = image.getWidth();
 			final int height = image.getHeight();
+			final int bpp = image.getColorModel().getNumComponents();
 			final boolean hasAlpha = image.getColorModel().hasAlpha();
 
-			// Get the pixel information
-			final int type = image.getType();
-			final int[] pixels;
-			if (type == BufferedImage.TYPE_INT_ARGB || type == BufferedImage.TYPE_INT_RGB) {
-				pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-			} else {
-				pixels = new int[width * height];
-				image.getRGB(0, 0, width, height, pixels, 0, width);
+			// Get the pixels from the buffered image
+			final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+
+			// Flip the pixels
+			final byte[] flippedPixels = new byte[pixels.length];
+			for (int h1 = 0, h2 = height - 1; h2 >= 0; ++h1, --h2) {
+				System.arraycopy(pixels, h2 * width * bpp, flippedPixels, h1 * width * bpp, width * bpp);
 			}
 
-			// Convert the pixels array into a byte buffer
-			final ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * image.getColorModel().getNumComponents());
-			if (hasAlpha) {
-				loadRGBA(buffer, pixels, width, height);
-			} else {
-				loadRGB(buffer, pixels, width, height);
-			}
+			// Convert the flipped pixels array into a byte buffer
+			final ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * bpp);
+			buffer.put(flippedPixels);
 			buffer.flip();
+
+			// Determine the texture formats
+			final int internalFormat;
+			final int format;
+			if (hasAlpha) {
+				internalFormat = GL_RGBA8;
+				format = GL_RGBA;
+			} else {
+				internalFormat = GL_RGB8;
+				format = GL_BGR;
+			}
 
 			// Create the texture
 			final Texture texture = new Texture();
-			texture.bind(0);
 			texture.setWrapMode(GL_REPEAT, GL_REPEAT);
 			texture.setFiltering(GL_NEAREST, GL_NEAREST);
-			texture.setTextureData(buffer, width, height, hasAlpha);
+			texture.setTextureData(buffer, width, height, internalFormat, format);
 			texture.unbind();
 			// Add the texture to the cache
 			this.resources.put(path, texture);
+
+			RenderUtil.checkGLError(true);
 			return texture;
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to load texture: " + path, ex);
-		}
-	}
-
-	private static void loadRGB(ByteBuffer buffer, int[] pixels, int width, int height) {
-		int h, w;
-		for (h = height - 1; h >= 0; --h) {
-			for (w = 0; w < width; ++w) {
-				final int pixel = pixels[w + h * width];
-				buffer.put((byte) ((pixel >> 16) & 0xFF));
-				buffer.put((byte) ((pixel >> 8) & 0xFF));
-				buffer.put((byte) (pixel & 0xFF));
-			}
-		}
-	}
-
-	private static void loadRGBA(ByteBuffer buffer, int[] pixels, int width, int height) {
-		int h, w;
-		for (h = height - 1; h >= 0; --h) {
-			for (w = 0; w < width; ++w) {
-				final int pixel = pixels[w + h * width];
-				buffer.put((byte) ((pixel >> 16) & 0xFF));
-				buffer.put((byte) ((pixel >> 8) & 0xFF));
-				buffer.put((byte) (pixel & 0xFF));
-				buffer.put((byte) ((pixel >> 24) & 0xFF));
-			}
 		}
 	}
 }
