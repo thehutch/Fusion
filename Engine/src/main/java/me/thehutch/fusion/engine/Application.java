@@ -65,13 +65,13 @@ public class Application {
 		// Check which operating system it is
 		if (os.contains("win")) {
 			nativePath = "windows";
-			files = new String[]{ "jinput-dx8.dll", "jinput-dx8_64.dll", "jinput-raw.dll", "jinput-raw_64.dll", "jinput-wintab.dll", "lwjgl.dll", "lwjgl64.dll", "OpenAL32.dll", "OpenAL64.dll" };
+			files = new String[] { "jinput-dx8.dll", "jinput-dx8_64.dll", "jinput-raw.dll", "jinput-raw_64.dll", "jinput-wintab.dll", "lwjgl.dll", "lwjgl64.dll", "OpenAL32.dll", "OpenAL64.dll" };
 		} else if (os.contains("mac")) {
 			nativePath = "mac";
-			files = new String[]{ "libjinput-osx.jnilib", "liblwjgl.jnilib", "openal.dylib" };
+			files = new String[] { "libjinput-osx.jnilib", "liblwjgl.jnilib", "openal.dylib" };
 		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
 			nativePath = "linux";
-			files = new String[]{ "liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so" };
+			files = new String[] { "liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so" };
 		} else {
 			throw new IllegalStateException("Unknown Operating System: " + os);
 		}
