@@ -20,7 +20,6 @@ package me.thehutch.fusion.api.util.hashing;
 import me.thehutch.fusion.api.maths.Vector2;
 import me.thehutch.fusion.api.maths.Vector3;
 
-
 /**
  * @author thehutch
  */

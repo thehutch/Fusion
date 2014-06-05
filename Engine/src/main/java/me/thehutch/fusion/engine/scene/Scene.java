@@ -24,7 +24,8 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_LEQUAL;
+import static org.lwjgl.opengl.GL11.GL_EQUAL;
+import static org.lwjgl.opengl.GL11.GL_LESS;
 import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
 import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
@@ -48,6 +49,7 @@ import me.thehutch.fusion.engine.filesystem.loaders.ModelLoader;
 import me.thehutch.fusion.engine.filesystem.loaders.ProgramLoader;
 import me.thehutch.fusion.engine.filesystem.loaders.TextureLoader;
 import me.thehutch.fusion.engine.scene.lights.AmbientLight;
+import me.thehutch.fusion.engine.scene.lights.DirectionalLight;
 import me.thehutch.fusion.engine.scene.lights.Light;
 import me.thehutch.fusion.engine.scene.lights.PointLight;
 import me.thehutch.fusion.engine.scene.lights.SpotLight;
@@ -69,7 +71,6 @@ public final class Scene implements IScene {
 	private final Collection<Model> models = new ArrayList<>();
 	private final Collection<Light> lights = new ArrayList<>();
 	private final AmbientLight ambientLight;
-	private final SpotLight spotLight;
 	private final Camera camera;
 	private final Client engine;
 
@@ -87,25 +88,26 @@ public final class Scene implements IScene {
 		// Create the window
 		createWindow();
 
-		// Create scene models
-		final Model teleporter = createModel("teleporter.fmdl", 0.0f, 0.0f, 0.0f);
-		teleporter.scale(0.125f);
+		// Create the room model
+		createModel("ground.fmdl", Vector3.ZERO);
 
 		// Set the ambient light
-		this.ambientLight = new AmbientLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("ambient.fprg")), 0.25f);
-		// Create a spot light (torch)
-		this.spotLight = createSpotLight(camera.getPosition(), Vector3.ONE, camera.getForward(), 0.0125f, 25.0f);
+		this.ambientLight = new AmbientLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("ambient.fprg")), 0.125f);
+
+		// Create the directional light (sun)
+		final Vector3 lightDirection = new Vector3(0.0f, 2.0f, 2.0f);
+		createDirectionalLight(Vector3.ONE, lightDirection);
 
 		// Enable depth testing
 		GL11.glEnable(GL_DEPTH_TEST);
 		GL11.glEnable(GL_DEPTH_CLAMP);
-		GL11.glDepthFunc(GL_LEQUAL);
 
-		// Enable backface culling
+		// Enable face culling
 		GL11.glEnable(GL_CULL_FACE);
 		GL11.glCullFace(GL_BACK);
 
-		RenderUtil.checkGLError(true);
+		// Check for errors
+		RenderUtil.checkGLError();
 
 		engine.getEventManager().registerEvent((KeyboardEvent event) -> {
 			if (event.getKeycode() == Key.KEY_L && event.getState() && !event.isRepeat()) {
@@ -162,6 +164,12 @@ public final class Scene implements IScene {
 		return light;
 	}
 
+	public DirectionalLight createDirectionalLight(Vector3 colour, Vector3 direction) {
+		final DirectionalLight light = new DirectionalLight(engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve("directional.fprg")), colour, direction);
+		this.lights.add(light);
+		return light;
+	}
+
 	@Override
 	public void removeLight(ILight light) {
 		this.lights.remove((Light) light);
@@ -176,7 +184,7 @@ public final class Scene implements IScene {
 	}
 
 	public void execute() {
-		// Clear the screen
+		// Clear the colour and depth buffers
 		GL11.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Calculate the camera matrix (projection * view)
@@ -191,23 +199,23 @@ public final class Scene implements IScene {
 		});
 		this.ambientLight.getProgram().unbind();
 
-		// Enable blending for the other lights
+		// Enable blending for the light render
 		GL11.glEnable(GL_BLEND);
 		GL14.glBlendEquation(GL_FUNC_ADD);
 		GL11.glBlendFunc(GL_ONE, GL_ONE);
 		GL11.glDepthMask(false);
+		GL11.glDepthFunc(GL_EQUAL);
 
-		this.spotLight.setDirection(camera.getForward().negate());
-		this.spotLight.setPosition(camera.getPosition());
-
-		// For each light, render the scene
+		// Render each of the lights in the scene
 		this.lights.stream().forEach((Light light) -> {
+
 			light.getProgram().bind();
 			light.uploadUniforms();
 			// Set the camera matrix
 			light.getProgram().setUniform("cameraMatrix", cameraMatrix);
-			// Set the camera position
+			// Set the position of the camera
 			light.getProgram().setUniform("cameraPos", camera.getPosition());
+			// Render all the models
 			this.models.stream().forEach((Model model) -> {
 				model.getMaterial().uploadUniforms(light.getProgram());
 				model.render(light.getProgram());
@@ -217,13 +225,14 @@ public final class Scene implements IScene {
 
 		// Disable blending
 		GL11.glDepthMask(true);
+		GL11.glDepthFunc(GL_LESS);
 		GL11.glDisable(GL_BLEND);
 
 		// Update the display
 		Display.update();
 
 		// Check for errors
-		RenderUtil.checkGLError(true);
+		RenderUtil.checkGLError();
 	}
 
 	private void createWindow() {
@@ -231,9 +240,10 @@ public final class Scene implements IScene {
 			Display.setTitle("Fusion Engine | " + ENGINE_VERSION);
 			Display.setDisplayMode(new DisplayMode(800, 600));
 			Display.setVSyncEnabled(true);
-			Display.create(new PixelFormat(24, 8, 4, 0, 4), new ContextAttribs(3, 3).withProfileCore(true));
+			Display.create(new PixelFormat(24, 8, 8, 0, 8), new ContextAttribs(3, 3).withProfileCore(true));
 		} catch (LWJGLException ex) {
 			ex.printStackTrace();
 		}
+		GL11.glClearColor(0.125f, 0.4f, 0.75f, 1.0f);
 	}
 }

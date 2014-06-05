@@ -29,9 +29,9 @@ public class RenderUtil {
 	private RenderUtil() {
 	}
 
-	public static void checkGLError(boolean throwError) {
+	public static void checkGLError() {
 		final int status = GL11.glGetError();
-		if (status != GL_NO_ERROR && throwError) {
+		if (status != GL_NO_ERROR) {
 			throw new IllegalStateException("OpenGL Error: " + GLU.gluErrorString(status));
 		}
 	}

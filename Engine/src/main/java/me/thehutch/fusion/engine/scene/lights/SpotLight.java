@@ -56,6 +56,7 @@ public class SpotLight extends PointLight implements ISpotLight {
 
 	@Override
 	public void uploadUniforms() {
+		// Set the light uniforms
 		this.program.setUniform("light.direction", direction);
 		this.program.setUniform("light.cutoff", (float) Math.cos(angle));
 		super.uploadUniforms();

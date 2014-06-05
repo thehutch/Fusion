@@ -119,12 +119,12 @@ public class Matrix2 {
 
 	public float[] toArray(boolean columnMajor) {
 		if (columnMajor) {
-			return new float[] {
+			return new float[]{
 				m00, m10,
 				m01, m11
 			};
 		} else {
-			return new float[] {
+			return new float[]{
 				m00, m01,
 				m10, m11
 			};

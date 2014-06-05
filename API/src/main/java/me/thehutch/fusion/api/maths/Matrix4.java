@@ -180,14 +180,14 @@ public class Matrix4 {
 
 	public float[] toArray(boolean columnMajor) {
 		if (columnMajor) {
-			return new float[] {
+			return new float[]{
 				m00, m10, m20, m30,
 				m01, m11, m21, m31,
 				m02, m12, m22, m32,
 				m03, m13, m23, m33
 			};
 		} else {
-			return new float[] {
+			return new float[]{
 				m00, m01, m02, m03,
 				m10, m11, m12, m13,
 				m20, m21, m22, m23,
@@ -216,11 +216,22 @@ public class Matrix4 {
 	}
 
 	public static Matrix4 createScale(float scale) {
-		return createScale(scale, scale, scale, scale);
+		return createScale(scale, scale, scale);
+	}
+
+	public static Matrix4 createScale(Vector3 v) {
+		return createScale(v.getX(), v.getY(), v.getZ());
 	}
 
 	public static Matrix4 createScale(Vector4 v) {
 		return createScale(v.getX(), v.getY(), v.getZ(), v.getW());
+	}
+
+	public static Matrix4 createScale(float x, float y, float z) {
+		return new Matrix4(x, 0, 0, 0,
+						   0, y, 0, 0,
+						   0, 0, z, 0,
+						   0, 0, 0, 1);
 	}
 
 	public static Matrix4 createScale(float x, float y, float z, float w) {
@@ -274,7 +285,7 @@ public class Matrix4 {
 						   0, 0, -1, 0);
 	}
 
-	public static Matrix4 createOrthographic(float right, float left, float top, float bottom, float near, float far) {
+	public static Matrix4 createOrthographic(float left, float right, float bottom, float top, float near, float far) {
 		return new Matrix4(2.0f / (right - left), 0, 0, -(right + left) / (right - left),
 						   0, 2.0f / (top - bottom), 0, -(top + bottom) / (top - bottom),
 						   0, 0, -2.0f / (far - near), -(far + near) / (far - near),

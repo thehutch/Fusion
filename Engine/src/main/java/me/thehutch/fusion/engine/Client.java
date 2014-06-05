@@ -36,6 +36,7 @@ import me.thehutch.fusion.engine.scene.Scene;
  */
 public final class Client extends Engine implements IClient {
 	private static final float MOUSE_SENSITIVITY = 10.0f;
+	private static final float MOVE_SPEED = 2.0f;
 	private final InputManager inputManager;
 	private final Scene scene;
 
@@ -55,27 +56,27 @@ public final class Client extends Engine implements IClient {
 		getInputManager().setMouseGrabbed(true);
 
 		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveLocalZ(-getScheduler().getDelta() * 0.5f);
+			getScene().getCamera().moveLocalZ(-getScheduler().getDelta() * MOVE_SPEED);
 		}, Key.KEY_W);
 
 		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveLocalX(-getScheduler().getDelta() * 0.5f);
+			getScene().getCamera().moveLocalX(-getScheduler().getDelta() * MOVE_SPEED);
 		}, Key.KEY_A);
 
 		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveLocalZ(getScheduler().getDelta() * 0.5f);
+			getScene().getCamera().moveLocalZ(getScheduler().getDelta() * MOVE_SPEED);
 		}, Key.KEY_S);
 
 		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveLocalX(getScheduler().getDelta() * 0.5f);
+			getScene().getCamera().moveLocalX(getScheduler().getDelta() * MOVE_SPEED);
 		}, Key.KEY_D);
 
 		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveY(getScheduler().getDelta() * 0.5f);
+			getScene().getCamera().moveY(getScheduler().getDelta() * MOVE_SPEED);
 		}, Key.KEY_SPACE);
 
 		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveY(-getScheduler().getDelta() * 0.5f);
+			getScene().getCamera().moveY(-getScheduler().getDelta() * MOVE_SPEED);
 		}, Key.KEY_LSHIFT);
 
 		getInputManager().registerKeyBinding(() -> {

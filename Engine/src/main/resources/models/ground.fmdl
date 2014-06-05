@@ -1,0 +1,5 @@
+# Mesh
+mesh: meshes/ground.obj
+
+# Texture
+texture: textures/ground.jpg

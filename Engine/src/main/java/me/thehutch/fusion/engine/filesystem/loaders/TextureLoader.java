@@ -17,11 +17,14 @@
  */
 package me.thehutch.fusion.engine.filesystem.loaders;
 
-import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
+import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_LINEAR_MIPMAP_LINEAR;
 import static org.lwjgl.opengl.GL11.GL_REPEAT;
 import static org.lwjgl.opengl.GL11.GL_RGB8;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
 import static org.lwjgl.opengl.GL11.GL_RGBA8;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL12.GL_BGR;
 
 import java.awt.image.BufferedImage;
@@ -37,6 +40,7 @@ import me.thehutch.fusion.api.filesystem.ResourceLoader;
 import me.thehutch.fusion.engine.render.Texture;
 import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
 
 /**
  * @author thehutch
@@ -89,13 +93,15 @@ public class TextureLoader extends ResourceLoader<Texture> {
 			// Create the texture
 			final Texture texture = new Texture();
 			texture.setWrapMode(GL_REPEAT, GL_REPEAT);
-			texture.setFiltering(GL_NEAREST, GL_NEAREST);
-			texture.setTextureData(buffer, width, height, internalFormat, format);
+			texture.setFiltering(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+			texture.setAnisotropicFiltering(GL11.glGetFloat(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+			texture.setTextureData(buffer, width, height, internalFormat, format, GL_UNSIGNED_BYTE);
 			texture.unbind();
 			// Add the texture to the cache
 			this.resources.put(path, texture);
 
-			RenderUtil.checkGLError(true);
+			// Check for errors
+			RenderUtil.checkGLError();
 			return texture;
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to load texture: " + path, ex);

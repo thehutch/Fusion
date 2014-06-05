@@ -150,13 +150,13 @@ public class Matrix3 {
 
 	public float[] toArray(boolean columnMajor) {
 		if (columnMajor) {
-			return new float[] {
+			return new float[]{
 				m00, m10, m20,
 				m01, m11, m21,
 				m02, m12, m22
 			};
 		} else {
-			return new float[] {
+			return new float[]{
 				m00, m01, m02,
 				m10, m11, m12,
 				m20, m21, m22

@@ -54,7 +54,7 @@ public class VertexArrayObject implements Disposable {
 		this.ibo = GL15.glGenBuffers();
 
 		// Check for errors
-		RenderUtil.checkGLError(true);
+		RenderUtil.checkGLError();
 	}
 
 	public void setIndices(TIntList indices) {
@@ -75,7 +75,7 @@ public class VertexArrayObject implements Disposable {
 		this.drawCount = indices.size();
 
 		// Check for errors
-		RenderUtil.checkGLError(true);
+		RenderUtil.checkGLError();
 	}
 
 	public void addAttribute(int index, int size, TFloatList data) {
@@ -104,7 +104,7 @@ public class VertexArrayObject implements Disposable {
 		this.attributes.insert(index, id);
 
 		// Check for errors
-		RenderUtil.checkGLError(true);
+		RenderUtil.checkGLError();
 	}
 
 	public void draw() {

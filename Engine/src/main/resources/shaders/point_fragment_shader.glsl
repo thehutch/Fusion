@@ -23,7 +23,7 @@ out vec4 fragColour;
 
 void main()
 {
-	// Calculate normal in word space
+	// Calculate normal in world space
 	vec3 normal = normalize(normalMatrix * normal0);
 
 	// Calculate location of fragment in world space

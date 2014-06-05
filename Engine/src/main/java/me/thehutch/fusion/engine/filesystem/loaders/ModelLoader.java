@@ -17,7 +17,6 @@
  */
 package me.thehutch.fusion.engine.filesystem.loaders;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,6 +38,13 @@ public class ModelLoader extends ResourceLoader<ModelData> {
 	}
 
 	@Override
+	public void dispose() {
+		this.resources.values().forEach((ModelData data) -> {
+			data.dispose();
+		});
+	}
+
+	@Override
 	public ModelData load(Path path) {
 		try (final Stream<String> lines = Files.lines(path)) {
 			final ModelData data = new ModelData();
@@ -55,13 +61,6 @@ public class ModelLoader extends ResourceLoader<ModelData> {
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to load model: " + path, ex);
 		}
-	}
-
-	@Override
-	public void dispose() {
-		this.resources.values().forEach((ModelData data) -> {
-			data.dispose();
-		});
 	}
 
 	private static Path getPath(String line) {

@@ -17,7 +17,6 @@
  */
 package me.thehutch.fusion.engine.filesystem.loaders;
 
-
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;

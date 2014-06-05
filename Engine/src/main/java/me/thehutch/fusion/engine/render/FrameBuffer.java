@@ -18,10 +18,10 @@
 package me.thehutch.fusion.engine.render;
 
 import static org.lwjgl.opengl.GL11.GL_NONE;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0;
 import static org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT15;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_COMPLETE;
 import static org.lwjgl.opengl.GL30.GL_RENDERBUFFER;
 
 import gnu.trove.set.TIntSet;
@@ -31,9 +31,9 @@ import java.util.Arrays;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL32;
 
 /**
  * @author thehutch
@@ -46,13 +46,9 @@ public class FrameBuffer implements Disposable {
 		// Generate and bind the frame buffer
 		this.fbo = GL30.glGenFramebuffers();
 		GL30.glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		// Disable input buffers
-		GL11.glReadBuffer(GL_NONE);
-		// Unbind the frame buffer
-		GL30.glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// Check for errors
-		RenderUtil.checkGLError(true);
+		RenderUtil.checkGLError();
 	}
 
 	public void bind() {
@@ -63,41 +59,49 @@ public class FrameBuffer implements Disposable {
 		GL30.glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	public void attachTexture(int point, int texture) {
+	public void attachTexture(int point, Texture texture) {
 		// Bind the frame buffer
 		GL30.glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		// Bind the texture to the frame buffer
-		GL30.glFramebufferTexture2D(GL_FRAMEBUFFER, point, GL_TEXTURE_2D, texture, 0);
+		GL32.glFramebufferTexture(GL_FRAMEBUFFER, point, texture.getID(), 0);
 		// Add the attachment to the outputs if it is a colour type
 		if (isColourAttachment(point)) {
 			this.outputBuffers.add(point);
 		}
 		// Update the output buffers
 		updateOutputBuffers();
+		// Check to see if the frame buffer is complete
+		if (GL30.glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			throw new IllegalStateException("Unable to complete frame buffer!");
+		}
 		// Unbind the frame buffer
 		GL30.glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// Check for errors
-		RenderUtil.checkGLError(true);
+		RenderUtil.checkGLError();
 	}
 
-	public void attachBuffer(int point, int buffer) {
+	public void attachBuffer(int point, RenderBuffer buffer) {
 		// Bind the frame buffer
 		GL30.glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		// Attach the render buffer to the frame buffer
-		GL30.glFramebufferRenderbuffer(GL_FRAMEBUFFER, point, GL_RENDERBUFFER, buffer);
-		RenderUtil.checkGLError(true);
+		GL30.glFramebufferRenderbuffer(GL_FRAMEBUFFER, point, GL_RENDERBUFFER, buffer.getID());
+		RenderUtil.checkGLError();
 		// Add the attachment to the outputs if it is a colour type
 		if (isColourAttachment(point)) {
 			this.outputBuffers.add(point);
 		}
 		// Update the output buffers
 		updateOutputBuffers();
+		// Check to see if the frame buffer is complete
+		if (GL30.glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			throw new IllegalStateException("Unable to complete frame buffer!");
+		}
 		// Unbind the frame buffer
 		GL30.glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// Check for errors
-		RenderUtil.checkGLError(true);
+		RenderUtil.checkGLError();
 	}
 
 	public void detach(int point) {
@@ -111,11 +115,15 @@ public class FrameBuffer implements Disposable {
 		}
 		// Update the output buffers
 		updateOutputBuffers();
+		// Check to see if the frame buffer is complete
+		if (GL30.glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			throw new IllegalStateException("Unable to complete frame buffer!");
+		}
 		// Unbind the frame buffer
 		GL30.glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// Check for errors
-		RenderUtil.checkGLError(true);
+		RenderUtil.checkGLError();
 	}
 
 	@Override
@@ -143,7 +151,7 @@ public class FrameBuffer implements Disposable {
 			GL20.glDrawBuffers(buffer);
 		}
 		// Check for errors
-		RenderUtil.checkGLError(true);
+		RenderUtil.checkGLError();
 	}
 
 	private static boolean isColourAttachment(int attachment) {

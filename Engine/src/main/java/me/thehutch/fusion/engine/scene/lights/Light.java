@@ -22,7 +22,6 @@ import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.scene.lights.ILight;
 import me.thehutch.fusion.engine.render.Program;
 
-
 public abstract class Light implements ILight {
 	protected final Program program;
 	private Vector3 position;
@@ -39,6 +38,7 @@ public abstract class Light implements ILight {
 	}
 
 	public void uploadUniforms() {
+		// Set the light uniforms
 		this.program.setUniform("light.position", position);
 		this.program.setUniform("light.colour", colour);
 	}

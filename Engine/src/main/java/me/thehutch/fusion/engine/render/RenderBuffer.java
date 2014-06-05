@@ -39,7 +39,7 @@ public class RenderBuffer implements Disposable {
 		GL30.glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 		// Check for errors
-		RenderUtil.checkGLError(true);
+		RenderUtil.checkGLError();
 	}
 
 	public int getID() {
@@ -58,6 +58,6 @@ public class RenderBuffer implements Disposable {
 	public void dispose() {
 		GL30.glDeleteRenderbuffers(rbo);
 		// Check for errors
-		RenderUtil.checkGLError(true);
+		RenderUtil.checkGLError();
 	}
 }
