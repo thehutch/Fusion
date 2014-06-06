@@ -159,8 +159,10 @@ public enum Key {
 	private final int keycode;
 
 	static {
-		for (int i = 0; i < Key.values().length; ++i) {
-			final Key keycode = Key.values()[i];
+		final Key[] keys = Key.values();
+		final int numKeys = keys.length;
+		for (int i = 0; i < numKeys; ++i) {
+			final Key keycode = keys[i];
 			KEYCODES.put(keycode.getKeycode(), keycode);
 		}
 	}

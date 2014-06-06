@@ -45,6 +45,18 @@ public interface IFileSystem {
 	public InputStream getResourceStream(Path path);
 
 	/**
+	 * Unloads the resource at the given path from the file system.
+	 *
+	 * @param path The path to the resource
+	 */
+	public void unload(Path path);
+
+	/**
+	 * Releases all resource held by the file system.
+	 */
+	public void release();
+
+	/**
 	 * Registers the loader with the file system to load any resources using the given extensions.
 	 *
 	 * @param loader     The loader

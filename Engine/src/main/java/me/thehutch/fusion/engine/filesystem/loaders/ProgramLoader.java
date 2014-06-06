@@ -40,7 +40,7 @@ public class ProgramLoader extends ResourceLoader<Program> {
 	}
 
 	@Override
-	protected Program load(Path path) {
+	public Program load(Path path) {
 		try (final Stream<String> lines = Files.lines(path)) {
 			final Program program = new Program();
 			lines.forEach((String line) -> {
@@ -69,6 +69,17 @@ public class ProgramLoader extends ResourceLoader<Program> {
 			return program;
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to load model: " + path, ex);
+		}
+	}
+
+	@Override
+	public void unload(Path path) {
+		final Program resource = resources.get(path);
+		if (resource != null) {
+			// Dispose of the resource
+			resource.dispose();
+			// Remove the resource from the cache
+			this.resources.remove(path);
 		}
 	}
 

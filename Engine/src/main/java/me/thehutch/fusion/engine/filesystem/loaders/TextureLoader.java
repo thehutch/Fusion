@@ -53,7 +53,7 @@ public class TextureLoader extends ResourceLoader<Texture> {
 	}
 
 	@Override
-	protected Texture load(Path path) {
+	public Texture load(Path path) {
 		// Open a stream to the resource
 		try (final InputStream stream = Files.newInputStream(path, StandardOpenOption.READ)) {
 			// Read the image into a buffered image
@@ -105,6 +105,17 @@ public class TextureLoader extends ResourceLoader<Texture> {
 			return texture;
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to load texture: " + path, ex);
+		}
+	}
+
+	@Override
+	public void unload(Path path) {
+		final Texture resource = resources.get(path);
+		if (resource != null) {
+			// Dispose of the resource
+			resource.dispose();
+			// Remove the resource from the cache
+			this.resources.remove(path);
 		}
 	}
 }

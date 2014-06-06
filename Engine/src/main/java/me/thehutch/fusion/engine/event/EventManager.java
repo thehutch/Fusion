@@ -36,12 +36,11 @@ public class EventManager implements IEventManager {
 	public <T extends Event> T callEvent(T event) {
 		final SortedSet<EventExecutor> executors = events.get(event.getClass());
 		// Check if there are any event executors for this event
-		if (executors == null) {
-			return event;
+		if (executors != null) {
+			executors.stream().forEach((EventExecutor executor) -> {
+				executor.execute(event);
+			});
 		}
-		executors.stream().forEach((EventExecutor executor) -> {
-			executor.execute(event);
-		});
 		return event;
 	}
 

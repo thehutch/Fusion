@@ -72,7 +72,7 @@ public class WavefrontOBJLoader {
 	/**
 	 * Loads a .obj file, storing the data in the provided lists. After loading, the input stream will be closed.
 	 * Note that normal and/or texture coord attributes might be missing from the .obj file. If this is the case, their lists will be empty.
-	 * The indices are stored in the indices list.
+	 * Passing null lists for the texture coords or normals will result in no loading of their data. The indices are stored in the indices list.\
 	 *
 	 * @param stream        The input stream for the .obj file
 	 * @param positions     The list in which to store the positions
@@ -92,9 +92,9 @@ public class WavefrontOBJLoader {
 		lines.forEachOrdered((String line) -> {
 			if (line.startsWith(POSITION_PREFIX + COMPONENT_SEPARATOR)) {
 				parseComponents(positions, line);
-			} else if (line.startsWith(TEXTURE_PREFIX + COMPONENT_SEPARATOR)) {
+			} else if (textureCoords != null && line.startsWith(TEXTURE_PREFIX + COMPONENT_SEPARATOR)) {
 				parseComponents(rawTextureCoords, line);
-			} else if (line.startsWith(NORMAL_PREFIX + COMPONENT_SEPARATOR)) {
+			} else if (normals != null && line.startsWith(NORMAL_PREFIX + COMPONENT_SEPARATOR)) {
 				parseComponents(rawNormalComponents, line);
 			} else if (line.startsWith(INDEX_PREFIX + COMPONENT_SEPARATOR)) {
 				parseIndices(indices, textureCoordIndices, normalIndices, line);
@@ -105,19 +105,19 @@ public class WavefrontOBJLoader {
 
 		final boolean hasTextureCoords;
 		final boolean hasNormals;
-		if (!textureCoordIndices.isEmpty() && !rawTextureCoords.isEmpty()) {
+		if (textureCoords != null && !textureCoordIndices.isEmpty() && !rawTextureCoords.isEmpty()) {
 			textureCoords.fill(0, positions.size() / POSITION_SIZE * TEXCOORD_SIZE, 0);
 			hasTextureCoords = true;
 		} else {
 			hasTextureCoords = false;
 		}
-		if (!normalIndices.isEmpty() && !rawNormalComponents.isEmpty()) {
+		if (normals != null && !normalIndices.isEmpty() && !rawNormalComponents.isEmpty()) {
 			normals.fill(0, positions.size() / POSITION_SIZE * NORMAL_SIZE, 0);
 			hasNormals = true;
 		} else {
 			hasNormals = false;
 		}
-		if (hasTextureCoords) {
+		if (textureCoords != null && hasTextureCoords) {
 			for (int i = 0; i < textureCoordIndices.size(); i++) {
 				final int textureCoordIndex = textureCoordIndices.get(i) * TEXCOORD_SIZE;
 				final int positionIndex = indices.get(i) * TEXCOORD_SIZE;
@@ -126,7 +126,7 @@ public class WavefrontOBJLoader {
 				}
 			}
 		}
-		if (hasNormals) {
+		if (normals != null && hasNormals) {
 			for (int i = 0; i < normalIndices.size(); i++) {
 				final int normalIndex = normalIndices.get(i) * NORMAL_SIZE;
 				final int positionIndex = indices.get(i) * NORMAL_SIZE;

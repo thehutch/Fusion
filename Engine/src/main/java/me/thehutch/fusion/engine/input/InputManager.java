@@ -105,9 +105,9 @@ public final class InputManager implements IInputManager {
 			Set<Runnable> functions = keyBindings.get(keys[i]);
 			if (functions == null) {
 				functions = new THashSet<>();
+				this.keyBindings.put(keys[i], functions);
 			}
 			functions.add(function);
-			this.keyBindings.put(keys[i], functions);
 		}
 	}
 

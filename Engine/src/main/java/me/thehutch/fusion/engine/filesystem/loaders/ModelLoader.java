@@ -63,6 +63,17 @@ public class ModelLoader extends ResourceLoader<ModelData> {
 		}
 	}
 
+	@Override
+	public void unload(Path path) {
+		final ModelData resource = resources.get(path);
+		if (resource != null) {
+			// Dispose of the resource
+			resource.dispose();
+			// Remove the resource from the cache
+			this.resources.remove(path);
+		}
+	}
+
 	private static Path getPath(String line) {
 		return FileSystem.DATA_DIRECTORY.resolve(line.substring(line.indexOf(':', 0) + 1).trim());
 	}

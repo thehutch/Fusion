@@ -69,6 +69,23 @@ public class FileSystem implements IFileSystem {
 	}
 
 	@Override
+	public void unload(Path path) {
+		// Calculate the file extension
+		final String extension = path.toString().substring(path.toString().lastIndexOf('.') + 1);
+		// Unload the resource
+		loaders.get(extension).unload(path);
+	}
+
+	@Override
+	public void release() {
+		this.loaders.forEach((String extension, ResourceLoader<?> loader) -> {
+			loader.dispose();
+			System.out.format("Unloaded resources: extension = %s%n", extension);
+		});
+		this.loaders.clear();
+	}
+
+	@Override
 	public void registerLoader(ResourceLoader<?> loader, String... extensions) {
 		for (String extension : extensions) {
 			this.loaders.put(extension, loader);

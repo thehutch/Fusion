@@ -46,11 +46,29 @@ public abstract class ResourceLoader<T> implements Disposable {
 	}
 
 	/**
+	 * Checks if the resource is loaded into the file system.
+	 *
+	 * @param path The path to the resource
+	 *
+	 * @return True if the resource is already loaded
+	 */
+	public boolean isLoaded(Path path) {
+		return resources.containsKey(path);
+	}
+
+	/**
 	 * Loads a resource at the given path.
 	 *
 	 * @param path The path to the resource
 	 *
 	 * @return The loaded resource
 	 */
-	protected abstract T load(Path path);
+	public abstract T load(Path path);
+
+	/**
+	 * Unloads the resource at the given path.
+	 *
+	 * @param path The path to the resource
+	 */
+	public abstract void unload(Path path);
 }
