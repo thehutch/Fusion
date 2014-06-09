@@ -52,11 +52,6 @@ public interface IFileSystem {
 	public void unload(Path path);
 
 	/**
-	 * Releases all resource held by the file system.
-	 */
-	public void release();
-
-	/**
 	 * Registers the loader with the file system to load any resources using the given extensions.
 	 *
 	 * @param loader     The loader

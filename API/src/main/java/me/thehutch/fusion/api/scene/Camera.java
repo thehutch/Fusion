@@ -84,7 +84,6 @@ public class Camera implements ISceneNode {
 		move(dx, 0.0f, 0.0f);
 	}
 
-	@Override
 	public void moveLocalX(float dx) {
 		this.position = getPosition().add(getRight().mul(dx));
 		this.dirty = true;
@@ -95,7 +94,6 @@ public class Camera implements ISceneNode {
 		move(0.0f, dy, 0.0f);
 	}
 
-	@Override
 	public void moveLocalY(float dy) {
 		this.position = getPosition().add(getUp().mul(dy));
 		this.dirty = true;
@@ -106,7 +104,6 @@ public class Camera implements ISceneNode {
 		move(0.0f, 0.0f, dz);
 	}
 
-	@Override
 	public void moveLocalZ(float dz) {
 		this.position = getPosition().add(getForward().mul(dz));
 		this.dirty = true;
@@ -124,28 +121,13 @@ public class Camera implements ISceneNode {
 	}
 
 	@Override
-	public void rotateLocalX(float angle) {
-		rotate(Quaternion.fromAxisAngleRad(toCamera(getRight()), angle));
-	}
-
-	@Override
 	public void rotateY(float angle) {
 		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_Y, angle));
 	}
 
 	@Override
-	public void rotateLocalY(float angle) {
-		rotate(Quaternion.fromAxisAngleRad(toCamera(getUp()), angle));
-	}
-
-	@Override
 	public void rotateZ(float angle) {
 		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_Z, angle));
-	}
-
-	@Override
-	public void rotateLocalZ(float angle) {
-		rotate(Quaternion.fromAxisAngleRad(toCamera(getForward()), angle));
 	}
 
 	@Override

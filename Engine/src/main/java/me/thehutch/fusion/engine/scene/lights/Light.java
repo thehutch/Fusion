@@ -75,37 +75,22 @@ public abstract class Light implements ILight {
 
 	@Override
 	public void moveX(float dx) {
-		throw new UnsupportedOperationException("moveX in class Light is not supported yet.");
-	}
-
-	@Override
-	public void moveLocalX(float dx) {
-		throw new UnsupportedOperationException("moveLocalX in class Light is not supported yet.");
+		move(dx, 0.0f, 0.0f);
 	}
 
 	@Override
 	public void moveY(float dy) {
-		throw new UnsupportedOperationException("moveY in class Light is not supported yet.");
-	}
-
-	@Override
-	public void moveLocalY(float dy) {
-		throw new UnsupportedOperationException("moveLocalY in class Light is not supported yet.");
+		move(0.0f, dy, 0.0f);
 	}
 
 	@Override
 	public void moveZ(float dz) {
-		throw new UnsupportedOperationException("moveZ in class Light is not supported yet.");
-	}
-
-	@Override
-	public void moveLocalZ(float dz) {
-		throw new UnsupportedOperationException("moveLocalZ in class Light is not supported yet.");
+		move(0.0f, 0.0f, dz);
 	}
 
 	@Override
 	public void move(float dx, float dy, float dz) {
-		throw new UnsupportedOperationException("move in class Light is not supported yet.");
+		this.position = position.add(dx, dy, dz);
 	}
 
 	@Override
@@ -114,28 +99,13 @@ public abstract class Light implements ILight {
 	}
 
 	@Override
-	public void rotateLocalX(float angle) {
-		throw new UnsupportedOperationException("rotateLocalX in class Light is not supported yet.");
-	}
-
-	@Override
 	public void rotateY(float angle) {
 		throw new UnsupportedOperationException("rotateY in class Light is not supported yet.");
 	}
 
 	@Override
-	public void rotateLocalY(float angle) {
-		throw new UnsupportedOperationException("rotateLocalY in class Light is not supported yet.");
-	}
-
-	@Override
 	public void rotateZ(float angle) {
 		throw new UnsupportedOperationException("rotateZ in class Light is not supported yet.");
-	}
-
-	@Override
-	public void rotateLocalZ(float angle) {
-		throw new UnsupportedOperationException("rotateLocalZ in class Light is not supported yet.");
 	}
 
 	@Override

@@ -30,10 +30,11 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import me.thehutch.fusion.api.filesystem.IFileSystem;
 import me.thehutch.fusion.api.filesystem.ResourceLoader;
+import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.Engine;
 import me.thehutch.fusion.engine.scene.Scene;
 
-public class FileSystem implements IFileSystem {
+public class FileSystem implements IFileSystem, Disposable {
 	public static final Path BASE_DIRECTORY = Paths.get(System.getProperty("user.dir"));
 	public static final Path DATA_DIRECTORY = BASE_DIRECTORY.resolve("data");
 	private final TMap<String, ResourceLoader<?>> loaders = new THashMap<>();
@@ -77,19 +78,19 @@ public class FileSystem implements IFileSystem {
 	}
 
 	@Override
-	public void release() {
+	public void registerLoader(ResourceLoader<?> loader, String... extensions) {
+		for (String extension : extensions) {
+			this.loaders.put(extension, loader);
+		}
+	}
+
+	@Override
+	public void dispose() {
 		this.loaders.forEach((String extension, ResourceLoader<?> loader) -> {
 			loader.dispose();
 			System.out.format("Unloaded resources: extension = %s%n", extension);
 		});
 		this.loaders.clear();
-	}
-
-	@Override
-	public void registerLoader(ResourceLoader<?> loader, String... extensions) {
-		for (String extension : extensions) {
-			this.loaders.put(extension, loader);
-		}
 	}
 
 	/**

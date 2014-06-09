@@ -24,7 +24,8 @@ import me.thehutch.fusion.api.util.Disposable;
 
 /**
  * @author thehutch
- * @param <T>
+ *
+ * @param <T> The type of the resource this loader loads
  */
 public abstract class ResourceLoader<T> implements Disposable {
 	protected final TMap<Path, T> resources = new THashMap<>();

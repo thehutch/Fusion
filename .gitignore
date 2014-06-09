@@ -10,4 +10,6 @@
 /Engine/natives/
 /Engine/data/
 /Engine/dependency-reduced-pom.xml
+/Engine/nbactions.xml
+/nb-configuration.xml
 /target/

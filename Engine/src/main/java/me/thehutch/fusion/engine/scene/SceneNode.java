@@ -59,28 +59,13 @@ public abstract class SceneNode implements ISceneNode {
 	}
 
 	@Override
-	public void moveLocalX(float dx) {
-		//this.position = getPosition().add(getRight().mul(dx));
-	}
-
-	@Override
 	public void moveY(float dy) {
 		move(0.0f, dy, 0.0f);
 	}
 
 	@Override
-	public void moveLocalY(float dy) {
-		//this.position = getPosition().add(getUp().mul(dy));
-	}
-
-	@Override
 	public void moveZ(float dz) {
 		move(0.0f, 0.0f, dz);
-	}
-
-	@Override
-	public void moveLocalZ(float dz) {
-		//this.position = getPosition().add(getForward().mul(dz));
 	}
 
 	@Override
@@ -94,28 +79,13 @@ public abstract class SceneNode implements ISceneNode {
 	}
 
 	@Override
-	public void rotateLocalX(float angle) {
-		//rotate(Quaternionf.fromAngleRadAxis(angle, toCamera(getRight())));
-	}
-
-	@Override
 	public void rotateY(float angle) {
 		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_Y, angle));
 	}
 
 	@Override
-	public void rotateLocalY(float angle) {
-		//rotate(Quaternionf.fromAngleRadAxis(angle, toCamera(getUp())));
-	}
-
-	@Override
 	public void rotateZ(float angle) {
 		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_Z, angle));
-	}
-
-	@Override
-	public void rotateLocalZ(float angle) {
-		//rotate(Quaternionf.fromAngleRadAxis(angle, toCamera(getForward())));
 	}
 
 	@Override

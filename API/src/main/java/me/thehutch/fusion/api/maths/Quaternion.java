@@ -99,6 +99,14 @@ public class Quaternion {
 		return new Quaternion(x / scalar, y / scalar, z / scalar, w / scalar);
 	}
 
+	public Vector3 getDirection() {
+		return Matrix3.createRotation(this).transform(Vector3.UNIT_Z);
+	}
+
+	public static Quaternion fromRotationTo(Vector3 from, Vector3 to) {
+		return Quaternion.fromAxisAngleRad(from.cross(to), (float) Math.acos(from.dot(to) / (from.length() * to.length())));
+	}
+
 	public static Quaternion fromAxisAngleDeg(Vector3 axis, float angle) {
 		return fromAxisAngleRad(axis.getX(), axis.getY(), axis.getZ(), MathsHelper.toRadians(angle));
 	}

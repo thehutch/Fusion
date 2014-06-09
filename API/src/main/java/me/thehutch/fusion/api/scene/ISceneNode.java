@@ -35,29 +35,17 @@ public interface ISceneNode extends Disposable {
 
 	public void moveX(float dx);
 
-	public void moveLocalX(float dx);
-
 	public void moveY(float dy);
 
-	public void moveLocalY(float dy);
-
 	public void moveZ(float dz);
-
-	public void moveLocalZ(float dz);
 
 	public void move(float dx, float dy, float dz);
 
 	public void rotateX(float angle);
 
-	public void rotateLocalX(float angle);
-
 	public void rotateY(float angle);
 
-	public void rotateLocalY(float angle);
-
 	public void rotateZ(float angle);
-
-	public void rotateLocalZ(float angle);
 
 	public void rotate(Quaternion rotation);
 }
