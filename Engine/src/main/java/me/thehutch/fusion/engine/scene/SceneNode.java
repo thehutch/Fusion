@@ -54,21 +54,6 @@ public abstract class SceneNode implements ISceneNode {
 	}
 
 	@Override
-	public Vector3 getForward() {
-		return Vector3.UNIT_Z.rotate(rotation);
-	}
-
-	@Override
-	public Vector3 getRight() {
-		return Vector3.UNIT_X.rotate(rotation);
-	}
-
-	@Override
-	public Vector3 getUp() {
-		return Vector3.UNIT_Y.rotate(rotation);
-	}
-
-	@Override
 	public void moveX(float dx) {
 		move(dx, 0.0f, 0.0f);
 	}

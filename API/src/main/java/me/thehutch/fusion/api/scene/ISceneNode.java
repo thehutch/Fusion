@@ -49,15 +49,15 @@ public interface ISceneNode extends Disposable {
 
 	public void rotate(Quaternion rotation);
 
-	default public Vector3 getForward() {
+	public default Vector3 getForward() {
 		return Vector3.UNIT_Z.rotate(getRotation());
 	}
 
-	default public Vector3 getRight() {
+	public default Vector3 getRight() {
 		return Vector3.UNIT_X.rotate(getRotation());
 	}
 
-	default public Vector3 getUp() {
+	public default Vector3 getUp() {
 		return Vector3.UNIT_Y.rotate(getRotation());
 	}
 }
