@@ -17,6 +17,11 @@
  */
 package me.thehutch.fusion.engine;
 
+import static org.lwjgl.opengl.GL11.GL_BACK;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
+
 import me.thehutch.fusion.api.IClient;
 import me.thehutch.fusion.api.Platform;
 import me.thehutch.fusion.api.event.EventPriority;
@@ -28,8 +33,11 @@ import me.thehutch.fusion.api.maths.Quaternion;
 import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.scene.Camera;
 import me.thehutch.fusion.api.scheduler.TaskPriority;
+import me.thehutch.fusion.engine.client.Window;
 import me.thehutch.fusion.engine.input.InputManager;
 import me.thehutch.fusion.engine.scene.Scene;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 
 /**
  * @author thehutch
@@ -38,6 +46,7 @@ public final class Client extends Engine implements IClient {
 	private static final float MOUSE_SENSITIVITY = 10.0f;
 	private static final float MOVE_SPEED = 2.0f;
 	private final InputManager inputManager;
+	private final Window window;
 	private final Scene scene;
 
 	private float cameraPitch;
@@ -45,13 +54,13 @@ public final class Client extends Engine implements IClient {
 
 	protected Client(Application application) {
 		super(application);
-		// TODO: Get the window size either from the commandline or config file
-		this.scene = new Scene(this, Camera.createPerspective(70.0f, 800.0f / 600.0f, 0.01f, 1000.0f));
+		this.window = new Window(this);
+		this.scene = new Scene(this, Camera.createPerspective(70.0f, (float) Display.getWidth() / Display.getHeight(), 0.01f, 1000.0f));
 		this.inputManager = new InputManager(this);
 		// Schedule the input manager task
-		getScheduler().scheduleSyncRepeatingTask(getInputManager()::execute, TaskPriority.CRITICAL, 0L, 1L);
+		getScheduler().scheduleSyncRepeatingTask(inputManager::execute, TaskPriority.CRITICAL, 0L, 1L);
 		// Schedule the scene task
-		getScheduler().scheduleSyncRepeatingTask(getScene()::execute, TaskPriority.CRITICAL, 0L, 1L);
+		getScheduler().scheduleSyncRepeatingTask(scene::execute, TaskPriority.CRITICAL, 0L, 1L);
 
 		getInputManager().setMouseGrabbed(true);
 
@@ -104,11 +113,24 @@ public final class Client extends Engine implements IClient {
 				getScene().getCamera().setRotation(yaw.mul(pitch));
 			}
 		}, MouseMotionEvent.class, EventPriority.HIGH, true);
+
+		// Enable depth testing
+		GL11.glEnable(GL_DEPTH_TEST);
+		GL11.glEnable(GL_DEPTH_CLAMP);
+
+		// Enable face culling
+		GL11.glEnable(GL_CULL_FACE);
+		GL11.glCullFace(GL_BACK);
 	}
 
 	@Override
 	public Scene getScene() {
 		return scene;
+	}
+
+	@Override
+	public Window getWindow() {
+		return window;
 	}
 
 	@Override

@@ -19,7 +19,13 @@ package me.thehutch.fusion.engine.util;
 
 import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Display;
 import org.lwjgl.util.glu.GLU;
 
 /**
@@ -33,6 +39,18 @@ public class RenderUtil {
 		final int status = GL11.glGetError();
 		if (status != GL_NO_ERROR) {
 			throw new IllegalStateException("OpenGL Error: " + GLU.gluErrorString(status));
+		}
+	}
+
+	public static List<DisplayMode> getSupportedResolutions() {
+		try {
+			final DisplayMode[] modes = Display.getAvailableDisplayModes(800, 600, 1920, 1080, 24, 24, 50, 60);
+			for (DisplayMode mode : modes) {
+				System.out.format("%dx%d%n", mode.getWidth(), mode.getHeight());
+			}
+			return Collections.unmodifiableList(Arrays.asList(modes));
+		} catch (LWJGLException ex) {
+			throw new IllegalStateException("Unable to retrieve available resolutions!", ex);
 		}
 	}
 }

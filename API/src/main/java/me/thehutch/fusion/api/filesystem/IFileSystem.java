@@ -26,7 +26,7 @@ import java.nio.file.Path;
 public interface IFileSystem {
 	/**
 	 * Retrieves the resource from the file system, if it has not been loaded before then
-	 * the resource will be loaded into memory. To release the resource call {@link #release}.
+	 * the resource will be loaded into memory.
 	 *
 	 * @param <R>  The type of resource to load
 	 * @param path The path to the resource
@@ -49,13 +49,26 @@ public interface IFileSystem {
 	 *
 	 * @param path The path to the resource
 	 */
-	public void unload(Path path);
+	public void unloadResource(Path path);
 
 	/**
-	 * Registers the loader with the file system to load any resources using the given extensions.
+	 * Registers the resource loader with the file system to load any resources using the given extensions.
 	 *
-	 * @param loader     The loader
+	 * @param loader     The resource loader
 	 * @param extensions The file extensions which require this loader
 	 */
 	public void registerLoader(ResourceLoader<?> loader, String... extensions);
+
+	/**
+	 * Returns the file extension associated with a path.
+	 *
+	 * @param path The path to get the extension of
+	 *
+	 * @return The file extension, or null if there is no file extension
+	 */
+	public static String getPathExtension(Path path) {
+		final String pathAsString = path.toString();
+		final int extPos = pathAsString.lastIndexOf('.');
+		return extPos == -1 ? null : pathAsString.substring(extPos + 1);
+	}
 }

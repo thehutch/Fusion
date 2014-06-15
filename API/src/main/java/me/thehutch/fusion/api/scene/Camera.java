@@ -20,14 +20,12 @@ package me.thehutch.fusion.api.scene;
 import me.thehutch.fusion.api.maths.Matrix4;
 import me.thehutch.fusion.api.maths.Quaternion;
 import me.thehutch.fusion.api.maths.Vector3;
-import me.thehutch.fusion.api.maths.Vector4;
 
 /**
  * @author thehutch
  */
 public class Camera implements ISceneNode {
 	private final Matrix4 projection;
-	private Matrix4 inverseRotation;
 	private Matrix4 viewMatrix;
 	private Quaternion rotation;
 	private Vector3 position;
@@ -35,7 +33,6 @@ public class Camera implements ISceneNode {
 
 	private Camera(Matrix4 projection) {
 		this.projection = projection;
-		this.inverseRotation = Matrix4.IDENTITY;
 		this.viewMatrix = Matrix4.IDENTITY;
 		this.rotation = Quaternion.IDENTITY;
 		this.position = Vector3.ZERO;
@@ -48,7 +45,6 @@ public class Camera implements ISceneNode {
 
 	public Matrix4 getViewMatrix() {
 		if (dirty) {
-			this.inverseRotation = Matrix4.createRotation(rotation);
 			final Matrix4 rotationMatrix = Matrix4.createRotation(rotation.invert());
 			final Matrix4 positionMatrix = Matrix4.createTranslation(position.negate());
 			this.viewMatrix = rotationMatrix.mul(positionMatrix);
@@ -140,21 +136,19 @@ public class Camera implements ISceneNode {
 	public void dispose() {
 	}
 
+	@Override
 	public Vector3 getForward() {
-		return toCamera(Vector3.UNIT_Z);
+		return Vector3.UNIT_Z.rotate(rotation);
 	}
 
+	@Override
 	public Vector3 getUp() {
-		return toCamera(Vector3.UNIT_Y);
+		return Vector3.UNIT_Y.rotate(rotation);
 	}
 
+	@Override
 	public Vector3 getRight() {
-		return toCamera(Vector3.UNIT_X);
-	}
-
-	private Vector3 toCamera(Vector3 vec) {
-		final Vector4 transform = inverseRotation.transform(vec.getX(), vec.getY(), vec.getZ(), 1.0f);
-		return new Vector3(transform.getX(), transform.getY(), transform.getZ());
+		return Vector3.UNIT_X.rotate(rotation);
 	}
 
 	public static Camera createPerspective(float fov, float aspectRatio, float near, float far) {

@@ -95,12 +95,23 @@ public class Quaternion {
 							  w * q.w - x * q.x - y * q.y - z * q.z);
 	}
 
+	public Quaternion mul(Vector3 r) {
+		return new Quaternion(w * r.getX() + y * r.getZ() - z * r.getY(),
+							  w * r.getY() + z * r.getX() - x * r.getZ(),
+							  w * r.getZ() + x * r.getY() - y * r.getX(),
+							  -x * r.getX() - y * r.getY() - z * r.getZ());
+	}
+
 	public Quaternion div(float scalar) {
 		return new Quaternion(x / scalar, y / scalar, z / scalar, w / scalar);
 	}
 
 	public Vector3 getDirection() {
 		return Matrix3.createRotation(this).transform(Vector3.UNIT_Z);
+	}
+
+	public Matrix4 toRotationMatrix() {
+		return Matrix4.createRotation(this);
 	}
 
 	public static Quaternion fromRotationTo(Vector3 from, Vector3 to) {

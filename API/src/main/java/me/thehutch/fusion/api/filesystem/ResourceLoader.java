@@ -38,7 +38,7 @@ public abstract class ResourceLoader<T> implements Disposable {
 	 *
 	 * @return The resource
 	 */
-	public T get(Path path) {
+	public final T get(Path path) {
 		final T resource = resources.get(path);
 		if (resource == null) {
 			return load(path);
@@ -53,7 +53,7 @@ public abstract class ResourceLoader<T> implements Disposable {
 	 *
 	 * @return True if the resource is already loaded
 	 */
-	public boolean isLoaded(Path path) {
+	public final boolean isLoaded(Path path) {
 		return resources.containsKey(path);
 	}
 

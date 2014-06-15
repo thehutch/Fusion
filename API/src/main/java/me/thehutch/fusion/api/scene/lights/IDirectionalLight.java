@@ -15,34 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api;
+package me.thehutch.fusion.api.scene.lights;
 
-import me.thehutch.fusion.api.client.IWindow;
-import me.thehutch.fusion.api.input.IInputManager;
-import me.thehutch.fusion.api.scene.IScene;
+import me.thehutch.fusion.api.maths.Vector3;
 
 /**
  * @author thehutch
  */
-public interface IClient extends IEngine {
-	/**
-	 * Gets the scene used by the client.
-	 *
-	 * @return The scene
-	 */
-	public IScene getScene();
+public interface IDirectionalLight extends ILight {
+	public Vector3 getDirection();
 
-	/**
-	 * Gets the window used by the client.
-	 *
-	 * @return The window
-	 */
-	public IWindow getWindow();
-
-	/**
-	 * Gets the input manager used by the client.
-	 *
-	 * @return The input manager
-	 */
-	public IInputManager getInputManager();
+	public void setDirection(Vector3 direction);
 }

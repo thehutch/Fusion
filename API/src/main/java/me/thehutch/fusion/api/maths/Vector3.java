@@ -84,6 +84,11 @@ public class Vector3 {
 		return new Vector3(y * vec.z - z * vec.y, z * vec.x - x * vec.z, x * vec.y - y * vec.x);
 	}
 
+	public Vector3 rotate(Quaternion rotation) {
+		final Quaternion q = rotation.mul(this).mul(rotation.conjugate());
+		return new Vector3(q.getX(), q.getY(), q.getZ());
+	}
+
 	public Vector3 normalise() {
 		final float length = length();
 		return new Vector3(x / length, y / length, z / length);

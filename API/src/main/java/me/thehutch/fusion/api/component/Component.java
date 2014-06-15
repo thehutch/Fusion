@@ -25,21 +25,43 @@ import me.thehutch.fusion.api.util.Tickable;
  * @param <T> The type of the owner of this component
  */
 public abstract class Component<T> extends Tickable {
-	private final T owner;
+	private T owner;
 
-	public Component(T owner) {
-		this.owner = owner;
-	}
-
+	/**
+	 * Retrieves the owner of this component.
+	 *
+	 * @return The component owner
+	 */
 	public T getOwner() {
 		return owner;
 	}
 
+	/**
+	 * Called when the component is attached.
+	 */
 	protected abstract void onAttach();
 
+	/**
+	 * Called when the component is detached. Should be used to release any resources.
+	 */
 	protected abstract void onDetach();
 
+	/**
+	 * @return True if this component can be detached from its owner.
+	 */
 	protected boolean isDetachable() {
 		return true;
+	}
+
+	/**
+	 * Attaches this component to a component holder.
+	 *
+	 * @param owner The owner this component is attached to
+	 */
+	void attach(T owner) {
+		if (this.owner != null) {
+			throw new IllegalStateException("Component can not be attached to more than one owner!");
+		}
+		this.owner = owner;
 	}
 }

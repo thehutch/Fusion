@@ -54,10 +54,8 @@ public class FileSystem implements IFileSystem, Disposable {
 
 	@Override
 	public <R> R getResource(Path path) {
-		// Calculate the file extension
-		final String extension = path.toString().substring(path.toString().lastIndexOf('.') + 1);
 		// Retrieve the loader for the file extension
-		return (R) loaders.get(extension).get(path);
+		return (R) loaders.get(IFileSystem.getPathExtension(path)).get(path);
 	}
 
 	@Override
@@ -70,11 +68,8 @@ public class FileSystem implements IFileSystem, Disposable {
 	}
 
 	@Override
-	public void unload(Path path) {
-		// Calculate the file extension
-		final String extension = path.toString().substring(path.toString().lastIndexOf('.') + 1);
-		// Unload the resource
-		loaders.get(extension).unload(path);
+	public void unloadResource(Path path) {
+		this.loaders.get(IFileSystem.getPathExtension(path)).unload(path);
 	}
 
 	@Override

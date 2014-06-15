@@ -18,9 +18,10 @@
 package me.thehutch.fusion.engine.scene.lights;
 
 import me.thehutch.fusion.api.maths.Vector3;
+import me.thehutch.fusion.api.scene.lights.IDirectionalLight;
 import me.thehutch.fusion.engine.render.Program;
 
-public class DirectionalLight extends Light {
+public class DirectionalLight extends Light implements IDirectionalLight {
 	private Vector3 direction;
 
 	public DirectionalLight(Program program, Vector3 colour, Vector3 direction) {
@@ -28,10 +29,12 @@ public class DirectionalLight extends Light {
 		this.direction = direction;
 	}
 
+	@Override
 	public Vector3 getDirection() {
 		return direction;
 	}
 
+	@Override
 	public void setDirection(Vector3 direction) {
 		this.direction = direction;
 	}
