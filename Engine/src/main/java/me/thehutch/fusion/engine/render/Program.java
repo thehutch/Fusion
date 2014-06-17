@@ -102,9 +102,10 @@ public class Program implements Disposable {
 		RenderUtil.checkGLError();
 
 		// Load the program uniforms
+		final int maxNameLength = GL20.glGetProgrami(id, GL_ACTIVE_UNIFORM_MAX_LENGTH);
 		final int uniformCount = GL20.glGetProgrami(id, GL_ACTIVE_UNIFORMS);
 		for (int i = 0; i < uniformCount; ++i) {
-			final String name = GL20.glGetActiveUniform(id, i, GL20.glGetProgrami(id, GL_ACTIVE_UNIFORM_MAX_LENGTH));
+			final String name = GL20.glGetActiveUniform(id, i, maxNameLength);
 			this.uniforms.put(name, GL20.glGetUniformLocation(id, name));
 		}
 		// Check for errors

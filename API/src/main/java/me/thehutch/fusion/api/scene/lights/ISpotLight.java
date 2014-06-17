@@ -17,17 +17,21 @@
  */
 package me.thehutch.fusion.api.scene.lights;
 
-import me.thehutch.fusion.api.maths.Vector3;
-
 /**
  * @author thehutch
  */
-public interface ISpotLight extends IPointLight {
+public interface ISpotLight extends IDirectionalLight, IPointLight {
+	/**
+	 * Gets the angle of the spotlight.
+	 *
+	 * @return The angle
+	 */
 	public float getAngle();
 
+	/**
+	 * Sets the angle of the spotlight.
+	 *
+	 * @param angle The angle
+	 */
 	public void setAngle(float angle);
-
-	public Vector3 getDirection();
-
-	public void setDirection(Vector3 direction);
 }

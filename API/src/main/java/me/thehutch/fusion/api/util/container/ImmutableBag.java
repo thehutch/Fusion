@@ -15,25 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api.scene.lights;
-
-import me.thehutch.fusion.api.maths.Vector3;
+package me.thehutch.fusion.api.util.container;
 
 /**
  * @author thehutch
+ * @param <E> The element type this bag contains
  */
-public interface IDirectionalLight extends ILight {
-	/**
-	 * Gets the direction of the light.
-	 *
-	 * @return The direction of the light
-	 */
-	public Vector3 getDirection();
+public interface ImmutableBag<E> {
+	public E get(int index);
 
-	/**
-	 * Sets the direction of the light.
-	 *
-	 * @param direction The direction of the light
-	 */
-	public void setDirection(Vector3 direction);
+	public boolean contains(E obj);
+
+	public int size();
+
+	public int capacity();
+
+	public boolean isEmpty();
 }

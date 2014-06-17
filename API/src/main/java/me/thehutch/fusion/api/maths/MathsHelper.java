@@ -284,4 +284,29 @@ public class MathsHelper {
 		final float coeff2 = (float) (Math.sin(percent * theta) / sinTheta * inverted);
 		return a.mul(coeff1).add(b.mul(coeff2));
 	}
+
+	/**
+	 * Calculates the square root of the given value. Uses a fast implementation
+	 * to calculate the square root so accuracy is limited.
+	 *
+	 * @param x The value
+	 *
+	 * @return The square root of the value
+	 */
+	public static float sqrt(float x) {
+		return x * inverseSqrt(x);
+	}
+
+	/**
+	 * Calculates the inverse square root of the given value.
+	 *
+	 * @param value The value
+	 *
+	 * @return The inverse square root of the value
+	 */
+	private static float inverseSqrt(float value) {
+		final float xhalves = 0.5f * value;
+		final float x = Float.intBitsToFloat(0x5F3759DF - (Float.floatToRawIntBits(value) >> 1));
+		return x * (1.5f - xhalves * x * x);
+	}
 }

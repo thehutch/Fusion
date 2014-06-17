@@ -15,25 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api.scene.lights;
-
-import me.thehutch.fusion.api.maths.Vector3;
+package me.thehutch.fusion.api.component;
 
 /**
  * @author thehutch
  */
-public interface IDirectionalLight extends ILight {
-	/**
-	 * Gets the direction of the light.
-	 *
-	 * @return The direction of the light
-	 */
-	public Vector3 getDirection();
+public abstract class Manager implements EntityObserver {
+	private System system;
 
-	/**
-	 * Sets the direction of the light.
-	 *
-	 * @param direction The direction of the light
-	 */
-	public void setDirection(Vector3 direction);
+	protected abstract void initialise();
+
+	protected System getSystem() {
+		return system;
+	}
+
+	protected void setSystem(System system) {
+		this.system = system;
+	}
 }

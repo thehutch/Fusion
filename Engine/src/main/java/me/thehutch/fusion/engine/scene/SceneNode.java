@@ -26,8 +26,13 @@ import me.thehutch.fusion.engine.render.Program;
  * @author thehutch
  */
 public abstract class SceneNode implements ISceneNode {
-	protected Quaternion rotation;
-	protected Vector3 position;
+	private Quaternion rotation;
+	private Vector3 position;
+
+	public SceneNode() {
+		this.rotation = Quaternion.IDENTITY;
+		this.position = Vector3.ZERO;
+	}
 
 	public abstract void update(float delta);
 

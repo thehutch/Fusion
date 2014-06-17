@@ -18,8 +18,6 @@
 package me.thehutch.fusion.engine.scene;
 
 import me.thehutch.fusion.api.maths.Matrix4;
-import me.thehutch.fusion.api.maths.Quaternion;
-import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.maths.Vector4;
 import me.thehutch.fusion.api.scene.IModel;
 import me.thehutch.fusion.api.util.Disposable;
@@ -35,9 +33,6 @@ public class Model extends SceneNode implements IModel {
 	protected Model(ModelData data, Material material) {
 		this.data = data;
 		this.material = material;
-
-		this.rotation = Quaternion.IDENTITY;
-		this.position = Vector3.ZERO;
 		this.scale = Vector4.ONE;
 	}
 
@@ -51,7 +46,7 @@ public class Model extends SceneNode implements IModel {
 		this.data.texture.bind(0);
 		program.setUniform("material", 0);
 
-		final Matrix4 modelMatrix = Matrix4.createScale(scale).rotate(rotation).translate(position);
+		final Matrix4 modelMatrix = Matrix4.createScale(getScale()).rotate(getRotation()).translate(getPosition());
 		// Set the model matrix
 		program.setUniform("modelMatrix", modelMatrix);
 		program.setUniform("normalMatrix", modelMatrix.invert().transpose().toMatrix3());

@@ -15,25 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api.scene.lights;
+package me.thehutch.fusion.api.component.annotations;
 
-import me.thehutch.fusion.api.maths.Vector3;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author thehutch
  */
-public interface IDirectionalLight extends ILight {
-	/**
-	 * Gets the direction of the light.
-	 *
-	 * @return The direction of the light
-	 */
-	public Vector3 getDirection();
-
-	/**
-	 * Sets the direction of the light.
-	 *
-	 * @param direction The direction of the light
-	 */
-	public void setDirection(Vector3 direction);
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Mapper {
 }

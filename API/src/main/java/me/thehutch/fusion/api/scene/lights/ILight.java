@@ -24,7 +24,17 @@ import me.thehutch.fusion.api.scene.ISceneNode;
  * @author thehutch
  */
 public interface ILight extends ISceneNode {
+	/**
+	 * Gets the colour of the light in RGB format.
+	 *
+	 * @return The colour of the light
+	 */
 	public Vector3 getColour();
 
+	/**
+	 * Sets the colour of the light in the format RGB.
+	 *
+	 * @param colour The new colour of the light
+	 */
 	public void setColour(Vector3 colour);
 }

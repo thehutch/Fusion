@@ -21,7 +21,17 @@ package me.thehutch.fusion.api.scene.lights;
  * @author thehutch
  */
 public interface IPointLight extends ILight {
+	/**
+	 * Gets the attenuation of the light. The rate at which the light intensity drops.
+	 *
+	 * @return The attenuation
+	 */
 	public float getAttenuation();
 
+	/**
+	 * Sets the attenuation of the light. The rate at which the light intensity drops.
+	 *
+	 * @param attenuation The attenuation
+	 */
 	public void setAttenuation(float attenuation);
 }
