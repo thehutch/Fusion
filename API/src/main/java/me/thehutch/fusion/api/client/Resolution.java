@@ -1,5 +1,5 @@
 /*
- * This file is part of Engine.
+ * This file is part of API.
  *
  * Copyright (c) 2014 thehutch.
  *
@@ -15,24 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.engine.util;
-
-import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
+package me.thehutch.fusion.api.client;
 
 /**
  * @author thehutch
  */
-public class RenderUtil {
-	private RenderUtil() {
+public class Resolution {
+	private final int width;
+	private final int height;
+
+	public Resolution(int width, int height) {
+		this.width = width;
+		this.height = height;
 	}
 
-	public static void checkGLError() {
-		final int status = GL11.glGetError();
-		if (status != GL_NO_ERROR) {
-			throw new IllegalStateException("OpenGL Error: " + GLU.gluErrorString(status));
-		}
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public float getAspectRatio() {
+		return (float) width / height;
 	}
 }

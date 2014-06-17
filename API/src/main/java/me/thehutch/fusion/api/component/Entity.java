@@ -27,7 +27,7 @@ import me.thehutch.fusion.api.util.container.Bag;
 public final class Entity {
 	private final ComponentManager componentManager;
 	private final EntityManager entityManager;
-	private final System system;
+	private final ComponentSystem system;
 
 	private final BitSet componentBits;
 	private final BitSet processorBits;
@@ -35,7 +35,7 @@ public final class Entity {
 	private final int id;
 	private UUID uuid;
 
-	protected Entity(System system, int id) {
+	protected Entity(ComponentSystem system, int id) {
 		this.componentManager = system.getComponentManager();
 		this.entityManager = system.getEntityManager();
 		this.system = system;
@@ -56,7 +56,7 @@ public final class Entity {
 		return uuid;
 	}
 
-	public System getSystem() {
+	public ComponentSystem getSystem() {
 		return system;
 	}
 

@@ -20,6 +20,7 @@ package me.thehutch.fusion.engine;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.thehutch.fusion.api.IEngine;
+import me.thehutch.fusion.api.component.ComponentSystem;
 import me.thehutch.fusion.engine.event.EventManager;
 import me.thehutch.fusion.engine.filesystem.FileSystem;
 import me.thehutch.fusion.engine.scheduler.Scheduler;
@@ -34,7 +35,9 @@ public abstract class Engine implements IEngine {
 	public static final int ENGINE_BUILD_VERSION = 1;
 	public static final String ENGINE_VERSION = ENGINE_MAJOR_VERSION + "." + ENGINE_MINOR_VERSION + "." + ENGINE_BUILD_VERSION;
 	private static final Logger LOGGER = Logger.getLogger("Fusion-" + ENGINE_VERSION);
+	private static final long TICKS_PER_SECOND = 60L;
 	private final EventManager eventManager;
+	private final ComponentSystem system;
 	private final FileSystem fileSystem;
 	private final Scheduler scheduler;
 	private final boolean debug;
@@ -42,8 +45,9 @@ public abstract class Engine implements IEngine {
 	protected Engine(Application application) {
 		// Initialise Debug Status
 		this.debug = application.debug;
-		this.scheduler = new Scheduler(60L);
+		this.scheduler = new Scheduler(TICKS_PER_SECOND);
 		this.eventManager = new EventManager();
+		this.system = new ComponentSystem();
 		this.fileSystem = new FileSystem();
 	}
 
@@ -70,6 +74,11 @@ public abstract class Engine implements IEngine {
 	@Override
 	public FileSystem getFileSystem() {
 		return fileSystem;
+	}
+
+	@Override
+	public ComponentSystem getComponentSystem() {
+		return system;
 	}
 
 	@Override

@@ -17,7 +17,6 @@
  */
 package me.thehutch.fusion.api.component;
 
-import gnu.trove.impl.Constants;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import java.util.BitSet;
@@ -32,7 +31,7 @@ public abstract class EntityProcessor implements EntityObserver {
 	private final Aspect aspect;
 	private final int index;
 	private boolean passive;
-	protected System system;
+	protected ComponentSystem system;
 
 	public EntityProcessor(Aspect aspect) {
 		this.index = ProcessorIndexManager.getIndexFor(getClass());
@@ -138,7 +137,7 @@ public abstract class EntityProcessor implements EntityObserver {
 		}
 	}
 
-	protected final void setSystem(System system) {
+	protected final void setSystem(ComponentSystem system) {
 		this.system = system;
 	}
 
@@ -155,7 +154,7 @@ public abstract class EntityProcessor implements EntityObserver {
 	}
 
 	private static class ProcessorIndexManager {
-		private static final TObjectIntMap<Class<? extends EntityProcessor>> INDICES = new TObjectIntHashMap<>();
+		private static final TObjectIntMap<Class<? extends EntityProcessor>> INDICES = new TObjectIntHashMap<>(4, 0.85f, -1);
 		private static int INDEX;
 
 		private ProcessorIndexManager() {
@@ -163,7 +162,7 @@ public abstract class EntityProcessor implements EntityObserver {
 
 		private static int getIndexFor(Class<? extends EntityProcessor> es) {
 			int index = INDICES.get(es);
-			if (index == Constants.DEFAULT_INT_NO_ENTRY_VALUE) {
+			if (index == INDICES.getNoEntryValue()) {
 				index = INDEX++;
 				INDICES.put(es, index);
 			}

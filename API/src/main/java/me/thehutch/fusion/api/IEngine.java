@@ -18,6 +18,7 @@
 package me.thehutch.fusion.api;
 
 import java.util.logging.Logger;
+import me.thehutch.fusion.api.component.ComponentSystem;
 import me.thehutch.fusion.api.event.IEventManager;
 import me.thehutch.fusion.api.filesystem.IFileSystem;
 import me.thehutch.fusion.api.scheduler.IScheduler;
@@ -67,6 +68,13 @@ public interface IEngine {
 	 * @return The file system
 	 */
 	public IFileSystem getFileSystem();
+
+	/**
+	 * Gets the {@link ComponentSystem} used by the engine.
+	 *
+	 * @return The component system
+	 */
+	public ComponentSystem getComponentSystem();
 
 	/**
 	 * Returns true if debug mode is enabled. Debug mode is more verbose and

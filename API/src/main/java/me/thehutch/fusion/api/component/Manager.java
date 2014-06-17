@@ -21,15 +21,15 @@ package me.thehutch.fusion.api.component;
  * @author thehutch
  */
 public abstract class Manager implements EntityObserver {
-	private System system;
+	private ComponentSystem system;
 
 	protected abstract void initialise();
 
-	protected System getSystem() {
+	protected ComponentSystem getSystem() {
 		return system;
 	}
 
-	protected void setSystem(System system) {
+	protected void setSystem(ComponentSystem system) {
 		this.system = system;
 	}
 }

@@ -27,7 +27,7 @@ public final class ComponentMapper<T extends Component> {
 	private final Bag<Component> components;
 	private final Class<T> classType;
 
-	public ComponentMapper(Class<T> type, System system) {
+	public ComponentMapper(Class<T> type, ComponentSystem system) {
 		this.components = system.getComponentManager().getComponentsByType(ComponentType.getTypeFor(type));
 		this.classType = type;
 	}
@@ -47,7 +47,7 @@ public final class ComponentMapper<T extends Component> {
 		return getSafe(e) != null;
 	}
 
-	public static <T extends Component> ComponentMapper<T> getFor(Class<T> type, System system) {
+	public static <T extends Component> ComponentMapper<T> getFor(Class<T> type, ComponentSystem system) {
 		return new ComponentMapper<>(type, system);
 	}
 }

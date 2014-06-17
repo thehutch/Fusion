@@ -28,7 +28,7 @@ import me.thehutch.fusion.api.util.container.ImmutableBag;
 /**
  * @author thehutch
  */
-public final class System {
+public final class ComponentSystem {
 	/*
 	 * The managers of this system
 	 */
@@ -58,7 +58,7 @@ public final class System {
 
 	private float delta;
 
-	public System() {
+	public ComponentSystem() {
 		this.componentManager = new ComponentManager();
 		addManager(componentManager);
 
@@ -226,7 +226,7 @@ public final class System {
 		}
 	}
 
-	public static void config(Object target, System system) {
+	public static void config(Object target, ComponentSystem system) {
 		try {
 			final Class<?> clazz = target.getClass();
 			for (Field field : clazz.getDeclaredFields()) {

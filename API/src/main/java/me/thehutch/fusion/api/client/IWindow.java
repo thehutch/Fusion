@@ -17,16 +17,32 @@
  */
 package me.thehutch.fusion.api.client;
 
+import java.util.Collection;
+
 /**
  * @author thehutch
  */
 public interface IWindow {
+	/**
+	 * Gets the resolution of the window.
+	 *
+	 * @return The window resolution
+	 */
+	public Resolution getResolution();
+
 	/**
 	 * Sets the text of the title bar of the window.
 	 *
 	 * @param title The title text
 	 */
 	public void setWindowTitle(String title);
+
+	/**
+	 * Sets the resolution of the window.
+	 *
+	 * @param resolution The window resolution
+	 */
+	public void setWindowSize(Resolution resolution);
 
 	/**
 	 * Sets the dimensions of the window.
@@ -58,4 +74,11 @@ public interface IWindow {
 	 * @param blue  The blue channel value
 	 */
 	public void setBackgroundColour(float red, float green, float blue);
+
+	/**
+	 * Gets all the supported resolutions of the system.
+	 *
+	 * @return The supported resolutions
+	 */
+	public Collection<Resolution> getSupportedResolutions();
 }

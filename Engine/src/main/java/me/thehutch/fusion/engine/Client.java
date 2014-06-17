@@ -54,7 +54,7 @@ public final class Client extends Engine implements IClient {
 
 	protected Client(Application application) {
 		super(application);
-		this.window = new Window(this);
+		this.window = new Window(getLogger(), 800, 600);
 		this.scene = new Scene(this, Camera.createPerspective(70.0f, (float) Display.getWidth() / Display.getHeight(), 0.01f, 1000.0f));
 		this.inputManager = new InputManager(this);
 		// Schedule the input manager task

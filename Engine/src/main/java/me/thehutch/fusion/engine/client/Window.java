@@ -17,9 +17,12 @@
  */
 package me.thehutch.fusion.engine.client;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.thehutch.fusion.api.client.IWindow;
-import me.thehutch.fusion.engine.Client;
+import me.thehutch.fusion.api.client.Resolution;
 import me.thehutch.fusion.engine.Engine;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextAttribs;
@@ -32,21 +35,28 @@ import org.lwjgl.opengl.PixelFormat;
  * @author thehutch
  */
 public final class Window implements IWindow {
-	private final Client engine;
+	private final Resolution resolution;
+	private final Logger logger;
 
-	public Window(Client engine) {
-		this.engine = engine;
+	public Window(Logger logger, int width, int height) {
+		this.resolution = new Resolution(width, height);
+		this.logger = logger;
 		try {
 			// Set the window settings
 			setWindowTitle("Fusion Engine | " + Engine.ENGINE_VERSION);
-			setWindowSize(800, 600);
+			setWindowSize(width, height);
 			setVSync(true);
 			// Create the window
 			Display.create(new PixelFormat(24, 8, 8, 0, 4), new ContextAttribs(3, 3).withProfileCore(true));
 		} catch (LWJGLException ex) {
-			engine.getLogger().log(Level.SEVERE, "Unable to create window!", ex);
+			this.logger.log(Level.SEVERE, "Unable to create window!", ex);
 		}
 		setBackgroundColour(0.0f, 0.45f, 0.75f);
+	}
+
+	@Override
+	public Resolution getResolution() {
+		return resolution;
 	}
 
 	@Override
@@ -55,11 +65,16 @@ public final class Window implements IWindow {
 	}
 
 	@Override
+	public void setWindowSize(Resolution resolution) {
+		setWindowSize(resolution.getWidth(), resolution.getHeight());
+	}
+
+	@Override
 	public void setWindowSize(int width, int height) {
 		try {
 			Display.setDisplayMode(new DisplayMode(width, height));
 		} catch (LWJGLException ex) {
-			this.engine.getLogger().log(Level.SEVERE, "Unable to set window size!", ex);
+			this.logger.log(Level.SEVERE, "Unable to set window size!", ex);
 		}
 	}
 
@@ -68,7 +83,7 @@ public final class Window implements IWindow {
 		try {
 			Display.setFullscreen(fullscreen);
 		} catch (LWJGLException ex) {
-			this.engine.getLogger().log(Level.SEVERE, "Unable to set fullscreen!", ex);
+			this.logger.log(Level.SEVERE, "Unable to set fullscreen!", ex);
 		}
 	}
 
@@ -81,6 +96,20 @@ public final class Window implements IWindow {
 	public void setBackgroundColour(float red, float green, float blue) {
 		if (Display.isCreated()) {
 			GL11.glClearColor(red, green, blue, 1.0f);
+		}
+	}
+
+	@Override
+	public Collection<Resolution> getSupportedResolutions() {
+		try {
+			final DisplayMode[] modes = Display.getAvailableDisplayModes();
+			final Collection<Resolution> resolutions = new ArrayList<>(modes.length);
+			for (DisplayMode mode : modes) {
+				resolutions.add(new Resolution(mode.getWidth(), mode.getHeight()));
+			}
+			return resolutions;
+		} catch (LWJGLException ex) {
+			throw new IllegalStateException("Unable to retrieve available resolutions!", ex);
 		}
 	}
 }
