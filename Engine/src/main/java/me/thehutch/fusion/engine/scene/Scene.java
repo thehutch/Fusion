@@ -1,5 +1,5 @@
 /*
- * This file is part of Engine.
+ * This file is part of Engine, licensed under the Apache 2.0 License.
  *
  * Copyright (c) 2014 thehutch.
  *
@@ -140,7 +140,7 @@ public final class Scene implements IScene {
 
 	@Override
 	public void removeLight(ILight light) {
-		this.lights.remove((Light) light);
+		this.lights.remove(light);
 		light.dispose();
 	}
 

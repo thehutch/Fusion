@@ -1,6 +1,6 @@
 This file is part of ${name}, licensed under the Apache 2.0 License.
 
-Copyright (c) ${year} ${owner}.
+Copyright (c) ${inceptionYear} ${owner}.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

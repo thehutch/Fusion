@@ -1,5 +1,5 @@
 /*
- * This file is part of API.
+ * This file is part of API, licensed under the Apache 2.0 License.
  *
  * Copyright (c) 2014 thehutch.
  *
