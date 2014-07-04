@@ -21,7 +21,7 @@ import me.thehutch.fusion.api.util.container.Bag;
 
 /**
  * @author thehutch
- * @param <T>
+ * @param <T> The type of component this mapper maps to
  */
 public final class ComponentMapper<T extends Component> {
 	private final Bag<Component> components;

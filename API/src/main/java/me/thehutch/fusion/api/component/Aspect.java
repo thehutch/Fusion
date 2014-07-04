@@ -24,8 +24,8 @@ import java.util.BitSet;
  */
 public final class Aspect {
 	private final BitSet allSet = new BitSet();
-	private final BitSet exclusionSet = new BitSet();
 	private final BitSet oneSet = new BitSet();
+	private final BitSet exclusionSet = new BitSet();
 
 	private Aspect() {
 	}
@@ -38,14 +38,6 @@ public final class Aspect {
 		return this;
 	}
 
-	public Aspect exclude(Class<? extends Component> type, Class<? extends Component>... types) {
-		this.exclusionSet.set(ComponentType.getIndexFor(type));
-		for (Class<? extends Component> t : types) {
-			this.exclusionSet.set(ComponentType.getIndexFor(t));
-		}
-		return this;
-	}
-
 	public Aspect one(Class<? extends Component> type, Class<? extends Component>... types) {
 		this.oneSet.set(ComponentType.getIndexFor(type));
 		for (Class<? extends Component> t : types) {
@@ -54,16 +46,24 @@ public final class Aspect {
 		return this;
 	}
 
+	public Aspect exclude(Class<? extends Component> type, Class<? extends Component>... types) {
+		this.exclusionSet.set(ComponentType.getIndexFor(type));
+		for (Class<? extends Component> t : types) {
+			this.exclusionSet.set(ComponentType.getIndexFor(t));
+		}
+		return this;
+	}
+
 	protected BitSet getAllSet() {
 		return allSet;
 	}
 
-	protected BitSet getExclusionSet() {
-		return exclusionSet;
-	}
-
 	protected BitSet getOneSet() {
 		return oneSet;
+	}
+
+	protected BitSet getExclusionSet() {
+		return exclusionSet;
 	}
 
 	public static Aspect getAspectFor(Class<? extends Component> type, Class<? extends Component>... types) {
