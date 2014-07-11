@@ -24,7 +24,6 @@ import me.thehutch.fusion.api.input.IInputManager;
  * @author thehutch
  */
 public interface IClient extends IEngine {
-
 	/**
 	 * Gets the window used by the client.
 	 *
