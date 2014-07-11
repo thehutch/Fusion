@@ -15,27 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api;
-
-import me.thehutch.fusion.api.client.IWindow;
-import me.thehutch.fusion.api.input.IInputManager;
+package me.thehutch.fusion.api.render.lights;
 
 /**
  * @author thehutch
  */
-public interface IClient extends IEngine {
+public interface IPointLight extends ILight {
+	/**
+	 * Gets the attenuation of the light. The rate at which the light intensity drops.
+	 *
+	 * @return The attenuation
+	 */
+	public float getAttenuation();
 
 	/**
-	 * Gets the window used by the client.
+	 * Sets the attenuation of the light. The rate at which the light intensity drops.
 	 *
-	 * @return The window
+	 * @param attenuation The attenuation
 	 */
-	public IWindow getWindow();
-
-	/**
-	 * Gets the input manager used by the client.
-	 *
-	 * @return The input manager
-	 */
-	public IInputManager getInputManager();
+	public void setAttenuation(float attenuation);
 }

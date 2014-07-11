@@ -17,7 +17,6 @@
  */
 package me.thehutch.fusion.api;
 
-import java.util.logging.Logger;
 import me.thehutch.fusion.api.component.ComponentSystem;
 import me.thehutch.fusion.api.event.IEventManager;
 import me.thehutch.fusion.api.filesystem.IFileSystem;
@@ -40,13 +39,6 @@ public interface IEngine {
 	 * @return A string representation of the version
 	 */
 	public String getVersion();
-
-	/**
-	 * Gets the {@link Logger} used by this engine.
-	 *
-	 * @return The logger
-	 */
-	public Logger getLogger();
 
 	/**
 	 * Gets the {@link IScheduler} used by the engine.

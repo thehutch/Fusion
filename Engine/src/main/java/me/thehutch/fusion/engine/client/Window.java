@@ -36,11 +36,9 @@ import org.lwjgl.opengl.PixelFormat;
  */
 public final class Window implements IWindow {
 	private final Resolution resolution;
-	private final Logger logger;
 
 	public Window(Logger logger, int width, int height) {
 		this.resolution = new Resolution(width, height);
-		this.logger = logger;
 		try {
 			// Set the window settings
 			setWindowTitle("Fusion Engine | " + Engine.ENGINE_VERSION);
@@ -49,7 +47,7 @@ public final class Window implements IWindow {
 			// Create the window
 			Display.create(new PixelFormat(24, 8, 8, 0, 4), new ContextAttribs(3, 3).withProfileCore(true));
 		} catch (LWJGLException ex) {
-			this.logger.log(Level.SEVERE, "Unable to create window!", ex);
+			Engine.getLogger().log(Level.SEVERE, "Unable to create window!", ex);
 		}
 		setBackgroundColour(0.0f, 0.45f, 0.75f);
 	}
@@ -74,7 +72,7 @@ public final class Window implements IWindow {
 		try {
 			Display.setDisplayMode(new DisplayMode(width, height));
 		} catch (LWJGLException ex) {
-			this.logger.log(Level.SEVERE, "Unable to set window size!", ex);
+			Engine.getLogger().log(Level.SEVERE, "Unable to set window size!", ex);
 		}
 	}
 
@@ -83,7 +81,7 @@ public final class Window implements IWindow {
 		try {
 			Display.setFullscreen(fullscreen);
 		} catch (LWJGLException ex) {
-			this.logger.log(Level.SEVERE, "Unable to set fullscreen!", ex);
+			Engine.getLogger().log(Level.SEVERE, "Unable to set fullscreen!", ex);
 		}
 	}
 
@@ -111,5 +109,10 @@ public final class Window implements IWindow {
 		} catch (LWJGLException ex) {
 			throw new IllegalStateException("Unable to retrieve available resolutions!", ex);
 		}
+	}
+
+	@Override
+	public void dispose() {
+		Display.destroy();
 	}
 }

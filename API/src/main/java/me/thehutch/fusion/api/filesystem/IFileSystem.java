@@ -25,8 +25,8 @@ import java.nio.file.Path;
  */
 public interface IFileSystem {
 	/**
-	 * Retrieves the resource from the file system, if it has not been loaded before then
-	 * the resource will be loaded into memory.
+	 * Retrieves the resource from the file system. If it has not been
+	 * loaded before then the resource will be loaded into memory.
 	 *
 	 * @param <R>  The type of resource to load
 	 * @param path The path to the resource
@@ -34,6 +34,19 @@ public interface IFileSystem {
 	 * @return The loaded resource
 	 */
 	public <R> R getResource(Path path);
+
+	/**
+	 * Retrieves the resource from the file system. If it has not been
+	 * loaded then it will be loaded if the load parameter is true.
+	 *
+	 * @param <R>  The type of resource to load
+	 * @param path The path to the resource
+	 * @param load True to load the resource if not already
+	 *
+	 * @return The resource, null if it is not already loaded and
+	 *         load is false, or null if it could not be loaded
+	 */
+	public <R> R getResource(Path path, boolean load);
 
 	/**
 	 * Retrieves an input stream to the resource.
@@ -52,23 +65,11 @@ public interface IFileSystem {
 	public void unloadResource(Path path);
 
 	/**
-	 * Registers the resource loader with the file system to load any resources using the given extensions.
+	 * Registers the resource manager with the file system to manage any
+	 * resources loaded using the given extensions.
 	 *
-	 * @param loader     The resource loader
+	 * @param manager    The resource manager
 	 * @param extensions The file extensions which require this loader
 	 */
-	public void registerLoader(ResourceLoader<?> loader, String... extensions);
-
-	/**
-	 * Returns the file extension associated with a path.
-	 *
-	 * @param path The path to get the extension of
-	 *
-	 * @return The file extension, or null if there is no file extension
-	 */
-	public static String getPathExtension(Path path) {
-		final String pathAsString = path.toString();
-		final int extPos = pathAsString.lastIndexOf('.');
-		return extPos == -1 ? null : pathAsString.substring(extPos + 1);
-	}
+	public void registerResourceManager(IResourceManager<?> manager, String... extensions);
 }

@@ -17,11 +17,14 @@
  */
 package me.thehutch.fusion.api.util.container;
 
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 /**
  * @author thehutch
  * @param <E> The element type this bag contains
  */
-public interface ImmutableBag<E> {
+public interface ImmutableBag<E> extends Iterable<E> {
 	public E get(int index);
 
 	public boolean contains(E obj);
@@ -31,4 +34,12 @@ public interface ImmutableBag<E> {
 	public int capacity();
 
 	public boolean isEmpty();
+
+	public default Stream<E> stream() {
+		return StreamSupport.stream(spliterator(), false);
+	}
+
+	public default Stream<E> parallelStream() {
+		return StreamSupport.stream(spliterator(), true);
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * This file is part of API, licensed under the Apache 2.0 License.
+ * This file is part of Engine, licensed under the Apache 2.0 License.
  *
  * Copyright (c) 2014 thehutch.
  *
@@ -15,27 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api;
+package me.thehutch.fusion.engine.render;
 
-import me.thehutch.fusion.api.client.IWindow;
-import me.thehutch.fusion.api.input.IInputManager;
+import me.thehutch.fusion.engine.render.opengl.Program;
 
 /**
  * @author thehutch
  */
-public interface IClient extends IEngine {
+public class Material {
+	private final float shininess;
 
-	/**
-	 * Gets the window used by the client.
-	 *
-	 * @return The window
-	 */
-	public IWindow getWindow();
+	public Material(float shininess) {
+		this.shininess = shininess;
+	}
 
-	/**
-	 * Gets the input manager used by the client.
-	 *
-	 * @return The input manager
-	 */
-	public IInputManager getInputManager();
+	public void uploadUniforms(Program program) {
+		program.setUniform("materialShininess", shininess);
+	}
 }

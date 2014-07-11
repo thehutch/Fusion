@@ -1,0 +1,16 @@
+# Texture source
+IMAGE_DATA: textures/ground.jpg
+
+#Anisotropic filtering
+ANISOTROPIC_FILTERING: 0.0
+
+# Texture compare function
+COMPARE_FUNC: LEQUAL
+
+# Texture filtering
+MIN_FILTER: LINEAR
+MAG_FILTER: LINEAR
+
+# Texture wrap mode
+WRAP_S: REPEAT
+WRAP_T: REPEAT

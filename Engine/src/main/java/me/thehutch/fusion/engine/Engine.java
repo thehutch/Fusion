@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.thehutch.fusion.api.IEngine;
 import me.thehutch.fusion.api.component.ComponentSystem;
+import me.thehutch.fusion.api.scheduler.TaskPriority;
 import me.thehutch.fusion.engine.event.EventManager;
 import me.thehutch.fusion.engine.filesystem.FileSystem;
 import me.thehutch.fusion.engine.scheduler.Scheduler;
@@ -43,22 +44,33 @@ public abstract class Engine implements IEngine {
 	private final boolean debug;
 
 	protected Engine(Application application) {
-		// Initialise Debug Status
+		// Initialise debug status
 		this.debug = application.debug;
+
+		// Create the engine scheduler
 		this.scheduler = new Scheduler(TICKS_PER_SECOND);
+
+		// Create the event manager
 		this.eventManager = new EventManager();
-		this.system = new ComponentSystem();
+
+		// Create the file system
 		this.fileSystem = new FileSystem();
+
+		// Create the component system
+		this.system = new ComponentSystem();
+	}
+
+	public void initialise() {
+		// Schedule the component system task
+		this.scheduler.scheduleSyncRepeatingTask(system::process, TaskPriority.CRITICAL, 0L, 1L);
+
+		// Initialise the component system
+		this.system.initialise();
 	}
 
 	@Override
 	public final String getVersion() {
 		return ENGINE_VERSION;
-	}
-
-	@Override
-	public final Logger getLogger() {
-		return LOGGER;
 	}
 
 	@Override
@@ -72,12 +84,12 @@ public abstract class Engine implements IEngine {
 	}
 
 	@Override
-	public FileSystem getFileSystem() {
+	public final FileSystem getFileSystem() {
 		return fileSystem;
 	}
 
 	@Override
-	public ComponentSystem getComponentSystem() {
+	public final ComponentSystem getComponentSystem() {
 		return system;
 	}
 
@@ -92,5 +104,9 @@ public abstract class Engine implements IEngine {
 		getScheduler().stop();
 
 		getLogger().log(Level.INFO, "Exiting Engine: {0}", reason);
+	}
+
+	public static Logger getLogger() {
+		return LOGGER;
 	}
 }

@@ -93,9 +93,9 @@ public abstract class EntityProcessor implements EntityObserver {
 
 	protected abstract void end();
 
-	protected abstract boolean checkProcessing();
-
 	protected abstract void processEntities(ImmutableBag<Entity> entities);
+
+	protected abstract boolean checkProcessing();
 
 	protected abstract void inserted(Entity e);
 

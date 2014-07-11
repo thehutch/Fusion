@@ -18,7 +18,7 @@
 package me.thehutch.fusion.engine.scheduler;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,12 +30,12 @@ public class SchedulerService {
 	private final BlockingQueue<Task> taskQueue = new LinkedBlockingQueue<>();
 	private final AtomicBoolean running = new AtomicBoolean(true);
 	private final Object lock = new Object();
-	private final List<Thread> threads;
+	private final Collection<Thread> threads;
 
 	public SchedulerService(int threadSize) {
 		this.threads = new ArrayList<>(threadSize);
 		for (int i = 0; i < threadSize; ++i) {
-			this.threads.add(i, new Thread(this::handleRunnable));
+			this.threads.add(new Thread(this::handleRunnable));
 		}
 	}
 

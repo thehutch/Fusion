@@ -1,5 +1,5 @@
 /*
- * This file is part of API, licensed under the Apache 2.0 License.
+ * This file is part of Engine, licensed under the Apache 2.0 License.
  *
  * Copyright (c) 2014 thehutch.
  *
@@ -15,27 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api;
+package me.thehutch.fusion.engine.component;
 
-import me.thehutch.fusion.api.client.IWindow;
-import me.thehutch.fusion.api.input.IInputManager;
+import me.thehutch.fusion.api.component.Component;
+import me.thehutch.fusion.engine.render.opengl.Mesh;
+import me.thehutch.fusion.engine.render.opengl.Texture;
 
 /**
  * @author thehutch
  */
-public interface IClient extends IEngine {
+public class RenderComponent implements Component {
+	private final Mesh mesh;
+	private final Texture texture;
 
-	/**
-	 * Gets the window used by the client.
-	 *
-	 * @return The window
-	 */
-	public IWindow getWindow();
+	public RenderComponent(Mesh mesh, Texture texture) {
+		this.mesh = mesh;
+		this.texture = texture;
+	}
 
-	/**
-	 * Gets the input manager used by the client.
-	 *
-	 * @return The input manager
-	 */
-	public IInputManager getInputManager();
+	public Mesh getMesh() {
+		return mesh;
+	}
+
+	public Texture getTexture() {
+		return texture;
+	}
 }

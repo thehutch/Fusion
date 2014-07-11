@@ -29,33 +29,37 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import me.thehutch.fusion.api.filesystem.IFileSystem;
-import me.thehutch.fusion.api.filesystem.ResourceLoader;
+import me.thehutch.fusion.api.filesystem.IResourceManager;
 import me.thehutch.fusion.api.util.Disposable;
 import me.thehutch.fusion.engine.Engine;
-import me.thehutch.fusion.engine.scene.Scene;
+import me.thehutch.fusion.engine.render.Renderer;
 
 public class FileSystem implements IFileSystem, Disposable {
 	public static final Path BASE_DIRECTORY = Paths.get(System.getProperty("user.dir"));
 	public static final Path DATA_DIRECTORY = BASE_DIRECTORY.resolve("data");
-	private final TMap<String, ResourceLoader<?>> loaders = new THashMap<>();
+	private final TMap<String, IResourceManager<?>> managers = new THashMap<>();
 
 	public FileSystem() {
 		// Extract the engine meshes
-		extractDirectory("meshes", Scene.MESH_DIRECTORY);
+		extractDirectory("meshes", Renderer.MESH_DIRECTORY);
 		// Extract the engine shaders
-		extractDirectory("shaders", Scene.SHADER_DIRECTORY);
+		extractDirectory("shaders", Renderer.SHADER_DIRECTORY);
 		// Extract the engine textures
-		extractDirectory("textures", Scene.TEXTURE_DIRECTORY);
+		extractDirectory("textures", Renderer.TEXTURE_DIRECTORY);
 		// Extract the engine program
-		extractDirectory("programs", Scene.PROGRAM_DIRECTORY);
-		// Extract the engine models
-		extractDirectory("models", Scene.MODELS_DIRECTORY);
+		extractDirectory("programs", Renderer.PROGRAM_DIRECTORY);
 	}
 
 	@Override
 	public <R> R getResource(Path path) {
+		return getResource(path, true);
+	}
+
+	@Override
+	public <R> R getResource(Path path, boolean load) {
+		final String extension = getPathExtension(path);
 		// Retrieve the loader for the file extension
-		return (R) loaders.get(IFileSystem.getPathExtension(path)).get(path);
+		return (R) managers.get(extension).get(path, load);
 	}
 
 	@Override
@@ -69,23 +73,23 @@ public class FileSystem implements IFileSystem, Disposable {
 
 	@Override
 	public void unloadResource(Path path) {
-		this.loaders.get(IFileSystem.getPathExtension(path)).unload(path);
+		this.managers.get(getPathExtension(path)).unload(path);
 	}
 
 	@Override
-	public void registerLoader(ResourceLoader<?> loader, String... extensions) {
+	public void registerResourceManager(IResourceManager<?> manager, String... extensions) {
 		for (String extension : extensions) {
-			this.loaders.put(extension, loader);
+			this.managers.put(extension, manager);
 		}
 	}
 
 	@Override
 	public void dispose() {
-		this.loaders.forEach((String extension, ResourceLoader<?> loader) -> {
-			loader.dispose();
-			System.out.format("Unloaded resources: extension = %s%n", extension);
+		this.managers.forEachValue((IResourceManager<?> manager) -> {
+			manager.dispose();
+			return true;
 		});
-		this.loaders.clear();
+		this.managers.clear();
 	}
 
 	/**
@@ -116,6 +120,19 @@ public class FileSystem implements IFileSystem, Disposable {
 		} catch (IOException | URISyntaxException ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	/**
+	 * Returns the file extension associated with a path.
+	 *
+	 * @param path The path to get the extension of
+	 *
+	 * @return The file extension, or null if there is no file extension
+	 */
+	private String getPathExtension(Path path) {
+		final String pathAsString = path.toString();
+		final int extPos = pathAsString.lastIndexOf('.');
+		return extPos == -1 ? null : pathAsString.substring(extPos + 1);
 	}
 
 	/**

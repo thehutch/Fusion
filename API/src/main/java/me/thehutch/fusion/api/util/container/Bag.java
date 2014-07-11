@@ -17,12 +17,15 @@
  */
 package me.thehutch.fusion.api.util.container;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * @author thehutch
  * @param <E> The element type of the container
  */
 public class Bag<E> implements ImmutableBag<E> {
-	private static final int DEFAULT_CAPACITY = 32;
+	private static final int DEFAULT_CAPACITY = 17;
 	private E[] data;
 	private int size;
 
@@ -31,6 +34,7 @@ public class Bag<E> implements ImmutableBag<E> {
 	}
 
 	public Bag(int capacity) {
+		ArrayList t;
 		this.data = (E[]) new Object[capacity];
 		this.size = 0;
 	}
@@ -147,6 +151,11 @@ public class Bag<E> implements ImmutableBag<E> {
 		}
 	}
 
+	@Override
+	public Iterator<E> iterator() {
+		return new BagIterator<>(this);
+	}
+
 	private void expand() {
 		final int newCapacity = (data.length * 3) / 2 + 1;
 		expand(newCapacity);
@@ -156,5 +165,25 @@ public class Bag<E> implements ImmutableBag<E> {
 		final E[] oldData = data;
 		this.data = (E[]) new Object[newCapacity];
 		System.arraycopy(oldData, 0, data, 0, oldData.length);
+	}
+
+	private class BagIterator<E> implements Iterator<E> {
+		private final Bag<E> bag;
+		private int index;
+
+		private BagIterator(Bag<E> bag) {
+			this.bag = bag;
+			this.index = 0;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return index < bag.size;
+		}
+
+		@Override
+		public E next() {
+			return bag.get(index++);
+		}
 	}
 }

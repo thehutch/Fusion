@@ -15,27 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api;
-
-import me.thehutch.fusion.api.client.IWindow;
-import me.thehutch.fusion.api.input.IInputManager;
+package me.thehutch.fusion.api.render.lights;
 
 /**
  * @author thehutch
  */
-public interface IClient extends IEngine {
+public interface ISpotLight extends IDirectionalLight, IPointLight {
+	/**
+	 * Gets the angle of the spotlight.
+	 *
+	 * @return The angle
+	 */
+	public float getAngle();
 
 	/**
-	 * Gets the window used by the client.
+	 * Sets the angle of the spotlight.
 	 *
-	 * @return The window
+	 * @param angle The angle
 	 */
-	public IWindow getWindow();
-
-	/**
-	 * Gets the input manager used by the client.
-	 *
-	 * @return The input manager
-	 */
-	public IInputManager getInputManager();
+	public void setAngle(float angle);
 }

@@ -56,8 +56,6 @@ public final class ComponentSystem {
 	 */
 	private final EntityManager entityManager;
 
-	private float delta;
-
 	public ComponentSystem() {
 		this.componentManager = new ComponentManager();
 		addManager(componentManager);
@@ -76,24 +74,6 @@ public final class ComponentSystem {
 			config(processorsBag.get(i), this);
 			this.processorsBag.get(i).initialise();
 		}
-	}
-
-	/**
-	 * Time since the last game loop.
-	 *
-	 * @return delta time since last game loop
-	 */
-	public float getDelta() {
-		return delta;
-	}
-
-	/**
-	 * Specify the delta of the game.
-	 *
-	 * @param delta time since the last game loop
-	 */
-	public void setDelta(float delta) {
-		this.delta = delta;
 	}
 
 	public ComponentManager getComponentManager() {
@@ -176,7 +156,7 @@ public final class ComponentSystem {
 	}
 
 	public <T extends Component> ComponentMapper<T> getMapper(Class<T> type) {
-		return ComponentMapper.getFor(type, this);
+		return ComponentMapper.getFor(type, componentManager);
 	}
 
 	/**
@@ -231,7 +211,7 @@ public final class ComponentSystem {
 			final Class<?> clazz = target.getClass();
 			for (Field field : clazz.getDeclaredFields()) {
 				final Mapper annotation = field.getAnnotation(Mapper.class);
-				if (annotation != null && Mapper.class.isAssignableFrom(Mapper.class)) {
+				if (annotation != null) {
 					final ParameterizedType genericType = (ParameterizedType) field.getGenericType();
 					final Class componentType = (Class) genericType.getActualTypeArguments()[0];
 

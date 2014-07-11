@@ -39,19 +39,23 @@ public class Application {
 	public static void main(String[] args) throws Exception {
 		// Load natives
 		loadNatives();
-		// Create Application
-		final Application application = new Application(args);
+		// The game engine
 		final Engine engine;
-		switch (application.platform) {
-			case CLIENT:
-				engine = new Client(application);
-				break;
-			case SERVER:
-				engine = new Server(application);
-				break;
-			default:
-				throw new IllegalStateException("Unknown Platform: " + application.platform);
+		// Create Application
+		{
+			final Application application = new Application(args);
+			switch (application.platform) {
+				case CLIENT:
+					engine = new Client(application);
+					break;
+				case SERVER:
+					engine = new Server(application);
+					break;
+				default:
+					throw new IllegalStateException("Unknown Platform: " + application.platform);
+			}
 		}
+		engine.initialise();
 		engine.getScheduler().execute();
 	}
 
@@ -59,8 +63,8 @@ public class Application {
 		// Get the operating system the engine is running on
 		final String os = System.getProperty("os.name").toLowerCase();
 
-		final String[] files;
 		final String nativePath;
+		final String[] files;
 
 		// Check which operating system it is
 		if (os.contains("win")) {

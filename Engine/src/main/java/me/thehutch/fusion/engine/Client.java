@@ -17,87 +17,67 @@
  */
 package me.thehutch.fusion.engine;
 
-import static org.lwjgl.opengl.GL11.GL_BACK;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
-
 import me.thehutch.fusion.api.IClient;
 import me.thehutch.fusion.api.Platform;
 import me.thehutch.fusion.api.event.EventPriority;
-import me.thehutch.fusion.api.input.keyboard.Key;
-import me.thehutch.fusion.api.input.keyboard.KeyboardEvent;
 import me.thehutch.fusion.api.input.mouse.MouseMotionEvent;
 import me.thehutch.fusion.api.maths.MathsHelper;
 import me.thehutch.fusion.api.maths.Quaternion;
 import me.thehutch.fusion.api.maths.Vector3;
-import me.thehutch.fusion.api.scene.Camera;
+import me.thehutch.fusion.api.render.Camera;
 import me.thehutch.fusion.api.scheduler.TaskPriority;
 import me.thehutch.fusion.engine.client.Window;
+import me.thehutch.fusion.engine.filesystem.loaders.ImageLoader;
+import me.thehutch.fusion.engine.filesystem.loaders.MeshManager;
+import me.thehutch.fusion.engine.filesystem.loaders.ProgramManager;
+import me.thehutch.fusion.engine.filesystem.loaders.TextureManager;
 import me.thehutch.fusion.engine.input.InputManager;
-import me.thehutch.fusion.engine.scene.Scene;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
+import me.thehutch.fusion.engine.render.Renderer;
 
 /**
  * @author thehutch
  */
 public final class Client extends Engine implements IClient {
 	private static final float MOUSE_SENSITIVITY = 10.0f;
-	private static final float MOVE_SPEED = 2.0f;
 	private final InputManager inputManager;
+	private final Renderer renderer;
 	private final Window window;
-	private final Scene scene;
 
 	private float cameraPitch;
 	private float cameraYaw;
 
 	protected Client(Application application) {
 		super(application);
+		// Create the window
 		this.window = new Window(getLogger(), 800, 600);
-		this.scene = new Scene(this, Camera.createPerspective(70.0f, (float) Display.getWidth() / Display.getHeight(), 0.01f, 1000.0f));
+
+		// Create the scene
+		this.renderer = new Renderer(this, Camera.createPerspective(70.0f, window.getResolution().getAspectRatio(), 0.01f, 1000.0f));
+
+		// Create the input manager
 		this.inputManager = new InputManager(this);
+	}
+
+	@Override
+	public void initialise() {
 		// Schedule the input manager task
 		getScheduler().scheduleSyncRepeatingTask(inputManager::execute, TaskPriority.CRITICAL, 0L, 1L);
-		// Schedule the scene task
-		getScheduler().scheduleSyncRepeatingTask(scene::execute, TaskPriority.CRITICAL, 0L, 1L);
 
-		getInputManager().setMouseGrabbed(true);
+		// Register the model loader
+		getFileSystem().registerResourceManager(new MeshManager(), "obj");
+		// Register the program loader
+		getFileSystem().registerResourceManager(new ProgramManager(), "fprg");
+		// Register the image loader
+		getFileSystem().registerResourceManager(new ImageLoader(), "png", "jpg");
+		// Register the texture loader
+		getFileSystem().registerResourceManager(new TextureManager(getFileSystem()), "ftex");
 
-		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveLocalZ(-getScheduler().getDelta() * MOVE_SPEED);
-		}, Key.KEY_W);
+		// Add the scene to the component system
+		getComponentSystem().addProcessor(renderer);
 
-		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveLocalX(-getScheduler().getDelta() * MOVE_SPEED);
-		}, Key.KEY_A);
-
-		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveLocalZ(getScheduler().getDelta() * MOVE_SPEED);
-		}, Key.KEY_S);
-
-		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveLocalX(getScheduler().getDelta() * MOVE_SPEED);
-		}, Key.KEY_D);
-
-		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveY(getScheduler().getDelta() * MOVE_SPEED);
-		}, Key.KEY_SPACE);
-
-		getInputManager().registerKeyBinding(() -> {
-			getScene().getCamera().moveY(-getScheduler().getDelta() * MOVE_SPEED);
-		}, Key.KEY_LSHIFT);
-
-		getInputManager().registerKeyBinding(() -> {
-			stop("Escape Pressed");
-		}, Key.KEY_ESCAPE);
-
-		getEventManager().registerEvent((KeyboardEvent event) -> {
-			if (event.getKeycode() == Key.KEY_GRAVE && event.getState() && !event.isRepeat()) {
-				getInputManager().toggleMouseGrab();
-			}
-		}, KeyboardEvent.class, EventPriority.MEDIUM, true);
-
+		/*
+		 * Register the mouse motion event
+		 */
 		getEventManager().registerEvent((MouseMotionEvent event) -> {
 			if (getInputManager().isMouseGrabbed()) {
 				final float sensitivity = MOUSE_SENSITIVITY * getScheduler().getDelta();
@@ -110,22 +90,16 @@ public final class Client extends Engine implements IClient {
 				this.cameraYaw %= 360;
 				final Quaternion yaw = Quaternion.fromAxisAngleDeg(Vector3.UNIT_Y, cameraYaw);
 
-				getScene().getCamera().setRotation(yaw.mul(pitch));
+				getRenderer().getCamera().setRotation(yaw.mul(pitch));
 			}
 		}, MouseMotionEvent.class, EventPriority.HIGH, true);
 
-		// Enable depth testing
-		GL11.glEnable(GL_DEPTH_TEST);
-		GL11.glEnable(GL_DEPTH_CLAMP);
-
-		// Enable face culling
-		GL11.glEnable(GL_CULL_FACE);
-		GL11.glCullFace(GL_BACK);
+		// Call the Engine initialise()
+		super.initialise();
 	}
 
-	@Override
-	public Scene getScene() {
-		return scene;
+	public Renderer getRenderer() {
+		return renderer;
 	}
 
 	@Override
@@ -145,9 +119,8 @@ public final class Client extends Engine implements IClient {
 
 	@Override
 	public void stop(String reason) {
-		// Dispose of the scene
-		getScene().dispose();
-		// Stop the engine
+		//this.inputManager.dispose();
+		//this.window.dispose();
 		super.stop(reason);
 	}
 }

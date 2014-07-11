@@ -72,7 +72,7 @@ public class Vector4 {
 	}
 
 	public float length() {
-		return (float) Math.sqrt(lengthSquared());
+		return MathsHelper.sqrt(lengthSquared());
 	}
 
 	public float lengthSquared() {
@@ -80,7 +80,7 @@ public class Vector4 {
 	}
 
 	public float distance(Vector4 vec) {
-		return (float) Math.sqrt(distanceSquared(vec));
+		return MathsHelper.sqrt(distanceSquared(vec));
 	}
 
 	public float distanceSquared(Vector4 vec) {

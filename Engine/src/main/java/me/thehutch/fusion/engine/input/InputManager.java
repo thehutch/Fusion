@@ -151,6 +151,22 @@ public final class InputManager implements IInputManager {
 				this.eventManager.callEvent(new MouseWheelMotionEvent(Mouse.getEventDWheel()));
 			}
 		}
+
+		// Check for display close
+		if (Display.isCloseRequested()) {
+			this.engine.stop("Displayed Closed");
+		}
+
 		//TODO: Possibilty of other input devices (Joystick, Touchscreen etc...)
+	}
+
+	@Override
+	public void dispose() {
+		if (Keyboard.isCreated()) {
+			Keyboard.destroy();
+		}
+		if (Mouse.isCreated()) {
+			Mouse.destroy();
+		}
 	}
 }

@@ -38,7 +38,7 @@ public class KeyboardEvent extends Event {
 	 *
 	 * @return The event key
 	 */
-	public Key getKeycode() {
+	public final Key getKeycode() {
 		return keycode;
 	}
 
@@ -47,7 +47,7 @@ public class KeyboardEvent extends Event {
 	 *
 	 * @return True if the key is pressed down
 	 */
-	public boolean getState() {
+	public final boolean getState() {
 		return state;
 	}
 
@@ -56,7 +56,7 @@ public class KeyboardEvent extends Event {
 	 *
 	 * @return True if the event is for a repeat key
 	 */
-	public boolean isRepeat() {
+	public final boolean isRepeat() {
 		return repeat;
 	}
 }

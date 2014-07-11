@@ -18,11 +18,12 @@
 package me.thehutch.fusion.api.input;
 
 import me.thehutch.fusion.api.input.keyboard.Key;
+import me.thehutch.fusion.api.util.Disposable;
 
 /**
  * @author thehutch
  */
-public interface IInputManager {
+public interface IInputManager extends Disposable {
 	/**
 	 * Gets the current mouse x position on the window.
 	 *

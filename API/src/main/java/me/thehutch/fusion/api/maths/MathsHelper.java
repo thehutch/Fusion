@@ -21,6 +21,7 @@ package me.thehutch.fusion.api.maths;
  * @author thehutch
  */
 public class MathsHelper {
+	public static final float E = 2.718281828f;
 	public static final float PI = 3.141592653f;
 	private static final float DEG_TO_RAD = PI / 180.0f;
 	private static final float RAD_TO_DEG = 180.0f / PI;
@@ -234,19 +235,6 @@ public class MathsHelper {
 	 */
 	public static float remap(float value, float min1, float max1, float min2, float max2) {
 		return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
-	}
-
-	/**
-	 * Interpolates between the two values given.
-	 *
-	 * @param a          The start value
-	 * @param b          The end value
-	 * @param percentage The amount of interpolate by
-	 *
-	 * @return The interpolated value
-	 */
-	public static int lerp(int a, int b, int percentage) {
-		return a + (b - a) * percentage;
 	}
 
 	/**

@@ -18,11 +18,12 @@
 package me.thehutch.fusion.api.client;
 
 import java.util.Collection;
+import me.thehutch.fusion.api.util.Disposable;
 
 /**
  * @author thehutch
  */
-public interface IWindow {
+public interface IWindow extends Disposable {
 	/**
 	 * Gets the resolution of the window.
 	 *

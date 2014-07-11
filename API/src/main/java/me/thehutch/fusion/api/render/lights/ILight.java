@@ -15,27 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api;
+package me.thehutch.fusion.api.render.lights;
 
-import me.thehutch.fusion.api.client.IWindow;
-import me.thehutch.fusion.api.input.IInputManager;
+import me.thehutch.fusion.api.component.Component;
+import me.thehutch.fusion.api.maths.Vector3;
 
 /**
  * @author thehutch
  */
-public interface IClient extends IEngine {
+public interface ILight extends Component {
+	/**
+	 * Gets the colour of the light in RGB format.
+	 *
+	 * @return The colour of the light
+	 */
+	public Vector3 getColour();
 
 	/**
-	 * Gets the window used by the client.
+	 * Sets the colour of the light in the format RGB.
 	 *
-	 * @return The window
+	 * @param colour The new colour of the light
 	 */
-	public IWindow getWindow();
-
-	/**
-	 * Gets the input manager used by the client.
-	 *
-	 * @return The input manager
-	 */
-	public IInputManager getInputManager();
+	public void setColour(Vector3 colour);
 }

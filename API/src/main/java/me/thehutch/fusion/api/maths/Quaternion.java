@@ -51,7 +51,7 @@ public class Quaternion {
 	}
 
 	public float length() {
-		return (float) Math.sqrt(lengthSquared());
+		return MathsHelper.sqrt(lengthSquared());
 	}
 
 	public float lengthSquared() {
@@ -132,7 +132,7 @@ public class Quaternion {
 
 	public static Quaternion fromAxisAngleRad(float x, float y, float z, float angle) {
 		final float halfAngle = angle / 2.0f;
-		final float q = (float) (Math.sin(halfAngle) / Math.sqrt(x * x + y * y + z * z));
+		final float q = (float) (Math.sin(halfAngle) / MathsHelper.sqrt(x * x + y * y + z * z));
 		return new Quaternion(x * q, y * q, z * q, (float) Math.cos(halfAngle));
 	}
 }

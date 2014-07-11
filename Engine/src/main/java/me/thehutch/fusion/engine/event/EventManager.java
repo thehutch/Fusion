@@ -19,6 +19,7 @@ package me.thehutch.fusion.engine.event;
 
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
@@ -34,10 +35,10 @@ public class EventManager implements IEventManager {
 
 	@Override
 	public <T extends Event> T callEvent(T event) {
-		final SortedSet<EventExecutor> executors = events.get(event.getClass());
+		final Set<EventExecutor> executors = events.get(event.getClass());
 		// Check if there are any event executors for this event
 		if (executors != null) {
-			executors.stream().forEach((EventExecutor executor) -> {
+			executors.stream().forEachOrdered((EventExecutor executor) -> {
 				executor.execute(event);
 			});
 		}
@@ -46,7 +47,17 @@ public class EventManager implements IEventManager {
 
 	@Override
 	public <T extends Event> T callEventAsync(T event) {
-		throw new UnsupportedOperationException("callEventAsync in class EventManager is not supported yet.");
+		final Set<EventExecutor> executors = events.get(event.getClass());
+		// Check if there are any event executors for this event
+		if (executors != null) {
+			final Thread thread = new Thread(() -> {
+				executors.stream().forEachOrdered((EventExecutor executor) -> {
+					executor.execute(event);
+				});
+			});
+			thread.start();
+		}
+		return event;
 	}
 
 	@Override

@@ -50,7 +50,7 @@ public class Vector2 {
 	}
 
 	public float length() {
-		return (float) Math.sqrt(lengthSquared());
+		return MathsHelper.sqrt(lengthSquared());
 	}
 
 	public float lengthSquared() {
@@ -58,7 +58,7 @@ public class Vector2 {
 	}
 
 	public float distance(Vector2 vec) {
-		return (float) Math.sqrt(distanceSquared(vec));
+		return MathsHelper.sqrt(distanceSquared(vec));
 	}
 
 	public float distanceSquared(Vector2 vec) {

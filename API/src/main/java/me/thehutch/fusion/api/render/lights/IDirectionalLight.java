@@ -15,27 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api;
+package me.thehutch.fusion.api.render.lights;
 
-import me.thehutch.fusion.api.client.IWindow;
-import me.thehutch.fusion.api.input.IInputManager;
+import me.thehutch.fusion.api.maths.Vector3;
 
 /**
  * @author thehutch
  */
-public interface IClient extends IEngine {
+public interface IDirectionalLight extends ILight {
+	/**
+	 * Gets the direction of the light.
+	 *
+	 * @return The direction of the light
+	 */
+	public Vector3 getDirection();
 
 	/**
-	 * Gets the window used by the client.
+	 * Sets the direction of the light.
 	 *
-	 * @return The window
+	 * @param direction The direction of the light
 	 */
-	public IWindow getWindow();
-
-	/**
-	 * Gets the input manager used by the client.
-	 *
-	 * @return The input manager
-	 */
-	public IInputManager getInputManager();
+	public void setDirection(Vector3 direction);
 }
