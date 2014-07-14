@@ -20,6 +20,7 @@ package me.thehutch.fusion.engine;
 import me.thehutch.fusion.api.IClient;
 import me.thehutch.fusion.api.Platform;
 import me.thehutch.fusion.api.event.EventPriority;
+import me.thehutch.fusion.api.input.keyboard.Key;
 import me.thehutch.fusion.api.input.mouse.MouseMotionEvent;
 import me.thehutch.fusion.api.maths.MathsHelper;
 import me.thehutch.fusion.api.maths.Quaternion;
@@ -93,6 +94,19 @@ public final class Client extends Engine implements IClient {
 				getRenderer().getCamera().setRotation(yaw.mul(pitch));
 			}
 		}, MouseMotionEvent.class, EventPriority.HIGH, true);
+
+		// Enable mouse grab toggle
+		getInputManager().registerKeyBinding(() -> {
+			getInputManager().toggleMouseGrab();
+		}, Key.KEY_GRAVE);
+
+		// Enable exit key
+		getInputManager().registerKeyBinding(() -> {
+			stop("Engine exit");
+		}, Key.KEY_ESCAPE);
+
+		// Enable mouse grab
+		getInputManager().setMouseGrabbed(true);
 
 		// Call the Engine initialise()
 		super.initialise();

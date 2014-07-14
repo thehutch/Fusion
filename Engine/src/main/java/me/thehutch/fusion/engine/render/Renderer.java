@@ -18,14 +18,10 @@
 package me.thehutch.fusion.engine.render;
 
 import static org.lwjgl.opengl.GL11.GL_BACK;
-import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_EQUAL;
-import static org.lwjgl.opengl.GL11.GL_LESS;
-import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 
 import java.nio.file.Path;
@@ -45,6 +41,7 @@ import me.thehutch.fusion.engine.render.lights.AmbientLight;
 import me.thehutch.fusion.engine.render.opengl.Mesh;
 import me.thehutch.fusion.engine.render.opengl.Program;
 import me.thehutch.fusion.engine.render.opengl.Texture;
+import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
@@ -52,7 +49,6 @@ public final class Renderer extends EntityProcessor {
 	public static final Path TEXTURE_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("textures");
 	public static final Path PROGRAM_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("programs");
 	public static final Path SHADER_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("shaders");
-	public static final Path MODELS_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("models");
 	public static final Path MESH_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("meshes");
 	// Scene camera
 	private final Camera camera;
@@ -95,11 +91,11 @@ public final class Renderer extends EntityProcessor {
 		final RenderComponent render = new RenderComponent(getMesh("ground.obj"), getTexture("ground.ftex"));
 		final TransformComponent transform = new TransformComponent();
 
-		final Entity e = engine.getComponentSystem().createEntity();
+		final Entity e = system.createEntity();
 		e.addComponent(render);
 		e.addComponent(transform);
 
-		engine.getComponentSystem().addEntity(e);
+		this.system.addEntity(e);
 	}
 
 	@Override
@@ -114,7 +110,7 @@ public final class Renderer extends EntityProcessor {
 		Display.update();
 
 		// Check for errors
-		//RenderUtil.checkGLError();
+		RenderUtil.checkGLError();
 	}
 
 	@Override
@@ -125,10 +121,12 @@ public final class Renderer extends EntityProcessor {
 		//
 		// Render the first pass of the scene for the ambient light
 		//
-		this.ambientLight.uploadUniforms();
-
 		final Program ambientProgram = ambientLight.getProgram();
+		ambientProgram.bind();
+
 		ambientProgram.setUniform("cameraMatrix", cameraMatrix);
+
+		this.ambientLight.uploadUniforms();
 
 		// Render the models
 		entities.forEach((Entity e) -> {
@@ -143,11 +141,10 @@ public final class Renderer extends EntityProcessor {
 		ambientProgram.unbind();
 
 		// Enable blending
-		GL11.glEnable(GL_BLEND);
-		GL11.glBlendFunc(GL_ONE, GL_ONE);
-		GL11.glDepthMask(false);
-		GL11.glDepthFunc(GL_EQUAL);
-
+//		GL11.glEnable(GL_BLEND);
+//		GL11.glBlendFunc(GL_ONE, GL_ONE);
+//		GL11.glDepthMask(false);
+//		GL11.glDepthFunc(GL_EQUAL);
 		//
 		// TODO: Perform the light render pass.
 		//
@@ -171,9 +168,9 @@ public final class Renderer extends EntityProcessor {
 		}
 
 		// Disable blending
-		GL11.glDepthMask(true);
-		GL11.glDepthFunc(GL_LESS);
-		GL11.glDisable(GL_BLEND);
+//		GL11.glDepthMask(true);
+//		GL11.glDepthFunc(GL_LESS);
+//		GL11.glDisable(GL_BLEND);
 	}
 
 	@Override
@@ -183,10 +180,12 @@ public final class Renderer extends EntityProcessor {
 
 	@Override
 	protected void inserted(Entity e) {
+		System.out.format("Entity added to Renderer%n");
 	}
 
 	@Override
 	protected void removed(Entity e) {
+		System.out.format("Entity removed from Renderer%n");
 	}
 
 	private Mesh getMesh(String name) {
@@ -203,7 +202,7 @@ public final class Renderer extends EntityProcessor {
 
 	private void render(RenderComponent render, TransformComponent transform, Program program) {
 		// Bind the texture
-		render.getTexture().bind(-1);
+		render.getTexture().bind(0);
 
 		// Set the material uniform
 		program.setUniform("material", 0);

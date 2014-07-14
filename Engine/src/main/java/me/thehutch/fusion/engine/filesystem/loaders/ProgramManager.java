@@ -80,7 +80,7 @@ public class ProgramManager implements IResourceManager<Program> {
 			// Link the program
 			program.link();
 			// Add the resource to the resource cache
-			//this.resources.put(path, program);
+			this.programs.put(path, program);
 			return program;
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to load model: " + path, ex);

@@ -29,7 +29,9 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import me.thehutch.fusion.api.maths.Matrix2;
 import me.thehutch.fusion.api.maths.Matrix3;
 import me.thehutch.fusion.api.maths.Matrix4;
@@ -42,7 +44,10 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
 public class Program implements Disposable {
-	private final TObjectIntMap<String> uniforms = new TObjectIntHashMap<>(8, 0.75f, -1);
+	private static final FloatBuffer MATRIX_2X2_BUFFER = BufferUtils.createFloatBuffer(4);
+	private static final FloatBuffer MATRIX_3X3_BUFFER = BufferUtils.createFloatBuffer(9);
+	private static final FloatBuffer MATRIX_4X4_BUFFER = BufferUtils.createFloatBuffer(16);
+	private final TObjectIntMap<String> uniforms = new TObjectIntHashMap<>(11, 0.75f, -1);
 	private final TIntList shaders = new TIntArrayList(2, 0);
 	private final int id;
 
@@ -101,12 +106,43 @@ public class Program implements Disposable {
 		// Check for errors
 		RenderUtil.checkGLError();
 
-		// Load the program uniforms
+		/*
+		 * Load the program uniforms
+		 */
+		// Get the maximum uniform name length
 		final int maxNameLength = GL20.glGetProgrami(id, GL_ACTIVE_UNIFORM_MAX_LENGTH);
+		// Create a buffer to store the name of the uniform
+		final ByteBuffer nameBuffer = BufferUtils.createByteBuffer(maxNameLength);
+		// Create a buffer to store the length of the uniform name
+		final IntBuffer lengthBuffer = BufferUtils.createIntBuffer(1);
+		// Create a buffer to store the uniform size
+		final IntBuffer sizeBuffer = BufferUtils.createIntBuffer(1);
+		// Create a buffer to stroe the uniform type
+		final IntBuffer typeBuffer = BufferUtils.createIntBuffer(1);
+		// Create a byte array to store the name in
+		final byte[] nameBytes = new byte[maxNameLength];
+
 		final int uniformCount = GL20.glGetProgrami(id, GL_ACTIVE_UNIFORMS);
 		for (int i = 0; i < uniformCount; ++i) {
-			final String name = GL20.glGetActiveUniform(id, i, maxNameLength);
+			// Retrieve the attributes of the uniform (length, size, type and name)
+			GL20.glGetActiveUniform(id, i, lengthBuffer, sizeBuffer, typeBuffer, nameBuffer);
+
+			// Get the length of the uniform name
+			final int length = lengthBuffer.get();
+
+			// Get the name from the buffer and put it in the byte[]
+			nameBuffer.get(nameBytes, 0, length);
+
+			final String name = new String(nameBytes, 0, length);
+
+			// Convert the name buffer to a String
 			this.uniforms.put(name, GL20.glGetUniformLocation(id, name));
+
+			// Clear the buffers
+			lengthBuffer.clear();
+			sizeBuffer.clear();
+			typeBuffer.clear();
+			nameBuffer.clear();
 		}
 		// Check for errors
 		RenderUtil.checkGLError();
@@ -175,10 +211,10 @@ public class Program implements Disposable {
 	public void setUniform(String name, Matrix2 matrix) {
 		final int loc = uniforms.get(name);
 		if (loc >= 0) {
-			final FloatBuffer buffer = BufferUtils.createFloatBuffer(4);
-			buffer.put(matrix.toArray(true));
-			buffer.flip();
-			GL20.glUniformMatrix2(loc, false, buffer);
+			MATRIX_2X2_BUFFER.put(matrix.toArray(true));
+			MATRIX_2X2_BUFFER.flip();
+			GL20.glUniformMatrix2(loc, false, MATRIX_2X2_BUFFER);
+			MATRIX_2X2_BUFFER.clear();
 		}
 	}
 
@@ -198,10 +234,10 @@ public class Program implements Disposable {
 	public void setUniform(String name, Matrix3 matrix) {
 		final int loc = uniforms.get(name);
 		if (loc >= 0) {
-			final FloatBuffer buffer = BufferUtils.createFloatBuffer(9);
-			buffer.put(matrix.toArray(true));
-			buffer.flip();
-			GL20.glUniformMatrix3(loc, false, buffer);
+			MATRIX_3X3_BUFFER.put(matrix.toArray(true));
+			MATRIX_3X3_BUFFER.flip();
+			GL20.glUniformMatrix3(loc, false, MATRIX_3X3_BUFFER);
+			MATRIX_3X3_BUFFER.clear();
 		}
 	}
 
@@ -221,10 +257,10 @@ public class Program implements Disposable {
 	public void setUniform(String name, Matrix4 matrix) {
 		final int loc = uniforms.get(name);
 		if (loc >= 0) {
-			final FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
-			buffer.put(matrix.toArray(true));
-			buffer.flip();
-			GL20.glUniformMatrix4(loc, false, buffer);
+			MATRIX_4X4_BUFFER.put(matrix.toArray(true));
+			MATRIX_4X4_BUFFER.flip();
+			GL20.glUniformMatrix4(loc, false, MATRIX_4X4_BUFFER);
+			MATRIX_4X4_BUFFER.clear();
 		}
 	}
 
