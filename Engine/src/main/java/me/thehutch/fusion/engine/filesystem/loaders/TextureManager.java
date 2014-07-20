@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
-import me.thehutch.fusion.api.filesystem.IFileSystem;
 import me.thehutch.fusion.api.filesystem.IResourceManager;
+import me.thehutch.fusion.engine.Client;
 import me.thehutch.fusion.engine.filesystem.FileSystem;
 import me.thehutch.fusion.engine.filesystem.loaders.ImageLoader.ImageData;
 import me.thehutch.fusion.engine.render.opengl.Texture;
@@ -46,10 +46,10 @@ public class TextureManager implements IResourceManager<Texture> {
 	private static final String T_WRAP_ATTRIBUTE = "WRAP_T";
 
 	private final TMap<Path, Texture> textures = new THashMap<>();
-	private final IFileSystem fileSystem;
+	private final Client engine;
 
-	public TextureManager(IFileSystem fileSystem) {
-		this.fileSystem = fileSystem;
+	public TextureManager(Client engine) {
+		this.engine = engine;
 	}
 
 	@Override
@@ -92,7 +92,9 @@ public class TextureManager implements IResourceManager<Texture> {
 			});
 
 			// Create a texture
-			final Texture texture = new Texture();
+			final Texture texture = engine.getContext().newTexture();
+			texture.create();
+			texture.bind();
 
 			// Set the anisotropic filtering
 			final float anisotropicFiltering = Float.parseFloat(values.get(ANISOTROPIC_FILTERING_ATTRIBUTE));
@@ -113,7 +115,7 @@ public class TextureManager implements IResourceManager<Texture> {
 			texture.setCompareFunc(compareFunc);
 
 			// Set the texture image data
-			final ImageData imageData = fileSystem.getResource(FileSystem.DATA_DIRECTORY.resolve(values.get(IMAGE_DATA_ATTRIBUTE)));
+			final ImageData imageData = engine.getFileSystem().getResource(FileSystem.DATA_DIRECTORY.resolve(values.get(IMAGE_DATA_ATTRIBUTE)));
 			texture.setPixelData(imageData, minFilter.requiresMipmaps());
 
 			// Unbind the texture

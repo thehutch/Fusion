@@ -1,5 +1,5 @@
 /*
- * This file is part of API, licensed under the Apache 2.0 License.
+ * This file is part of Engine, licensed under the Apache 2.0 License.
  *
  * Copyright (c) 2014 thehutch.
  *
@@ -15,29 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.api.client;
+package me.thehutch.fusion.engine.render.opengl;
+
+import me.thehutch.fusion.api.util.GLVersion;
 
 /**
  * @author thehutch
  */
-public class Resolution {
-	private final int width;
-	private final int height;
-
-	public Resolution(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public float getAspectRatio() {
-		return (float) width / height;
-	}
+public interface GLVersioned {
+	/**
+	 * Gets the minimum required version of OpenGL of this object.
+	 *
+	 * @return The minimum required OpenGL version of this object.
+	 */
+	public GLVersion getGLVersion();
 }

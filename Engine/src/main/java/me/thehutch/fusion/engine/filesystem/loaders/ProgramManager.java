@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 import me.thehutch.fusion.api.filesystem.IResourceManager;
+import me.thehutch.fusion.engine.Client;
 import me.thehutch.fusion.engine.filesystem.FileSystem;
 import me.thehutch.fusion.engine.render.opengl.Program;
 
@@ -36,8 +37,10 @@ import me.thehutch.fusion.engine.render.opengl.Program;
  */
 public class ProgramManager implements IResourceManager<Program> {
 	private final TMap<Path, Program> programs = new THashMap<>();
+	private final Client engine;
 
-	public ProgramManager() {
+	public ProgramManager(Client engine) {
+		this.engine = engine;
 	}
 
 	@Override
@@ -57,7 +60,8 @@ public class ProgramManager implements IResourceManager<Program> {
 	@Override
 	public Program load(Path path) {
 		try (final Stream<String> lines = Files.lines(path)) {
-			final Program program = new Program();
+			final Program program = engine.getContext().newProgram();
+			program.create();
 			lines.forEach((String line) -> {
 				try {
 					if (line.startsWith("vertex_shader")) {

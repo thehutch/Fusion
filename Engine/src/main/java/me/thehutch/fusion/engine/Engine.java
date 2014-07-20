@@ -17,7 +17,11 @@
  */
 package me.thehutch.fusion.engine;
 
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import me.thehutch.fusion.api.IEngine;
 import me.thehutch.fusion.api.component.ComponentSystem;
@@ -35,13 +39,30 @@ public abstract class Engine implements IEngine {
 	public static final int ENGINE_MINOR_VERSION = 0;
 	public static final int ENGINE_BUILD_VERSION = 1;
 	public static final String ENGINE_VERSION = ENGINE_MAJOR_VERSION + "." + ENGINE_MINOR_VERSION + "." + ENGINE_BUILD_VERSION;
-	private static final Logger LOGGER = Logger.getLogger("Fusion-" + ENGINE_VERSION);
+	private static final Logger LOGGER;
 	private static final long TICKS_PER_SECOND = 60L;
 	private final EventManager eventManager;
 	private final ComponentSystem system;
 	private final FileSystem fileSystem;
 	private final Scheduler scheduler;
 	private final boolean debug;
+
+	static {
+		final Formatter formatter = new Formatter() {
+			private static final String format = "[%s]: %s";
+
+			@Override
+			public String format(LogRecord record) {
+				return String.format(format, record.getLevel().getName(), record.getMessage());
+			}
+		};
+		final Handler handler = new ConsoleHandler();
+		handler.setFormatter(formatter);
+
+		LOGGER = Logger.getLogger("Fusion-" + ENGINE_VERSION);
+		LOGGER.setUseParentHandlers(false);
+		LOGGER.addHandler(handler);
+	}
 
 	protected Engine(Application application) {
 		// Initialise debug status
@@ -103,7 +124,7 @@ public abstract class Engine implements IEngine {
 		// Terminate the Scheduler
 		getScheduler().stop();
 
-		getLogger().log(Level.INFO, "Exiting Engine: {0}", reason);
+		LOGGER.log(Level.INFO, "Exiting Engine: {0}", reason);
 	}
 
 	public static Logger getLogger() {

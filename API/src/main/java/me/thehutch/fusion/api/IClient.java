@@ -17,20 +17,20 @@
  */
 package me.thehutch.fusion.api;
 
-import me.thehutch.fusion.api.client.IWindow;
 import me.thehutch.fusion.api.input.IInputManager;
+import me.thehutch.fusion.api.render.IContext;
+import me.thehutch.fusion.api.util.GLVersion;
 
 /**
  * @author thehutch
  */
 public interface IClient extends IEngine {
-
 	/**
-	 * Gets the window used by the client.
+	 * Gets the opengl context used by the client.
 	 *
 	 * @return The window
 	 */
-	public IWindow getWindow();
+	public IContext getContext();
 
 	/**
 	 * Gets the input manager used by the client.
@@ -38,4 +38,11 @@ public interface IClient extends IEngine {
 	 * @return The input manager
 	 */
 	public IInputManager getInputManager();
+
+	/**
+	 * Gets the version of OpenGL used by the engine.
+	 *
+	 * @return The OpenGL version
+	 */
+	public GLVersion getOpenGLVersion();
 }

@@ -17,47 +17,22 @@
  */
 package me.thehutch.fusion.engine.render.opengl;
 
-import static org.lwjgl.opengl.GL30.GL_RENDERBUFFER;
-
-import me.thehutch.fusion.api.util.Disposable;
-import me.thehutch.fusion.engine.util.RenderUtil;
-import org.lwjgl.opengl.GL30;
+import me.thehutch.fusion.api.util.Creatable;
+import me.thehutch.fusion.engine.render.texture.InternalFormat;
 
 /**
  * @author thehutch
  */
-public class RenderBuffer implements Disposable {
-	private final int rbo;
+public abstract class RenderBuffer extends Creatable implements GLVersioned {
+	protected int id;
 
-	public RenderBuffer(int width, int height, int internalFormat) {
-		// Generate and bind the render buffer
-		this.rbo = GL30.glGenRenderbuffers();
-		GL30.glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-		// Set the storage format and dimensions
-		GL30.glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, width, height);
-		// Unbind the render buffer
-		GL30.glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-		// Check for errors
-		RenderUtil.checkGLError();
+	public final int getId() {
+		return id;
 	}
 
-	public int getID() {
-		return rbo;
-	}
+	public abstract void bind();
 
-	public void bind() {
-		GL30.glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	}
+	public abstract void unbind();
 
-	public void unbind() {
-		GL30.glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	}
-
-	@Override
-	public void dispose() {
-		GL30.glDeleteRenderbuffers(rbo);
-		// Check for errors
-		RenderUtil.checkGLError();
-	}
+	public abstract void setStorage(int width, int height, InternalFormat format);
 }

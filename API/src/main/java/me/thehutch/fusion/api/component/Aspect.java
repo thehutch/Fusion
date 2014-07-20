@@ -54,15 +54,15 @@ public final class Aspect {
 		return this;
 	}
 
-	protected BitSet getAllSet() {
+	BitSet getAllSet() {
 		return allSet;
 	}
 
-	protected BitSet getOneSet() {
+	BitSet getOneSet() {
 		return oneSet;
 	}
 
-	protected BitSet getExclusionSet() {
+	BitSet getExclusionSet() {
 		return exclusionSet;
 	}
 

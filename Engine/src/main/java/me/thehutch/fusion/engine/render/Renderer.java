@@ -34,13 +34,14 @@ import me.thehutch.fusion.api.maths.Matrix4;
 import me.thehutch.fusion.api.render.Camera;
 import me.thehutch.fusion.api.util.container.ImmutableBag;
 import me.thehutch.fusion.engine.Client;
+import me.thehutch.fusion.engine.Engine;
 import me.thehutch.fusion.engine.component.RenderComponent;
 import me.thehutch.fusion.engine.component.TransformComponent;
 import me.thehutch.fusion.engine.filesystem.FileSystem;
 import me.thehutch.fusion.engine.render.lights.AmbientLight;
-import me.thehutch.fusion.engine.render.opengl.Mesh;
 import me.thehutch.fusion.engine.render.opengl.Program;
 import me.thehutch.fusion.engine.render.opengl.Texture;
+import me.thehutch.fusion.engine.render.opengl.VertexArray;
 import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -180,15 +181,15 @@ public final class Renderer extends EntityProcessor {
 
 	@Override
 	protected void inserted(Entity e) {
-		System.out.format("Entity added to Renderer%n");
+		Engine.getLogger().info("Entity added to Renderer");
 	}
 
 	@Override
 	protected void removed(Entity e) {
-		System.out.format("Entity removed from Renderer%n");
+		Engine.getLogger().info("Entity removed from Renderer");
 	}
 
-	private Mesh getMesh(String name) {
+	private VertexArray getMesh(String name) {
 		return engine.getFileSystem().getResource(MESH_DIRECTORY.resolve(name));
 	}
 

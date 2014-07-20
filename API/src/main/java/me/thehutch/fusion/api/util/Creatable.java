@@ -20,16 +20,31 @@ package me.thehutch.fusion.api.util;
 /**
  * @author thehutch
  */
-public abstract class Tickable {
-	public abstract void onTick(float delta);
+public abstract class Creatable implements Disposable {
+	private boolean created = false;
 
-	public boolean canTick() {
-		return true;
+	public void create() {
+		this.created = true;
 	}
 
-	public final void tick(float delta) {
-		if (canTick()) {
-			onTick(delta);
+	public final boolean isCreated() {
+		return created;
+	}
+
+	public final void ensureCreated(String message) {
+		if (!created) {
+			throw new IllegalStateException(message);
 		}
+	}
+
+	public final void ensureNotCreated(String message) {
+		if (created) {
+			throw new IllegalStateException(message);
+		}
+	}
+
+	@Override
+	public void dispose() {
+		this.created = false;
 	}
 }

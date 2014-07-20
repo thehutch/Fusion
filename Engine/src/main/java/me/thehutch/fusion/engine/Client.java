@@ -27,13 +27,15 @@ import me.thehutch.fusion.api.maths.Quaternion;
 import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.render.Camera;
 import me.thehutch.fusion.api.scheduler.TaskPriority;
-import me.thehutch.fusion.engine.client.Window;
+import me.thehutch.fusion.api.util.GLVersion;
 import me.thehutch.fusion.engine.filesystem.loaders.ImageLoader;
 import me.thehutch.fusion.engine.filesystem.loaders.MeshManager;
 import me.thehutch.fusion.engine.filesystem.loaders.ProgramManager;
 import me.thehutch.fusion.engine.filesystem.loaders.TextureManager;
 import me.thehutch.fusion.engine.input.InputManager;
 import me.thehutch.fusion.engine.render.Renderer;
+import me.thehutch.fusion.engine.render.opengl.GLContext;
+import me.thehutch.fusion.engine.render.opengl.gl30.OpenGL30Context;
 
 /**
  * @author thehutch
@@ -41,19 +43,19 @@ import me.thehutch.fusion.engine.render.Renderer;
 public final class Client extends Engine implements IClient {
 	private static final float MOUSE_SENSITIVITY = 10.0f;
 	private final InputManager inputManager;
+	private final GLContext context;
 	private final Renderer renderer;
-	private final Window window;
-
 	private float cameraPitch;
 	private float cameraYaw;
 
 	protected Client(Application application) {
 		super(application);
-		// Create the window
-		this.window = new Window(getLogger(), 800, 600);
+		// Create the opengl context
+		this.context = new OpenGL30Context();
+		this.context.create();
 
 		// Create the scene
-		this.renderer = new Renderer(this, Camera.createPerspective(70.0f, window.getResolution().getAspectRatio(), 0.01f, 1000.0f));
+		this.renderer = new Renderer(this, Camera.createPerspective(70.0f, context.getWindowPositionAndSize().getAspectRatio(), 0.01f, 1000.0f));
 
 		// Create the input manager
 		this.inputManager = new InputManager(this);
@@ -64,14 +66,14 @@ public final class Client extends Engine implements IClient {
 		// Schedule the input manager task
 		getScheduler().scheduleSyncRepeatingTask(inputManager::execute, TaskPriority.CRITICAL, 0L, 1L);
 
-		// Register the model loader
-		getFileSystem().registerResourceManager(new MeshManager(), "obj");
-		// Register the program loader
-		getFileSystem().registerResourceManager(new ProgramManager(), "fprg");
 		// Register the image loader
 		getFileSystem().registerResourceManager(new ImageLoader(), "png", "jpg");
 		// Register the texture loader
-		getFileSystem().registerResourceManager(new TextureManager(getFileSystem()), "ftex");
+		getFileSystem().registerResourceManager(new TextureManager(this), "ftex");
+		// Register the program loader
+		getFileSystem().registerResourceManager(new ProgramManager(this), "fprg");
+		// Register the model loader
+		getFileSystem().registerResourceManager(new MeshManager(context), "obj");
 
 		// Add the scene to the component system
 		getComponentSystem().addProcessor(renderer);
@@ -117,8 +119,8 @@ public final class Client extends Engine implements IClient {
 	}
 
 	@Override
-	public Window getWindow() {
-		return window;
+	public GLContext getContext() {
+		return context;
 	}
 
 	@Override
@@ -129,6 +131,11 @@ public final class Client extends Engine implements IClient {
 	@Override
 	public Platform getPlatform() {
 		return Platform.CLIENT;
+	}
+
+	@Override
+	public GLVersion getOpenGLVersion() {
+		return context.getGLVersion();
 	}
 
 	@Override

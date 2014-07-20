@@ -1,5 +1,5 @@
 /*
- * This file is part of Engine, licensed under the Apache 2.0 License.
+ * This file is part of API, licensed under the Apache 2.0 License.
  *
  * Copyright (c) 2014 thehutch.
  *
@@ -15,29 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.engine.component;
-
-import me.thehutch.fusion.api.component.Component;
-import me.thehutch.fusion.engine.render.opengl.Texture;
-import me.thehutch.fusion.engine.render.opengl.VertexArray;
+package me.thehutch.fusion.api.render;
 
 /**
  * @author thehutch
  */
-public class RenderComponent implements Component {
-	private final VertexArray mesh;
-	private final Texture texture;
+public class Resolution {
+	private final int width;
+	private final int height;
 
-	public RenderComponent(VertexArray mesh, Texture texture) {
-		this.mesh = mesh;
-		this.texture = texture;
+	public Resolution(int width, int height) {
+		this.width = width;
+		this.height = height;
 	}
 
-	public VertexArray getMesh() {
-		return mesh;
+	public int getWidth() {
+		return width;
 	}
 
-	public Texture getTexture() {
-		return texture;
+	public int getHeight() {
+		return height;
+	}
+
+	public float getAspectRatio() {
+		return (float) width / height;
 	}
 }

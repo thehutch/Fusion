@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import me.thehutch.fusion.api.Platform;
 import me.thehutch.fusion.engine.filesystem.FileSystem;
+import org.lwjgl.LWJGLUtil;
 
 /**
  * @author thehutch
@@ -60,28 +61,23 @@ public class Application {
 	}
 
 	private static void loadNatives() throws IOException {
-		// Get the operating system the engine is running on
-		final String os = System.getProperty("os.name").toLowerCase();
-
-		final String nativePath;
+		// Get the native libraries required by this operating system
 		final String[] files;
-
-		// Check which operating system it is
-		if (os.contains("win")) {
-			nativePath = "windows";
-			files = new String[] { "jinput-dx8.dll", "jinput-dx8_64.dll", "jinput-raw.dll", "jinput-raw_64.dll", "jinput-wintab.dll", "lwjgl.dll", "lwjgl64.dll", "OpenAL32.dll", "OpenAL64.dll" };
-		} else if (os.contains("mac")) {
-			nativePath = "mac";
-			files = new String[] { "libjinput-osx.jnilib", "liblwjgl.jnilib", "openal.dylib" };
-		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
-			nativePath = "linux";
-			files = new String[] { "liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so" };
-		} else {
-			throw new IllegalStateException("Unknown Operating System: " + os);
+		switch (LWJGLUtil.getPlatform()) {
+			case LWJGLUtil.PLATFORM_LINUX:
+				files = new String[] { "liblwjgl.so", "liblwjgl64.so", "libopenal.so", "libopenal64.so", "libjinput-linux.so", "libjinput-linux64.so" };
+				break;
+			case LWJGLUtil.PLATFORM_WINDOWS:
+				files = new String[] { "jinput-dx8.dll", "jinput-dx8_64.dll", "jinput-raw.dll", "jinput-raw_64.dll", "jinput-wintab.dll", "lwjgl.dll", "lwjgl64.dll", "OpenAL32.dll", "OpenAL64.dll" };
+				break;
+			case LWJGLUtil.PLATFORM_MACOSX:
+				files = new String[] { "libjinput-osx.jnilib", "liblwjgl.jnilib", "openal.dylib" };
+				break;
+			default:
+				throw new IllegalStateException("Unknown operating system");
 		}
-
 		// Locate the natives directory
-		final Path nativesDir = FileSystem.BASE_DIRECTORY.resolve("natives").resolve(nativePath);
+		final Path nativesDir = FileSystem.BASE_DIRECTORY.resolve("natives").resolve(LWJGLUtil.getPlatformName());
 		// Create the natives directory
 		Files.createDirectories(nativesDir);
 		// Copy each native library into the natives directory

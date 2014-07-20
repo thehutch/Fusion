@@ -47,7 +47,7 @@ public final class ComponentMapper<T extends Component> {
 		return getSafe(e) != null;
 	}
 
-	protected static <T extends Component> ComponentMapper<T> getFor(Class<T> type, ComponentManager manager) {
+	static <T extends Component> ComponentMapper<T> getFor(Class<T> type, ComponentManager manager) {
 		return new ComponentMapper<>(type, manager);
 	}
 }

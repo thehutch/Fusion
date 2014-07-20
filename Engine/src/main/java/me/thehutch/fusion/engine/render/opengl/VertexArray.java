@@ -15,29 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.engine.component;
+package me.thehutch.fusion.engine.render.opengl;
 
-import me.thehutch.fusion.api.component.Component;
-import me.thehutch.fusion.engine.render.opengl.Texture;
-import me.thehutch.fusion.engine.render.opengl.VertexArray;
+import gnu.trove.list.TFloatList;
+import gnu.trove.list.TIntList;
+import me.thehutch.fusion.api.util.Creatable;
 
 /**
  * @author thehutch
  */
-public class RenderComponent implements Component {
-	private final VertexArray mesh;
-	private final Texture texture;
+public abstract class VertexArray extends Creatable implements GLVersioned {
+	protected TIntList attributes;
+	protected int drawCount;
+	protected int vao;
+	protected int ibo;
 
-	public RenderComponent(VertexArray mesh, Texture texture) {
-		this.mesh = mesh;
-		this.texture = texture;
-	}
+	public abstract void setIndices(TIntList indices);
 
-	public VertexArray getMesh() {
-		return mesh;
-	}
+	public abstract void addAttribute(int index, int size, TFloatList data);
 
-	public Texture getTexture() {
-		return texture;
-	}
+	public abstract void draw();
 }

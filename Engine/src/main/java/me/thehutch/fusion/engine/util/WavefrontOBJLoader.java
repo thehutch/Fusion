@@ -25,7 +25,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
-import me.thehutch.fusion.engine.render.opengl.Mesh;
+import me.thehutch.fusion.engine.render.opengl.GLContext;
+import me.thehutch.fusion.engine.render.opengl.VertexArray;
 
 /**
  * @author thehutch
@@ -44,7 +45,7 @@ public class WavefrontOBJLoader {
 	private WavefrontOBJLoader() {
 	}
 
-	public static Mesh load(Path path) {
+	public static VertexArray load(GLContext context, Path path) {
 		try {
 			// Create the lists to store the vertex data
 			final TFloatList positions = new TFloatArrayList();
@@ -58,7 +59,8 @@ public class WavefrontOBJLoader {
 				calculateNormals(positions, indices, normals);
 			}
 			// Create the vertex array object
-			final Mesh mesh = new Mesh();
+			final VertexArray mesh = context.newVertexArray();
+			mesh.create();
 			mesh.setIndices(indices);
 			mesh.addAttribute(0, POSITION_SIZE, positions);
 			mesh.addAttribute(1, TEXCOORD_SIZE, texcoords);

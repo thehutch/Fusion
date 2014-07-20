@@ -122,15 +122,15 @@ public final class Entity {
 		return this;
 	}
 
-	protected BitSet getComponentBits() {
+	BitSet getComponentBits() {
 		return componentBits;
 	}
 
-	protected BitSet getProcessorBits() {
+	BitSet getProcessorBits() {
 		return processorBits;
 	}
 
-	protected void reset() {
+	void reset() {
 		this.uuid = UUID.randomUUID();
 		this.componentBits.clear();
 		this.processorBits.clear();

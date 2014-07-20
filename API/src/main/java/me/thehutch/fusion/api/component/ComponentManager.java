@@ -52,7 +52,7 @@ public final class ComponentManager extends Manager {
 	protected void initialise() {
 	}
 
-	protected Component getComponent(Entity e, ComponentType type) {
+	Component getComponent(Entity e, ComponentType type) {
 		final Bag<Component> components = componentsByType.get(type.getIndex());
 		if (components != null) {
 			return components.get(e.getId());
@@ -60,7 +60,7 @@ public final class ComponentManager extends Manager {
 		return null;
 	}
 
-	protected Bag<Component> getComponentsByType(ComponentType type) {
+	Bag<Component> getComponentsByType(ComponentType type) {
 		Bag<Component> components = componentsByType.get(type.getIndex());
 		if (components == null) {
 			components = new Bag<>();
@@ -69,7 +69,7 @@ public final class ComponentManager extends Manager {
 		return components;
 	}
 
-	protected Bag<Component> getComponentsFor(Entity e, Bag<Component> fillbag) {
+	Bag<Component> getComponentsFor(Entity e, Bag<Component> fillbag) {
 		final BitSet componentBits = e.getComponentBits();
 		for (int i = componentBits.nextSetBit(0); i >= 0; i = componentBits.nextSetBit(i + 1)) {
 			fillbag.add(componentsByType.get(i).get(e.getId()));
@@ -77,7 +77,7 @@ public final class ComponentManager extends Manager {
 		return fillbag;
 	}
 
-	protected void addComponent(Entity e, ComponentType type, Component component) {
+	void addComponent(Entity e, ComponentType type, Component component) {
 		this.componentsByType.ensureCapacity(type.getIndex());
 
 		Bag<Component> components = componentsByType.get(type.getIndex());
@@ -90,7 +90,7 @@ public final class ComponentManager extends Manager {
 		e.getComponentBits().set(type.getIndex());
 	}
 
-	protected void removeComponent(Entity e, ComponentType type) {
+	void removeComponent(Entity e, ComponentType type) {
 		final BitSet componentBits = e.getComponentBits();
 		final int index = type.getIndex();
 		if (componentBits.get(index)) {
@@ -99,7 +99,7 @@ public final class ComponentManager extends Manager {
 		}
 	}
 
-	protected void clean() {
+	void clean() {
 		if (!deleted.isEmpty()) {
 			for (int i = 0; i < deleted.size(); ++i) {
 				final Entity e = deleted.get(i);

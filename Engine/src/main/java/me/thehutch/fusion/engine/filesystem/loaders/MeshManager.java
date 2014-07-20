@@ -22,21 +22,24 @@ import gnu.trove.map.hash.THashMap;
 import java.nio.file.Path;
 import me.thehutch.fusion.api.filesystem.IResourceManager;
 import me.thehutch.fusion.engine.filesystem.FileSystem;
-import me.thehutch.fusion.engine.render.opengl.Mesh;
+import me.thehutch.fusion.engine.render.opengl.GLContext;
+import me.thehutch.fusion.engine.render.opengl.VertexArray;
 import me.thehutch.fusion.engine.util.WavefrontOBJLoader;
 
 /**
  * @author thehutch
  */
-public class MeshManager implements IResourceManager<Mesh> {
-	private final TMap<Path, Mesh> meshes = new THashMap<>();
+public class MeshManager implements IResourceManager<VertexArray> {
+	private final TMap<Path, VertexArray> meshes = new THashMap<>();
+	private final GLContext context;
 
-	public MeshManager() {
+	public MeshManager(GLContext context) {
+		this.context = context;
 	}
 
 	@Override
-	public Mesh get(Path path, boolean load) {
-		final Mesh mesh = meshes.get(path);
+	public VertexArray get(Path path, boolean load) {
+		final VertexArray mesh = meshes.get(path);
 		if (mesh == null && load) {
 			return load(path);
 		}
@@ -49,8 +52,8 @@ public class MeshManager implements IResourceManager<Mesh> {
 	}
 
 	@Override
-	public Mesh load(Path path) {
-		final Mesh mesh = WavefrontOBJLoader.load(path);
+	public VertexArray load(Path path) {
+		final VertexArray mesh = WavefrontOBJLoader.load(context, path);
 		if (mesh != null) {
 			this.meshes.put(path, mesh);
 		}
@@ -59,7 +62,7 @@ public class MeshManager implements IResourceManager<Mesh> {
 
 	@Override
 	public void unload(Path path) {
-		final Mesh mesh = meshes.remove(path);
+		final VertexArray mesh = meshes.remove(path);
 		if (mesh != null) {
 			mesh.dispose();
 		}
@@ -67,7 +70,7 @@ public class MeshManager implements IResourceManager<Mesh> {
 
 	@Override
 	public void dispose() {
-		this.meshes.forEachValue((Mesh mesh) -> {
+		this.meshes.forEachValue((VertexArray mesh) -> {
 			mesh.dispose();
 			return true;
 		});
