@@ -20,6 +20,7 @@ package me.thehutch.fusion.api;
 import me.thehutch.fusion.api.component.ComponentSystem;
 import me.thehutch.fusion.api.event.IEventManager;
 import me.thehutch.fusion.api.filesystem.IFileSystem;
+import me.thehutch.fusion.api.plugin.IPluginManager;
 import me.thehutch.fusion.api.scheduler.IScheduler;
 
 /**
@@ -46,6 +47,13 @@ public interface IEngine {
 	 * @return The scheduler
 	 */
 	public IScheduler getScheduler();
+
+	/**
+	 * Gets the {@link IPluginManager} used by the engine.
+	 *
+	 * @return The plugin manager
+	 */
+	public IPluginManager getPluginManager();
 
 	/**
 	 * Gets the {@link IEventManager} used by the engine.

@@ -17,17 +17,31 @@
  */
 package me.thehutch.fusion.engine.filesystem;
 
+import static java.nio.file.FileVisitOption.FOLLOW_LINKS;
+import static java.nio.file.FileVisitResult.CONTINUE;
+import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
+import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.file.DirectoryStream;
+import java.nio.file.CopyOption;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystemLoopException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.util.EnumSet;
+import java.util.logging.Level;
 import me.thehutch.fusion.api.filesystem.IFileSystem;
 import me.thehutch.fusion.api.filesystem.IResourceManager;
 import me.thehutch.fusion.api.util.Disposable;
@@ -37,17 +51,26 @@ import me.thehutch.fusion.engine.render.Renderer;
 public class FileSystem implements IFileSystem, Disposable {
 	public static final Path BASE_DIRECTORY = Paths.get(System.getProperty("user.dir"));
 	public static final Path DATA_DIRECTORY = BASE_DIRECTORY.resolve("data");
+	public static final Path PLUGIN_DIRECTORY = BASE_DIRECTORY.resolve("plugins");
 	private final TMap<String, IResourceManager<?>> managers = new THashMap<>();
 
 	public FileSystem() {
+		try {
+			// Create the data directory
+			Files.createDirectories(DATA_DIRECTORY);
+			// Create the plugin directory
+			Files.createDirectories(PLUGIN_DIRECTORY);
+		} catch (IOException ex) {
+			throw new SecurityException("Unable to create directory", ex);
+		}
 		// Extract the engine meshes
-		extractDirectory("meshes", Renderer.MESH_DIRECTORY);
+		extractDirectory("meshes", Renderer.MESH_DIRECTORY, false);
 		// Extract the engine shaders
-		extractDirectory("shaders", Renderer.SHADER_DIRECTORY);
+		extractDirectory("shaders", Renderer.SHADER_DIRECTORY, false);
 		// Extract the engine textures
-		extractDirectory("textures", Renderer.TEXTURE_DIRECTORY);
+		extractDirectory("textures", Renderer.TEXTURE_DIRECTORY, false);
 		// Extract the engine program
-		extractDirectory("programs", Renderer.PROGRAM_DIRECTORY);
+		extractDirectory("programs", Renderer.PROGRAM_DIRECTORY, false);
 	}
 
 	@Override
@@ -93,43 +116,13 @@ public class FileSystem implements IFileSystem, Disposable {
 	}
 
 	/**
-	 * Extracts the source directory out of the engine jar and copies it to the destination directory.
-	 * If the destination directory does not exist then it is created.
-	 *
-	 * @param source The source directory relative to the Engine classpath
-	 * @param dest   The destination directory relative to the user directory
-	 */
-	public static void extractDirectory(String source, Path dest) {
-		try {
-			// Create the destination directory
-			Files.createDirectories(dest);
-
-			// Get the path to the source directory
-			final Path sourcePath = Paths.get(Engine.class.getResource('/' + source).toURI());
-
-			// Obtain a directory stream to extract each file
-			try (final DirectoryStream<Path> stream = Files.newDirectoryStream(sourcePath)) {
-				stream.forEach((Path path) -> {
-					try {
-						Files.copy(path, dest.resolve(path.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
-				});
-			}
-		} catch (IOException | URISyntaxException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	/**
 	 * Returns the file extension associated with a path.
 	 *
 	 * @param path The path to get the extension of
 	 *
 	 * @return The file extension, or null if there is no file extension
 	 */
-	private String getPathExtension(Path path) {
+	private static String getPathExtension(Path path) {
 		final String pathAsString = path.toString();
 		final int extPos = pathAsString.lastIndexOf('.');
 		return extPos == -1 ? null : pathAsString.substring(extPos + 1);
@@ -144,5 +137,137 @@ public class FileSystem implements IFileSystem, Disposable {
 	 */
 	public static InputStream getJarResource(String path) {
 		return Engine.class.getResourceAsStream('/' + path);
+	}
+
+	/**
+	 * Converts the path so that it is relative to the base directory.
+	 *
+	 * @param path The path to convert
+	 *
+	 * @return The relativised path
+	 */
+	private static Path relativise(Path path) {
+		return FileSystem.BASE_DIRECTORY.relativize(path);
+	}
+
+	/**
+	 * Copy the source file to the target location. The {@code preserve}
+	 * paramter determins if the file attributes should be copied/preserved.
+	 *
+	 * @param source   The source file
+	 * @param target   The target file
+	 * @param preserve Whether to preserve the file attributes
+	 */
+	private static void copyFile(Path source, Path target, boolean preserve) {
+		final CopyOption[] options = preserve
+									 ? new CopyOption[] { COPY_ATTRIBUTES, REPLACE_EXISTING }
+									 : new CopyOption[] { REPLACE_EXISTING };
+		if (Files.notExists(target)) {
+			try {
+				Files.copy(source, target, options);
+			} catch (IOException ex) {
+				Engine.getLogger().log(Level.WARNING, "Unable to copy file: " + relativise(source), ex);
+			}
+		}
+	}
+
+	/**
+	 * Extracts the source directory out of the engine jar and copies it to the destination directory.
+	 * If the destination directory does not exist then it is created.
+	 *
+	 * @param source The source directory relative to the engine classpath
+	 * @param target The target directory relative to the user directory
+	 */
+	private static void extractDirectory(String source, Path target, boolean overwrite) {
+		// Check if the directory already exists
+		if (Files.notExists(target)) {
+			Engine.getLogger().log(Level.INFO, "'{0}' does not exist. Creating...", target);
+
+			// Attempt to create the destination directory
+			try {
+				Files.createDirectories(target);
+			} catch (FileAlreadyExistsException ex) {
+				Engine.getLogger().log(Level.WARNING, "'" + relativise(target) + "' already exists", ex);
+			} catch (IOException ex) {
+				Engine.getLogger().log(Level.SEVERE, "Unable to create directory: " + relativise(target), ex);
+			}
+		}
+
+		// Get the name of the engine jar
+		final String jarName;
+		try {
+			jarName = FileSystem.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+		} catch (URISyntaxException ex) {
+			throw new IllegalStateException("Unable to get engine jar name!", ex);
+		}
+
+		// Get the path to the engine jar
+		final Path sourcePath = BASE_DIRECTORY.resolve(jarName).resolve(source);
+
+		// Follow links when copying files
+		final EnumSet<FileVisitOption> options = EnumSet.of(FOLLOW_LINKS);
+		final CopyFileVisitor visitor = new CopyFileVisitor(sourcePath, target, overwrite);
+		try {
+			Files.walkFileTree(sourcePath, options, Integer.MAX_VALUE, visitor);
+		} catch (IOException ex) {
+			Engine.getLogger().log(Level.SEVERE, "Unable to extract directory: " + relativise(sourcePath), ex);
+		}
+	}
+
+	private static final class CopyFileVisitor implements FileVisitor<Path> {
+		private final Path source;
+		private final Path target;
+		private final boolean preserve;
+
+		private CopyFileVisitor(Path source, Path target, boolean preserve) {
+			this.source = source;
+			this.target = target;
+			this.preserve = preserve;
+		}
+
+		@Override
+		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+			final Path newDir = target.resolve(source.relativize(dir));
+			try {
+				Files.copy(dir, newDir);
+			} catch (FileAlreadyExistsException ex) {
+				// Ignore exception
+			} catch (IOException ex) {
+				Engine.getLogger().log(Level.SEVERE, "Unable to create directory: " + relativise(newDir), ex);
+				return SKIP_SUBTREE;
+			}
+			return CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			copyFile(file, target.resolve(source.relativize(file)), preserve);
+			return CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult postVisitDirectory(Path dir, IOException exception) throws IOException {
+			// Update the modification time of directory when done
+			if (exception == null && preserve) {
+				final Path newDir = target.resolve(source.relativize(dir));
+				try {
+					final FileTime time = Files.getLastModifiedTime(dir);
+					Files.setLastModifiedTime(newDir, time);
+				} catch (IOException ex) {
+					Engine.getLogger().log(Level.SEVERE, "Unable to copy all attributes to: " + relativise(newDir), ex);
+				}
+			}
+			return CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFileFailed(Path file, IOException exception) throws IOException {
+			if (exception instanceof FileSystemLoopException) {
+				Engine.getLogger().log(Level.SEVERE, "Cycle detected: " + relativise(file), exception);
+			} else {
+				Engine.getLogger().log(Level.SEVERE, "Unable to copy: " + relativise(file), exception);
+			}
+			return CONTINUE;
+		}
 	}
 }

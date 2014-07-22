@@ -89,23 +89,6 @@
 					<showDeprecation>true</showDeprecation>
 				</configuration>
 			</plugin>
-			<!-- Dependency addition plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.3</version>
-				<executions>
-					<execution>
-						<configuration>
-							<minimizeJar>false</minimizeJar>
-						</configuration>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<!-- Source plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -115,7 +98,7 @@
 					<execution>
 						<id>attach-sources</id>
 						<goals>
-							<goal>jar</goal>
+							<goal>aggregate</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -129,7 +112,7 @@
 					<execution>
 						<id>attach-javadocs</id>
 						<goals>
-							<goal>jar</goal>
+							<goal>aggregate-jar</goal>
 						</goals>
 					</execution>
 				</executions>

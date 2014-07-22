@@ -18,6 +18,7 @@
 package me.thehutch.fusion.engine;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -82,7 +83,9 @@ public class Application {
 		Files.createDirectories(nativesDir);
 		// Copy each native library into the natives directory
 		for (String file : files) {
-			Files.copy(FileSystem.getJarResource(file), nativesDir.resolve(file), StandardCopyOption.REPLACE_EXISTING);
+			try (InputStream stream = FileSystem.getJarResource(file)) {
+				Files.copy(stream, nativesDir.resolve(file), StandardCopyOption.REPLACE_EXISTING);
+			}
 		}
 		// Set the library paths
 		System.setProperty("org.lwjgl.librarypath", nativesDir.toAbsolutePath().toString());

@@ -17,17 +17,23 @@
  */
 package me.thehutch.fusion.engine;
 
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collection;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import me.thehutch.fusion.api.IEngine;
 import me.thehutch.fusion.api.component.ComponentSystem;
+import me.thehutch.fusion.api.plugin.Plugin;
 import me.thehutch.fusion.api.scheduler.TaskPriority;
 import me.thehutch.fusion.engine.event.EventManager;
 import me.thehutch.fusion.engine.filesystem.FileSystem;
+import me.thehutch.fusion.engine.plugin.PluginManager;
 import me.thehutch.fusion.engine.scheduler.Scheduler;
 
 /**
@@ -41,6 +47,7 @@ public abstract class Engine implements IEngine {
 	public static final String ENGINE_VERSION = ENGINE_MAJOR_VERSION + "." + ENGINE_MINOR_VERSION + "." + ENGINE_BUILD_VERSION;
 	private static final Logger LOGGER;
 	private static final long TICKS_PER_SECOND = 60L;
+	private final PluginManager pluginManager;
 	private final EventManager eventManager;
 	private final ComponentSystem system;
 	private final FileSystem fileSystem;
@@ -49,14 +56,31 @@ public abstract class Engine implements IEngine {
 
 	static {
 		final Formatter formatter = new Formatter() {
-			private static final String format = "[%s]: %s";
+			private final String format = "[%s]: %s\n";
 
 			@Override
 			public String format(LogRecord record) {
-				return String.format(format, record.getLevel().getName(), record.getMessage());
+				final Object[] params = record.getParameters();
+				String message = record.getMessage();
+				if (params != null) {
+					final int length = params.length;
+					for (int i = 0; i < length; ++i) {
+						if (params[i] instanceof Path) {
+							final Path path = (Path) params[i];
+							message = message.replace("{" + i + "}", FileSystem.BASE_DIRECTORY.relativize(path).toString());
+						} else {
+							message = message.replace("{" + i + "}", params[i].toString());
+						}
+					}
+				}
+				final Throwable exception = record.getThrown();
+				if (exception != null) {
+					exception.printStackTrace();
+				}
+				return String.format(format, record.getLevel().getName(), message);
 			}
 		};
-		final Handler handler = new ConsoleHandler();
+		final ConsoleHandler handler = new ConsoleHandler();
 		handler.setFormatter(formatter);
 
 		LOGGER = Logger.getLogger("Fusion-" + ENGINE_VERSION);
@@ -74,6 +98,9 @@ public abstract class Engine implements IEngine {
 		// Create the event manager
 		this.eventManager = new EventManager();
 
+		// Create the plugin manager
+		this.pluginManager = new PluginManager(this);
+
 		// Create the file system
 		this.fileSystem = new FileSystem();
 
@@ -87,6 +114,17 @@ public abstract class Engine implements IEngine {
 
 		// Initialise the component system
 		this.system.initialise();
+
+		// Attempt to load all the plugins
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(FileSystem.PLUGIN_DIRECTORY, "*.jar")) {
+			stream.forEach(pluginManager::loadPlugin);
+		} catch (IOException ex) {
+			getLogger().log(Level.WARNING, "Unable to load plugins!", ex);
+		}
+		// Enable the plugins
+		// TODO: Enable in dependencies order
+		final Collection<Plugin> plugins = pluginManager.getPlugins();
+		plugins.forEach(pluginManager::enablePlugin);
 	}
 
 	@Override
@@ -97,6 +135,11 @@ public abstract class Engine implements IEngine {
 	@Override
 	public final Scheduler getScheduler() {
 		return scheduler;
+	}
+
+	@Override
+	public final PluginManager getPluginManager() {
+		return pluginManager;
 	}
 
 	@Override
@@ -124,7 +167,10 @@ public abstract class Engine implements IEngine {
 		// Terminate the Scheduler
 		getScheduler().stop();
 
-		LOGGER.log(Level.INFO, "Exiting Engine: {0}", reason);
+		// Dispose of the plugin manager
+		getPluginManager().dispose();
+
+		getLogger().log(Level.INFO, "Exiting Engine: {0}", reason);
 	}
 
 	public static Logger getLogger() {
