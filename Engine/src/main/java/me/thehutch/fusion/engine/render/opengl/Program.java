@@ -17,11 +17,6 @@
  */
 package me.thehutch.fusion.engine.render.opengl;
 
-import gnu.trove.impl.Constants;
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
 import me.thehutch.fusion.api.maths.Matrix2;
 import me.thehutch.fusion.api.maths.Matrix3;
 import me.thehutch.fusion.api.maths.Matrix4;
@@ -29,10 +24,10 @@ import me.thehutch.fusion.api.maths.Vector2;
 import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.maths.Vector4;
 import me.thehutch.fusion.api.util.Creatable;
+import me.thehutch.fusion.engine.render.data.Uniform;
+import me.thehutch.fusion.engine.render.data.UniformHolder;
 
 public abstract class Program extends Creatable implements GLVersioned {
-	protected final TObjectIntMap<String> uniforms = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
-	protected final TIntList shaders = new TIntArrayList(2, -1);
 	protected int id;
 
 	public abstract void bind();
@@ -42,6 +37,8 @@ public abstract class Program extends Creatable implements GLVersioned {
 	public abstract void attachShader(CharSequence source, int type);
 
 	public abstract void link();
+
+	public abstract void bindSampler(int unit);
 
 	public abstract void setUniform(String name, boolean b);
 
@@ -66,4 +63,18 @@ public abstract class Program extends Creatable implements GLVersioned {
 	public abstract void setUniform(String name, Matrix4 matrix);
 
 	public abstract void setUniform(String name, Matrix4[] matrix);
+
+	public final int getId() {
+		return id;
+	}
+
+	public final void upload(Uniform uniform) {
+		uniform.upload(this);
+	}
+
+	public final void upload(UniformHolder holder) {
+		holder.forEach((Uniform uniform) -> {
+			uniform.upload(this);
+		});
+	}
 }

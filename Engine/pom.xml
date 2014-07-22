@@ -16,30 +16,28 @@
 
 	<!-- Build properties -->
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mainClass>me.thehutch.fusion.engine.Application</mainClass>
-		<lwjgl-version>2.9.1</lwjgl-version>
+		<project.root>..</project.root>
 	</properties>
 
 	<!-- Project dependencies -->
 	<dependencies>
-		<!-- Include in final JAR -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>fusion-api</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.lwjgl.lwjgl</groupId>
 			<artifactId>lwjgl</artifactId>
-			<version>${lwjgl-version}</version>
+			<version>2.9.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.lwjgl.lwjgl</groupId>
 			<artifactId>lwjgl_util</artifactId>
-			<version>${lwjgl-version}</version>
+			<version>2.9.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>fusion-api</artifactId>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
@@ -69,7 +67,7 @@
 				<executions>
 					<execution>
 						<configuration>
-							<minimizeJar>true</minimizeJar>
+							<minimizeJar>false</minimizeJar>
 						</configuration>
 						<phase>package</phase>
 						<goals>

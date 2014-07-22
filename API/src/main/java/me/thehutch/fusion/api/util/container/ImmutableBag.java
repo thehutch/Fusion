@@ -17,6 +17,11 @@
  */
 package me.thehutch.fusion.api.util.container;
 
+import static java.util.Spliterator.IMMUTABLE;
+import static java.util.Spliterator.SIZED;
+
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -41,5 +46,10 @@ public interface ImmutableBag<E> extends Iterable<E> {
 
 	public default Stream<E> parallelStream() {
 		return StreamSupport.stream(spliterator(), true);
+	}
+
+	@Override
+	public default Spliterator<E> spliterator() {
+		return Spliterators.spliterator(iterator(), size(), SIZED | IMMUTABLE);
 	}
 }

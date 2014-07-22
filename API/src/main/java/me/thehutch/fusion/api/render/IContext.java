@@ -26,8 +26,9 @@ import me.thehutch.fusion.api.maths.Vector3;
  */
 public interface IContext {
 	/**
+	 * Gets the title of the window.
 	 *
-	 * @return
+	 * @return The window title
 	 */
 	public String getWindowTitle();
 
@@ -73,7 +74,7 @@ public interface IContext {
 	 *
 	 * @param colour The clearing colour
 	 *
-	 * @see setClearColour(float, float, float)
+	 * @see #setClearColour(float, float, float)
 	 */
 	public void setClearColour(Vector3 colour);
 

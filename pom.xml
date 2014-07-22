@@ -8,7 +8,16 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<inceptionYear>2014</inceptionYear>
+	<url>https://github.com/thehutch/Fusion</url>
 	<description>Java OpenGL 3D Engine</description>
+
+	<!-- Project developers -->
+	<developers>
+		<developer>
+			<id>thehutch</id>
+			<email>52d5ad14@opayq.com</email>
+		</developer>
+	</developers>
 
 	<!-- Parent information -->
 	<parent>
@@ -23,6 +32,13 @@
 		<module>Engine</module>
 	</modules>
 
+	<!-- Build properties -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.root>.</project.root>
+	</properties>
+
+	<!-- License information -->
 	<licenses>
 		<license>
 			<name>Apache License 2.0</name>
@@ -31,11 +47,23 @@
 		</license>
 	</licenses>
 
-	<!-- Build properties -->
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.root>.</project.root>
-	</properties>
+	<!-- Issue management -->
+	<issueManagement>
+		<system>github</system>
+		<url>${project.url}/issues</url>
+	</issueManagement>
+
+	<!-- Dependency repositories -->
+	<repositories>
+		<repository>
+			<id>sonatype-nexus</id>
+			<url>https://oss.sonatype.org/content/repositories/public/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<!-- Build plugin repositories -->
 	<pluginRepositories>
@@ -108,6 +136,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9.1</version>
+				<configuration>
+					<windowtitle>${project.name} Javadocs</windowtitle>
+					<author>true</author>
+					<version>true</version>
+				</configuration>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>

@@ -16,9 +16,10 @@
 
 	<!-- Build properties -->
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.root>..</project.root>
 	</properties>
 
+	<!-- Prject dependencies -->
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.trove4j</groupId>
@@ -34,6 +35,7 @@
 		</dependency>
 	</dependencies>
 
+	<!-- Dependency addition plugin -->
 	<build>
 		<plugins>
 			<!-- Dependency addition plugin -->

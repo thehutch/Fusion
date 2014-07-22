@@ -17,7 +17,6 @@
  */
 package me.thehutch.fusion.api.util.container;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -34,7 +33,6 @@ public class Bag<E> implements ImmutableBag<E> {
 	}
 
 	public Bag(int capacity) {
-		ArrayList t;
 		this.data = (E[]) new Object[capacity];
 		this.size = 0;
 	}
@@ -147,7 +145,7 @@ public class Bag<E> implements ImmutableBag<E> {
 
 	public void ensureCapacity(int index) {
 		if (index >= data.length) {
-			expand(index * 2);
+			expand((index * 3) / 2 + 1);
 		}
 	}
 
@@ -167,7 +165,7 @@ public class Bag<E> implements ImmutableBag<E> {
 		System.arraycopy(oldData, 0, data, 0, oldData.length);
 	}
 
-	private class BagIterator<E> implements Iterator<E> {
+	private static class BagIterator<E> implements Iterator<E> {
 		private final Bag<E> bag;
 		private int index;
 

@@ -23,8 +23,17 @@ import static org.lwjgl.opengl.GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH;
 import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
 import static org.lwjgl.opengl.GL20.GL_INFO_LOG_LENGTH;
 import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
+import static org.lwjgl.opengl.GL20.GL_SAMPLER_2D;
+import static org.lwjgl.opengl.GL20.GL_SAMPLER_CUBE;
 import static org.lwjgl.opengl.GL20.GL_VALIDATE_STATUS;
 
+import gnu.trove.impl.Constants;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -47,6 +56,9 @@ public class OpenGL20Program extends Program {
 	private static final FloatBuffer MATRIX_2X2_BUFFER = BufferUtils.createFloatBuffer(4);
 	private static final FloatBuffer MATRIX_3X3_BUFFER = BufferUtils.createFloatBuffer(9);
 	private static final FloatBuffer MATRIX_4X4_BUFFER = BufferUtils.createFloatBuffer(16);
+	private final TObjectIntMap<String> uniforms = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
+	private final TIntObjectMap<String> textures = new TIntObjectHashMap<>();
+	private final TIntList shaders = new TIntArrayList(2, -1);
 
 	@Override
 	public void create() {
@@ -149,6 +161,7 @@ public class OpenGL20Program extends Program {
 		final IntBuffer typeBuffer = BufferUtils.createIntBuffer(1);
 		// Create a byte array to store the name in
 		final byte[] nameBytes = new byte[maxNameLength];
+		int textureUnit = 0;
 
 		final int uniformCount = GL20.glGetProgrami(id, GL_ACTIVE_UNIFORMS);
 		for (int i = 0; i < uniformCount; ++i) {
@@ -166,6 +179,16 @@ public class OpenGL20Program extends Program {
 			// Convert the name buffer to a String
 			this.uniforms.put(name, GL20.glGetUniformLocation(id, name));
 
+			// Check if the uniform is a texture/sampler
+			switch (typeBuffer.get()) {
+				case GL_SAMPLER_2D:
+				case GL_SAMPLER_CUBE:
+					this.textures.put(textureUnit++, name);
+					break;
+				default:
+					break;
+			}
+
 			// Clear the buffers
 			lengthBuffer.clear();
 			sizeBuffer.clear();
@@ -179,6 +202,15 @@ public class OpenGL20Program extends Program {
 	@Override
 	public GLVersion getGLVersion() {
 		return GLVersion.GL20;
+	}
+
+	@Override
+	public void bindSampler(int unit) {
+		final String name = textures.get(unit);
+		if (name == null) {
+			throw new IllegalArgumentException("No texture has been set for the unit: " + unit);
+		}
+		setUniform(name, unit);
 	}
 
 	@Override
