@@ -20,7 +20,6 @@ package me.thehutch.fusion.engine.filesystem;
 import static java.nio.file.FileVisitOption.FOLLOW_LINKS;
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
-import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import gnu.trove.map.TMap;
@@ -28,7 +27,6 @@ import gnu.trove.map.hash.THashMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.file.CopyOption;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystemLoopException;
 import java.nio.file.FileVisitOption;
@@ -64,13 +62,15 @@ public class FileSystem implements IFileSystem, Disposable {
 			throw new SecurityException("Unable to create directory", ex);
 		}
 		// Extract the engine meshes
-		extractDirectory("meshes", Renderer.MESH_DIRECTORY, false);
+		extractDirectory("meshes", Renderer.MESH_DIRECTORY, true);
 		// Extract the engine shaders
-		extractDirectory("shaders", Renderer.SHADER_DIRECTORY, false);
+		extractDirectory("shaders", Renderer.SHADER_DIRECTORY, true);
 		// Extract the engine textures
-		extractDirectory("textures", Renderer.TEXTURE_DIRECTORY, false);
-		// Extract the engine program
-		extractDirectory("programs", Renderer.PROGRAM_DIRECTORY, false);
+		extractDirectory("textures", Renderer.TEXTURE_DIRECTORY, true);
+		// Extract the engine programs
+		extractDirectory("programs", Renderer.PROGRAM_DIRECTORY, true);
+		// Extract the engine materials
+		extractDirectory("materials", Renderer.MATERIAL_DIRECTORY, true);
 	}
 
 	@Override
@@ -154,17 +154,14 @@ public class FileSystem implements IFileSystem, Disposable {
 	 * Copy the source file to the target location. The {@code preserve}
 	 * paramter determins if the file attributes should be copied/preserved.
 	 *
-	 * @param source   The source file
-	 * @param target   The target file
-	 * @param preserve Whether to preserve the file attributes
+	 * @param source    The source file
+	 * @param target    The target file
+	 * @param overwrite Whether to overwrite the file attributes
 	 */
-	private static void copyFile(Path source, Path target, boolean preserve) {
-		final CopyOption[] options = preserve
-									 ? new CopyOption[] { COPY_ATTRIBUTES, REPLACE_EXISTING }
-									 : new CopyOption[] { REPLACE_EXISTING };
-		if (Files.notExists(target)) {
+	private static void copyFile(Path source, Path target, boolean overwrite) {
+		if (Files.notExists(target) || overwrite) {
 			try {
-				Files.copy(source, target, options);
+				Files.copy(source, target, REPLACE_EXISTING);
 			} catch (IOException ex) {
 				Engine.getLogger().log(Level.WARNING, "Unable to copy file: " + relativise(source), ex);
 			}
@@ -217,12 +214,12 @@ public class FileSystem implements IFileSystem, Disposable {
 	private static final class CopyFileVisitor implements FileVisitor<Path> {
 		private final Path source;
 		private final Path target;
-		private final boolean preserve;
+		private final boolean overwrite;
 
-		private CopyFileVisitor(Path source, Path target, boolean preserve) {
+		private CopyFileVisitor(Path source, Path target, boolean overwrite) {
 			this.source = source;
 			this.target = target;
-			this.preserve = preserve;
+			this.overwrite = overwrite;
 		}
 
 		@Override
@@ -241,14 +238,14 @@ public class FileSystem implements IFileSystem, Disposable {
 
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-			copyFile(file, target.resolve(source.relativize(file)), preserve);
+			copyFile(file, target.resolve(source.relativize(file)), overwrite);
 			return CONTINUE;
 		}
 
 		@Override
 		public FileVisitResult postVisitDirectory(Path dir, IOException exception) throws IOException {
 			// Update the modification time of directory when done
-			if (exception == null && preserve) {
+			if (exception == null && overwrite) {
 				final Path newDir = target.resolve(source.relativize(dir));
 				try {
 					final FileTime time = Files.getLastModifiedTime(dir);

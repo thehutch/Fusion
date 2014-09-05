@@ -19,16 +19,12 @@ package me.thehutch.fusion.engine;
 
 import me.thehutch.fusion.api.IClient;
 import me.thehutch.fusion.api.Platform;
-import me.thehutch.fusion.api.event.EventPriority;
 import me.thehutch.fusion.api.input.keyboard.Key;
-import me.thehutch.fusion.api.input.mouse.MouseMotionEvent;
-import me.thehutch.fusion.api.maths.MathsHelper;
-import me.thehutch.fusion.api.maths.Quaternion;
-import me.thehutch.fusion.api.maths.Vector3;
 import me.thehutch.fusion.api.render.Camera;
 import me.thehutch.fusion.api.scheduler.TaskPriority;
 import me.thehutch.fusion.api.util.GLVersion;
 import me.thehutch.fusion.engine.filesystem.loaders.ImageLoader;
+import me.thehutch.fusion.engine.filesystem.loaders.MaterialLoader;
 import me.thehutch.fusion.engine.filesystem.loaders.MeshManager;
 import me.thehutch.fusion.engine.filesystem.loaders.ProgramManager;
 import me.thehutch.fusion.engine.filesystem.loaders.TextureManager;
@@ -41,12 +37,9 @@ import me.thehutch.fusion.engine.render.opengl.gl30.OpenGL30Context;
  * @author thehutch
  */
 public final class Client extends Engine implements IClient {
-	private static final float MOUSE_SENSITIVITY = 10.0f;
 	private final InputManager inputManager;
 	private final GLContext context;
 	private final Renderer renderer;
-	private float cameraPitch;
-	private float cameraYaw;
 
 	protected Client(Application application) {
 		super(application);
@@ -72,30 +65,13 @@ public final class Client extends Engine implements IClient {
 		getFileSystem().registerResourceManager(new TextureManager(this), "ftex");
 		// Register the program loader
 		getFileSystem().registerResourceManager(new ProgramManager(this), "fprg");
+		// Register the material loader
+		getFileSystem().registerResourceManager(new MaterialLoader(this), "fmat");
 		// Register the model loader
 		getFileSystem().registerResourceManager(new MeshManager(context), "obj");
 
 		// Add the scene to the component system
 		getComponentSystem().addProcessor(renderer);
-
-		/*
-		 * Register the mouse motion event
-		 */
-		getEventManager().registerEvent((MouseMotionEvent event) -> {
-			if (getInputManager().isMouseGrabbed()) {
-				final float sensitivity = MOUSE_SENSITIVITY * getScheduler().getDelta();
-
-				this.cameraPitch += event.getDY() * sensitivity;
-				this.cameraPitch = MathsHelper.clamp(cameraPitch, -90.0f, 90.0f);
-				final Quaternion pitch = Quaternion.fromAxisAngleDeg(Vector3.UNIT_X, cameraPitch);
-
-				this.cameraYaw -= event.getDX() * sensitivity;
-				this.cameraYaw %= 360;
-				final Quaternion yaw = Quaternion.fromAxisAngleDeg(Vector3.UNIT_Y, cameraYaw);
-
-				getRenderer().getCamera().setRotation(yaw.mul(pitch));
-			}
-		}, MouseMotionEvent.class, EventPriority.HIGH, true);
 
 		// Enable mouse grab toggle
 		getInputManager().registerKeyBinding(() -> {
@@ -116,6 +92,11 @@ public final class Client extends Engine implements IClient {
 
 	public Renderer getRenderer() {
 		return renderer;
+	}
+
+	@Override
+	public Camera getCamera() {
+		return renderer.getCamera();
 	}
 
 	@Override

@@ -41,7 +41,7 @@ public abstract class ParallelEntityProcessor extends EntityProcessor {
 	public abstract void process(Entity entity);
 
 	@Override
-	protected void processEntities(ImmutableBag<Entity> entities) {
+	protected final void processEntities(ImmutableBag<Entity> entities) {
 		entities.parallelStream().forEach(this::process);
 	}
 

@@ -28,8 +28,8 @@ import java.nio.file.Path;
 import me.thehutch.fusion.api.component.Aspect;
 import me.thehutch.fusion.api.component.ComponentMapper;
 import me.thehutch.fusion.api.component.Entity;
-import me.thehutch.fusion.api.component.EntityProcessor;
 import me.thehutch.fusion.api.component.annotations.Mapper;
+import me.thehutch.fusion.api.component.processors.BatchEntityProcessor;
 import me.thehutch.fusion.api.maths.Matrix4;
 import me.thehutch.fusion.api.render.Camera;
 import me.thehutch.fusion.api.util.container.ImmutableBag;
@@ -38,15 +38,14 @@ import me.thehutch.fusion.engine.Engine;
 import me.thehutch.fusion.engine.component.RenderComponent;
 import me.thehutch.fusion.engine.component.TransformComponent;
 import me.thehutch.fusion.engine.filesystem.FileSystem;
-import me.thehutch.fusion.engine.render.lights.AmbientLight;
 import me.thehutch.fusion.engine.render.opengl.Program;
-import me.thehutch.fusion.engine.render.opengl.Texture;
 import me.thehutch.fusion.engine.render.opengl.VertexArray;
 import me.thehutch.fusion.engine.util.RenderUtil;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
-public final class Renderer extends EntityProcessor {
+public final class Renderer extends BatchEntityProcessor {
+	public static final Path MATERIAL_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("materials");
 	public static final Path TEXTURE_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("textures");
 	public static final Path PROGRAM_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("programs");
 	public static final Path SHADER_DIRECTORY = FileSystem.DATA_DIRECTORY.resolve("shaders");
@@ -61,8 +60,6 @@ public final class Renderer extends EntityProcessor {
 	// Transform component mapper
 	@Mapper
 	private ComponentMapper<TransformComponent> transformMapper;
-	// Ambient light
-	private AmbientLight ambientLight;
 
 	public Renderer(Client engine, Camera camera) {
 		super(Aspect.getAspectFor(RenderComponent.class,
@@ -77,9 +74,6 @@ public final class Renderer extends EntityProcessor {
 
 	@Override
 	protected void initialise() {
-		// Initialise the ambient light
-		this.ambientLight = new AmbientLight(getProgram("ambient.fprg"), 0.125f);
-
 		// Enable depth testing
 		GL11.glEnable(GL_DEPTH_TEST);
 		GL11.glEnable(GL_DEPTH_CLAMP);
@@ -89,7 +83,7 @@ public final class Renderer extends EntityProcessor {
 		GL11.glCullFace(GL_BACK);
 
 		// Create an example model for testing
-		final RenderComponent render = new RenderComponent(getMesh("ground.obj"), getTexture("ground.ftex"));
+		final RenderComponent render = new RenderComponent(getMaterial("ground.fmat"), getMesh("ground.obj"));
 		final TransformComponent transform = new TransformComponent();
 
 		final Entity e = system.createEntity();
@@ -119,16 +113,6 @@ public final class Renderer extends EntityProcessor {
 		// Calculate the camera matrix (projection * view)
 		final Matrix4 cameraMatrix = camera.getProjectionMatrix().mul(camera.getViewMatrix());
 
-		//
-		// Render the first pass of the scene for the ambient light
-		//
-		final Program ambientProgram = ambientLight.getProgram();
-		ambientProgram.bind();
-
-		ambientProgram.setUniform("cameraMatrix", cameraMatrix);
-
-		this.ambientLight.uploadUniforms();
-
 		// Render the models
 		entities.forEach((Entity e) -> {
 			// Get the render and transform components
@@ -136,10 +120,8 @@ public final class Renderer extends EntityProcessor {
 			final TransformComponent transform = transformMapper.get(e);
 
 			// Render the entity
-			render(render, transform, ambientProgram);
+			render(render, transform, cameraMatrix);
 		});
-		// Unbind the program
-		ambientProgram.unbind();
 
 		// Enable blending
 //		GL11.glEnable(GL_BLEND);
@@ -193,20 +175,20 @@ public final class Renderer extends EntityProcessor {
 		return engine.getFileSystem().getResource(MESH_DIRECTORY.resolve(name));
 	}
 
-	private Texture getTexture(String name) {
-		return engine.getFileSystem().getResource(TEXTURE_DIRECTORY.resolve(name));
+	private Material getMaterial(String name) {
+		return engine.getFileSystem().getResource(MATERIAL_DIRECTORY.resolve(name));
 	}
 
-	private Program getProgram(String name) {
-		return engine.getFileSystem().getResource(PROGRAM_DIRECTORY.resolve(name));
-	}
+	private void render(RenderComponent render, TransformComponent transform, Matrix4 camera) {
+		final Material material = render.getMaterial();
+		final Program program = material.getProgram();
 
-	private void render(RenderComponent render, TransformComponent transform, Program program) {
-		// Bind the texture
-		render.getTexture().bind(0);
+		// Bind the material
+		material.bind();
+		material.uploadUniforms();
 
-		// Set the material uniform
-		program.setUniform("material", 0);
+		// Set the camera matrix
+		program.setUniform("cameraMatrix", camera);
 
 		// Set the model and normal matrix uniforms
 		final Matrix4 modelMatrix = Matrix4.createScale(transform.getScale()).rotate(transform.getRotation()).translate(transform.getPosition());

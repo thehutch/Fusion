@@ -17,7 +17,7 @@
 	<!-- Build properties -->
 	<properties>
 		<mainClass>me.thehutch.fusion.engine.Application</mainClass>
-		<project.root>..</project.root>
+		<project.root>.</project.root>
 	</properties>
 
 	<!-- Project dependencies -->
@@ -67,7 +67,7 @@
 				<executions>
 					<execution>
 						<configuration>
-							<minimizeJar>false</minimizeJar>
+							<minimizeJar>true</minimizeJar>
 						</configuration>
 						<phase>package</phase>
 						<goals>

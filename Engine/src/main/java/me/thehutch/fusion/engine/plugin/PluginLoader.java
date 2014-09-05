@@ -143,7 +143,7 @@ public final class PluginLoader {
 			plugin.setEnabled(true);
 
 			//TODO: Call plugin enable event
-			this.engine.getEventManager().callEvent(new PluginEnabledEvent(plugin));
+			this.engine.getEventManager().invoke(new PluginEnabledEvent(plugin));
 		}
 	}
 
@@ -156,7 +156,7 @@ public final class PluginLoader {
 			// Disable the plugin
 			plugin.setEnabled(false);
 			// Execute the plugin disabled event
-			this.engine.getEventManager().callEvent(new PluginDisabledEvent(plugin));
+			this.engine.getEventManager().invoke(new PluginDisabledEvent(plugin));
 		}
 	}
 }

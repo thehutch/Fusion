@@ -1,0 +1,2 @@
+vertex_shader: shaders/solid_vertex_shader.glsl
+fragment_shader: shaders/solid_fragment_shader.glsl

@@ -31,7 +31,7 @@ public interface IEventManager {
 	 *
 	 * @return The final result of the event
 	 */
-	public <T extends Event> T callEvent(T event);
+	public <T extends Event> T invoke(T event);
 
 	/**
 	 * Executes the event asynchronously.
@@ -41,16 +41,15 @@ public interface IEventManager {
 	 *
 	 * @return The final result of the event
 	 */
-	public <T extends Event> T callEventAsync(T event);
+	public <T extends Event> T invokeAsync(T event);
 
 	/**
 	 * Registers the event handler with the given priority and ignore flag.
 	 *
 	 * @param <T>             The type of event being registered
 	 * @param handler         The function which handles the event
-	 * @param eventClass      The class of the event being registered
 	 * @param priority        The priority of the event
 	 * @param ignoreCancelled If the handler ignores the cancellation state of the event
 	 */
-	public <T extends Event> void registerEvent(Consumer<T> handler, Class<T> eventClass, EventPriority priority, boolean ignoreCancelled);
+	public <T extends Event> void register(Consumer<T> handler, EventPriority priority, boolean ignoreCancelled);
 }

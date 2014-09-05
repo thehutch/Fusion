@@ -69,7 +69,7 @@ public class TextureManager implements IResourceManager<Texture> {
 	@Override
 	public Texture load(Path path) {
 		// Open the texture file and read its attributes
-		try (final Stream<String> stream = Files.lines(path)) {
+		try (Stream<String> stream = Files.lines(path)) {
 
 			final TMap<String, String> values = new THashMap<>(17, 0.9f);
 

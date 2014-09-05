@@ -18,6 +18,7 @@
 package me.thehutch.fusion.api;
 
 import me.thehutch.fusion.api.input.IInputManager;
+import me.thehutch.fusion.api.render.Camera;
 import me.thehutch.fusion.api.render.IContext;
 import me.thehutch.fusion.api.util.GLVersion;
 
@@ -25,6 +26,13 @@ import me.thehutch.fusion.api.util.GLVersion;
  * @author thehutch
  */
 public interface IClient extends IEngine {
+	/**
+	 * Gets the camera used by the client.
+	 *
+	 * @return The camera
+	 */
+	public Camera getCamera();
+
 	/**
 	 * Gets the opengl context used by the client.
 	 *

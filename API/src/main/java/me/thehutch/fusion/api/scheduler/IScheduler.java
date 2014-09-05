@@ -86,4 +86,11 @@ public interface IScheduler {
 	 * @param taskId Id of the task to be cancelled
 	 */
 	public void cancelTask(int taskId);
+
+	/**
+	 * Returns the current delta of the scheduler.
+	 *
+	 * @return The time since the last update in milliseconds
+	 */
+	public float getDelta();
 }

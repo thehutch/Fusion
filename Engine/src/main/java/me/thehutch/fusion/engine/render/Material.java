@@ -89,6 +89,15 @@ public class Material implements Comparable<Material> {
 	}
 
 	/**
+	 * Returns the uniforms used in this material.
+	 *
+	 * @return The uniforms
+	 */
+	public UniformHolder getUniforms() {
+		return uniforms;
+	}
+
+	/**
 	 * Uploads all the uniforms of this material to the program.
 	 */
 	public void uploadUniforms() {

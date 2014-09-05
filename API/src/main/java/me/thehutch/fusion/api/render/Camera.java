@@ -17,7 +17,6 @@
  */
 package me.thehutch.fusion.api.render;
 
-import me.thehutch.fusion.api.component.Component;
 import me.thehutch.fusion.api.maths.Matrix4;
 import me.thehutch.fusion.api.maths.Quaternion;
 import me.thehutch.fusion.api.maths.Vector3;
@@ -25,7 +24,7 @@ import me.thehutch.fusion.api.maths.Vector3;
 /**
  * @author thehutch
  */
-public class Camera implements Component {
+public class Camera {
 	private final Matrix4 projection;
 	private Matrix4 viewMatrix;
 	private Quaternion rotation;
@@ -78,6 +77,79 @@ public class Camera implements Component {
 	public void setRotation(Quaternion rotation) {
 		this.rotation = rotation;
 		this.dirty = true;
+	}
+
+	public void moveX(float dx) {
+		move(dx, 0.0f, 0.0f);
+	}
+
+	public void moveLocalX(float dx) {
+		this.position = getPosition().add(getRight().mul(dx));
+		this.dirty = true;
+	}
+
+	public void moveY(float dy) {
+		move(0.0f, dy, 0.0f);
+	}
+
+	public void moveLocalY(float dy) {
+		this.position = getPosition().add(getUp().mul(dy));
+		this.dirty = true;
+	}
+
+	public void moveZ(float dz) {
+		move(0.0f, 0.0f, dz);
+	}
+
+	public void moveLocalZ(float dz) {
+		this.position = getPosition().add(getForward().mul(dz));
+		this.dirty = true;
+	}
+
+	public void move(float dx, float dy, float dz) {
+		this.position = getPosition().add(dx, dy, dz);
+		this.dirty = true;
+	}
+
+	public void rotateX(float angle) {
+		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_X, angle));
+	}
+
+	public void rotateLocalX(float angle) {
+		rotate(Quaternion.fromAxisAngleRad(getRight(), angle));
+	}
+
+	public void rotateY(float angle) {
+		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_Y, angle));
+	}
+
+	public void rotateLocalY(float angle) {
+		rotate(Quaternion.fromAxisAngleRad(getUp(), angle));
+	}
+
+	public void rotateZ(float angle) {
+		rotate(Quaternion.fromAxisAngleRad(Vector3.UNIT_Z, angle));
+	}
+
+	public void rotateLocalZ(float angle) {
+		rotate(Quaternion.fromAxisAngleRad(getForward(), angle));
+	}
+
+	public void rotate(Quaternion rotation) {
+		this.rotation = rotation.normalise().mul(getRotation());
+		this.dirty = true;
+	}
+
+	public Vector3 getRight() {
+		return Vector3.UNIT_X.rotate(rotation);
+	}
+
+	public Vector3 getUp() {
+		return Vector3.UNIT_Y.rotate(rotation);
+	}
+
+	public Vector3 getForward() {
+		return Vector3.UNIT_Z.negate().rotate(rotation);
 	}
 
 	public static Camera createPerspective(float fov, float aspectRatio, float near, float far) {

@@ -22,23 +22,27 @@ import gnu.trove.map.hash.THashMap;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import me.thehutch.fusion.api.event.Event;
 import me.thehutch.fusion.api.event.EventPriority;
 import me.thehutch.fusion.api.event.IEventManager;
+import me.thehutch.fusion.engine.util.ReflectionHelper;
 
 /**
  * @author thehutch
  */
 public class EventManager implements IEventManager {
 	private final TMap<Class<? extends Event>, SortedSet<EventExecutor>> events = new THashMap<>();
+	private final ExecutorService threadPool = Executors.newCachedThreadPool();
 
 	@Override
-	public <T extends Event> T callEvent(T event) {
+	public <T extends Event> T invoke(T event) {
 		final Set<EventExecutor> executors = events.get(event.getClass());
 		// Check if there are any event executors for this event
 		if (executors != null) {
-			executors.stream().forEachOrdered((EventExecutor executor) -> {
+			executors.forEach((EventExecutor executor) -> {
 				executor.execute(event);
 			});
 		}
@@ -46,22 +50,20 @@ public class EventManager implements IEventManager {
 	}
 
 	@Override
-	public <T extends Event> T callEventAsync(T event) {
+	public <T extends Event> T invokeAsync(T event) {
 		final Set<EventExecutor> executors = events.get(event.getClass());
 		// Check if there are any event executors for this event
 		if (executors != null) {
-			final Thread thread = new Thread(() -> {
-				executors.stream().forEachOrdered((EventExecutor executor) -> {
-					executor.execute(event);
-				});
+			executors.forEach((EventExecutor executor) -> {
+				threadPool.submit(() -> executor.execute(event));
 			});
-			thread.start();
 		}
 		return event;
 	}
 
 	@Override
-	public <T extends Event> void registerEvent(Consumer<T> handler, Class<T> eventClass, EventPriority priority, boolean ignoreCancelled) {
+	public <T extends Event> void register(Consumer<T> handler, EventPriority priority, boolean ignoreCancelled) {
+		final Class<T> eventClass = ReflectionHelper.getGenericClass();
 		SortedSet<EventExecutor> executors = events.get(eventClass);
 		if (executors == null) {
 			executors = new TreeSet<>();

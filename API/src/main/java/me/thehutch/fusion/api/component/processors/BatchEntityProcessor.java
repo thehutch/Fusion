@@ -1,5 +1,5 @@
 /*
- * This file is part of Engine, licensed under the Apache 2.0 License.
+ * This file is part of API, licensed under the Apache 2.0 License.
  *
  * Copyright (c) 2014 thehutch.
  *
@@ -15,29 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.thehutch.fusion.engine.component;
+package me.thehutch.fusion.api.component.processors;
 
-import me.thehutch.fusion.api.component.Component;
-import me.thehutch.fusion.engine.render.Material;
-import me.thehutch.fusion.engine.render.opengl.VertexArray;
+import me.thehutch.fusion.api.component.Aspect;
+import me.thehutch.fusion.api.component.EntityProcessor;
 
 /**
+ * An entity processor which can process all of the entities it contains in one go.
+ * This is useful if you need to iterate over the entities multiple times (eg. Rendering).
+ *
  * @author thehutch
  */
-public class RenderComponent implements Component {
-	private final Material material;
-	private final VertexArray mesh;
+public abstract class BatchEntityProcessor extends EntityProcessor {
 
-	public RenderComponent(Material material, VertexArray mesh) {
-		this.material = material;
-		this.mesh = mesh;
+	public BatchEntityProcessor(Aspect aspect) {
+		super(aspect);
 	}
 
-	public VertexArray getMesh() {
-		return mesh;
-	}
-
-	public Material getMaterial() {
-		return material;
+	@Override
+	protected boolean checkProcessing() {
+		return true;
 	}
 }

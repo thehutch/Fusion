@@ -129,7 +129,7 @@ public final class InputManager implements IInputManager {
 			// Get the event keycode
 			final int keycode = Keyboard.getEventKey();
 			// Call the KeyboardEvent
-			this.eventManager.callEvent(new KeyboardEvent(Key.fromKeycode(keycode), Keyboard.getEventKeyState(), Keyboard.isRepeatEvent()));
+			this.eventManager.invoke(new KeyboardEvent(Key.fromKeycode(keycode), Keyboard.getEventKeyState(), Keyboard.isRepeatEvent()));
 		}
 
 		// Check for mouse events
@@ -138,17 +138,17 @@ public final class InputManager implements IInputManager {
 			final int mouseButton = Mouse.getEventButton();
 			if (mouseButton != -1) {
 				// Call the mouse button event
-				this.eventManager.callEvent(new MouseButtonEvent(mouseButton, Mouse.getEventX(), Mouse.getY(), Mouse.getEventButtonState()));
+				this.eventManager.invoke(new MouseButtonEvent(mouseButton, Mouse.getEventX(), Mouse.getY(), Mouse.getEventButtonState()));
 			}
 			// Check if the mouse has moved
 			if (Mouse.getEventDX() != 0.0f || Mouse.getEventDY() != 0.0f) {
 				// Call the mouse motion event
-				this.eventManager.callEvent(new MouseMotionEvent(Mouse.getEventDX(), Mouse.getEventDY(), Mouse.getEventX(), Mouse.getEventY()));
+				this.eventManager.invoke(new MouseMotionEvent(Mouse.getEventDX(), Mouse.getEventDY(), Mouse.getEventX(), Mouse.getEventY()));
 			}
 			// Check if the mouse wheel has moved
 			if (Mouse.getEventDWheel() != 0.0f) {
 				// Call the mouse wheel motion event
-				this.eventManager.callEvent(new MouseWheelMotionEvent(Mouse.getEventDWheel()));
+				this.eventManager.invoke(new MouseWheelMotionEvent(Mouse.getEventDWheel()));
 			}
 		}
 

@@ -115,6 +115,7 @@ public class Scheduler implements IScheduler {
 	 *
 	 * @return Frame time in seconds
 	 */
+	@Override
 	public float getDelta() {
 		return diffTimePerTick / (float) NANOSECOND_TO_SECOND;
 	}
