@@ -28,6 +28,7 @@ public class KeyboardEvent extends Event {
 	private final boolean repeat;
 
 	public KeyboardEvent(Key keycode, boolean state, boolean repeat) {
+		super(true);
 		this.keycode = keycode;
 		this.state = state;
 		this.repeat = repeat;

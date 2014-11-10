@@ -33,8 +33,14 @@ public enum EventPriority {
 	 * Low priority event, called after {@link #MEDIUM} priority.
 	 */
 	LOW(2);
+	private static final EventPriority[] VALUES = EventPriority.values();
 	private final int priority;
 
+	/**
+	 * Default constructor for {@link EventPriority}.
+	 *
+	 * @param priority The level of priority
+	 */
 	private EventPriority(int priority) {
 		this.priority = priority;
 	}
@@ -46,5 +52,19 @@ public enum EventPriority {
 	 */
 	public int getPriority() {
 		return priority;
+	}
+
+	/**
+	 * Returns the {@link EventPriority} at the given index based on their ordinal.
+	 *
+	 * @param index The index of the priority
+	 *
+	 * @return The {@link EventPriority} at the given index
+	 */
+	public static EventPriority getByIndex(int index) {
+		if (index < 0 || index >= VALUES.length) {
+			throw new ArrayIndexOutOfBoundsException(index);
+		}
+		return VALUES[index];
 	}
 }

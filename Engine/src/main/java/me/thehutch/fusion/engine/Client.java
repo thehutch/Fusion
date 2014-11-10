@@ -57,7 +57,7 @@ public final class Client extends Engine implements IClient {
 	@Override
 	public void initialise() {
 		// Schedule the input manager task
-		getScheduler().scheduleSyncRepeatingTask(inputManager::execute, TaskPriority.CRITICAL, 0L, 1L);
+		getScheduler().invokeRepeating(inputManager::execute, TaskPriority.CRITICAL, 0L, 1L);
 
 		// Register the image loader
 		getFileSystem().registerResourceManager(new ImageLoader(), "png", "jpg");

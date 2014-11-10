@@ -45,6 +45,7 @@ public enum TaskPriority {
 	 * Priority for tasks which can be deferred by up to 10000ms when under load.
 	 */
 	LOWEST(10000L);
+	private static final TaskPriority[] VALUES = TaskPriority.values();
 	private final long maxDeferred;
 
 	/**
@@ -63,5 +64,19 @@ public enum TaskPriority {
 	 */
 	public long getMaxDeferred() {
 		return maxDeferred;
+	}
+
+	/**
+	 * Returns the {@link TaskPriority} at the given index based on their ordinal.
+	 *
+	 * @param index The index of the priority
+	 *
+	 * @return The {@link TaskPriority} at the given index
+	 */
+	public static TaskPriority getByIndex(int index) {
+		if (index < 0 || index >= VALUES.length) {
+			throw new ArrayIndexOutOfBoundsException(index);
+		}
+		return VALUES[index];
 	}
 }

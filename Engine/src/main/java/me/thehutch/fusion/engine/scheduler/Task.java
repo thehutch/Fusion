@@ -17,87 +17,136 @@
  */
 package me.thehutch.fusion.engine.scheduler;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import me.thehutch.fusion.api.scheduler.TaskPriority;
 
 /**
  * @author thehutch
  */
-public class Task implements Comparable<Task> {
+public final class Task implements Comparable<Task> {
+	private final Runnable runnable;
 	private final TaskPriority priority;
-	private final Runnable executor;
-	private final boolean parallel;
+	private final AtomicBoolean isAlive;
 	private final long creationTime;
+	private final boolean isAsync;
 	private final long period;
-	private final long delay;
 	private final int id;
-	private boolean alive;
-	private long time;
+	private long tick;
 
-	public Task(int id, Runnable executor, TaskPriority priority, long delay, long period, boolean parallel) {
+	/**
+	 * Default constructor for {@link Task}.
+	 *
+	 * @param id           The id of the task
+	 * @param runnable     The task runnable function
+	 * @param priority     The priority of the task
+	 * @param async        True if the task is executed asynchronously
+	 * @param creationTime A timestamp of this task's creation
+	 * @param delay        The number of ticks before task execution
+	 * @param period       The number of ticks between task execution
+	 */
+	public Task(int id, Runnable runnable, TaskPriority priority, boolean async, long creationTime, long delay, long period) {
 		this.id = id;
+		this.runnable = runnable;
 		this.priority = priority;
-		this.executor = executor;
-		this.parallel = parallel;
+		this.isAsync = async;
 		this.period = period;
-		this.delay = delay;
-		this.alive = true;
-		this.time = 0L;
-		this.creationTime = System.currentTimeMillis();
+		this.creationTime = creationTime;
+		this.isAlive = new AtomicBoolean(true);
+		this.tick = creationTime + delay;
 	}
 
-	public void execute() {
-		this.executor.run();
+	/**
+	 * @return The task runnable function
+	 */
+	public Runnable getRunnable() {
+		return runnable;
 	}
 
+	/**
+	 * @return The priority of the task
+	 */
 	public TaskPriority getPriority() {
 		return priority;
 	}
 
+	/**
+	 * @return True if the task is still running
+	 */
+	public boolean isAlive() {
+		return isAlive.get();
+	}
+
+	/**
+	 * @return A timestamp of this task's creation
+	 */
 	public long getCreationTime() {
 		return creationTime;
 	}
 
+	/**
+	 * @return True if this task is executed asynchronously
+	 */
+	public boolean isAsync() {
+		return isAsync;
+	}
+
+	/**
+	 * @return The number of ticks between task executions
+	 */
 	public long getPeriod() {
 		return period;
 	}
 
-	public long getDelay() {
-		return delay;
-	}
-
+	/**
+	 * @return The id of the task
+	 */
 	public int getId() {
 		return id;
 	}
 
-	public void cancel() {
-		this.alive = false;
-	}
-
-	public void setTickTime(long tick, boolean isOverloaded) {
-		this.time = tick + (isOverloaded ? getPriority().getMaxDeferred() : 0L);
-	}
-
-	public long getTickTime() {
-		return time;
-	}
-
-	public boolean isAlive() {
-		return alive;
-	}
-
-	public boolean isParallel() {
-		return parallel;
-	}
-
+	/**
+	 * @return True if this task repeats
+	 */
 	public boolean isRepeating() {
 		return period > 0;
 	}
 
+	/**
+	 * @return The tick when this task is next executed
+	 */
+	public long getTime() {
+		return tick;
+	}
+
+	/**
+	 * Sets the next tick when this task is executed.
+	 *
+	 * @param tick The next execution tick
+	 */
+	public void setTime(long tick) {
+		this.tick = tick;
+	}
+
+	/**
+	 * Cancels this task
+	 */
+	public void cancel() {
+		this.isAlive.set(false);
+	}
+
+	/**
+	 * Compares this task with the given task.
+	 *
+	 * @param task The task to compare this task with
+	 *
+	 * @return Greater than 1 if this task has a greater priority
+	 *         than the given task else less than one
+	 */
 	@Override
 	public int compareTo(Task task) {
-		if (getTickTime() == task.getTickTime()) {
+		if (getTime() == task.getTime()) {
 			return (int) (getPriority() == task.getPriority() ? getCreationTime() - task.getCreationTime() : task.getPriority().getMaxDeferred() - getPriority().getMaxDeferred());
 		}
-		return getTickTime() < task.getTickTime() ? 1 : -1;
+		return getTime() < task.getTime() ? 1 : -1;
 	}
 }

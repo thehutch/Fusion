@@ -26,11 +26,6 @@ import me.thehutch.fusion.api.plugin.Plugin;
  */
 public final class PluginDisabledEvent extends PluginEvent {
 	public PluginDisabledEvent(Plugin plugin) {
-		super(plugin);
-	}
-
-	@Override
-	protected boolean canCancel() {
-		return false;
+		super(plugin, false);
 	}
 }

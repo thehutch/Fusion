@@ -28,6 +28,7 @@ public class MouseWheelMotionEvent extends Event {
 	private final float delta;
 
 	public MouseWheelMotionEvent(float delta) {
+		super(true);
 		this.delta = delta;
 	}
 

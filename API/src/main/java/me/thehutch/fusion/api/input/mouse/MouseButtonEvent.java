@@ -31,6 +31,7 @@ public class MouseButtonEvent extends Event {
 	private final int y;
 
 	public MouseButtonEvent(int button, int x, int y, boolean state) {
+		super(true);
 		this.button = button;
 		this.state = state;
 		this.x = x;

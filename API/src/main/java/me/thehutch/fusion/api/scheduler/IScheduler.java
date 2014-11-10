@@ -30,10 +30,10 @@ public interface IScheduler {
 	 *
 	 * @return The id of the task which has been scheduled
 	 */
-	public int scheduleSyncTask(Runnable task, TaskPriority priority);
+	public int invoke(Runnable task, TaskPriority priority);
 
 	/**
-	 * Schedules a one off task and executed after the delay given has passed.
+	 * Schedules a one off task and executed after the delay period.
 	 * This task will be executed synchronously.
 	 *
 	 * @param task     Task to be executed
@@ -42,10 +42,10 @@ public interface IScheduler {
 	 *
 	 * @return The id of the task which has been scheduled
 	 */
-	public int scheduleSyncDelayedTask(Runnable task, TaskPriority priority, long delay);
+	public int invokeDelayed(Runnable task, TaskPriority priority, long delay);
 
 	/**
-	 * Schedules a task which will be executed at a ticking interval of period.
+	 * Schedules a delayed task which will repeat every given number of ticks.
 	 * This task will be executed synchronously.
 	 *
 	 * @param task     Task to be executed
@@ -55,7 +55,7 @@ public interface IScheduler {
 	 *
 	 * @return The id of the task which has been scheduled
 	 */
-	public int scheduleSyncRepeatingTask(Runnable task, TaskPriority priority, long delay, long period);
+	public int invokeRepeating(Runnable task, TaskPriority priority, long delay, long period);
 
 	/**
 	 * Schedules a once off short lived task to occur as soon as possible.
@@ -66,10 +66,10 @@ public interface IScheduler {
 	 *
 	 * @return The id of the task which has been scheduled
 	 */
-	public int scheduleAsyncTask(Runnable task, TaskPriority priority);
+	public int invokeAsync(Runnable task, TaskPriority priority);
 
 	/**
-	 * Schedules a once off short lived task to occur in the number of ticks given.
+	 * Schedules a once off short lived task to occur after the delay period.
 	 * This task will be executed asynchronously.
 	 *
 	 * @param task     Task to be executed
@@ -78,7 +78,7 @@ public interface IScheduler {
 	 *
 	 * @return The id of the task which has been scheduled
 	 */
-	public int scheduleAsyncDelayedTask(Runnable task, TaskPriority priority, long delay);
+	public int invokeDelayedAsync(Runnable task, TaskPriority priority, long delay);
 
 	/**
 	 * Cancels the task associated with this id.
@@ -86,11 +86,4 @@ public interface IScheduler {
 	 * @param taskId Id of the task to be cancelled
 	 */
 	public void cancelTask(int taskId);
-
-	/**
-	 * Returns the current delta of the scheduler.
-	 *
-	 * @return The time since the last update in milliseconds
-	 */
-	public float getDelta();
 }

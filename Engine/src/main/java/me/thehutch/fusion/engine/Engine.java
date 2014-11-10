@@ -96,7 +96,7 @@ public abstract class Engine implements IEngine {
 		this.scheduler = new Scheduler(TICKS_PER_SECOND);
 
 		// Create the event manager
-		this.eventManager = new EventManager();
+		this.eventManager = new EventManager(scheduler);
 
 		// Create the plugin manager
 		this.pluginManager = new PluginManager(this);
@@ -110,7 +110,7 @@ public abstract class Engine implements IEngine {
 
 	public void initialise() {
 		// Schedule the component system task
-		this.scheduler.scheduleSyncRepeatingTask(system::process, TaskPriority.CRITICAL, 0L, 1L);
+		this.scheduler.invokeRepeating(system::process, TaskPriority.CRITICAL, 0L, 1L);
 
 		// Initialise the component system
 		this.system.initialise();
@@ -165,7 +165,7 @@ public abstract class Engine implements IEngine {
 	@Override
 	public void stop(String reason) {
 		// Terminate the Scheduler
-		getScheduler().stop();
+		getScheduler().shutdown();
 
 		// Dispose of the plugin manager
 		getPluginManager().dispose();

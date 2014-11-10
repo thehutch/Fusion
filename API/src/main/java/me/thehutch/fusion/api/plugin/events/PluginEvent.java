@@ -25,10 +25,11 @@ import me.thehutch.fusion.api.plugin.Plugin;
  *
  * @author thehutch
  */
-public class PluginEvent extends Event {
+public abstract class PluginEvent extends Event {
 	private final Plugin plugin;
 
-	public PluginEvent(Plugin plugin) {
+	public PluginEvent(Plugin plugin, boolean canCancel) {
+		super(canCancel);
 		this.plugin = plugin;
 	}
 

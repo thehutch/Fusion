@@ -21,9 +21,17 @@ package me.thehutch.fusion.api.event;
  * @author thehutch
  */
 public abstract class Event {
-	private boolean isCancelled = false;
+	private final boolean canCancel;
+	private boolean isCancelled;
 
-	public Event() {
+	/**
+	 * Default constructor for {@link Event}.
+	 *
+	 * @param canCancel True if this event can be cancelled
+	 */
+	public Event(boolean canCancel) {
+		this.canCancel = canCancel;
+		this.isCancelled = false;
 	}
 
 	/**
@@ -42,17 +50,6 @@ public abstract class Event {
 	 * @param cancelled True if event should be cancelled
 	 */
 	public final void setCancelled(boolean cancelled) {
-		if (canCancel()) {
-			this.isCancelled = cancelled;
-		}
-	}
-
-	/**
-	 * Can be overrided to change whether this event can be cancelled.
-	 *
-	 * @return If true this event can be cancelled
-	 */
-	protected boolean canCancel() {
-		return true;
+		this.isCancelled = cancelled && canCancel;
 	}
 }

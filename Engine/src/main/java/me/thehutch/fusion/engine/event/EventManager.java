@@ -22,75 +22,136 @@ import gnu.trove.map.hash.THashMap;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import me.thehutch.fusion.api.event.Event;
 import me.thehutch.fusion.api.event.EventPriority;
 import me.thehutch.fusion.api.event.IEventManager;
+import me.thehutch.fusion.api.scheduler.IScheduler;
+import me.thehutch.fusion.api.scheduler.TaskPriority;
 import me.thehutch.fusion.engine.util.ReflectionHelper;
 
 /**
  * @author thehutch
  */
 public class EventManager implements IEventManager {
-	private final TMap<Class<? extends Event>, SortedSet<EventExecutor>> events = new THashMap<>();
-	private final ExecutorService threadPool = Executors.newCachedThreadPool();
+	private final TMap<Class<? extends Event>, SortedSet<EventExecutor>> events;
+	private final IScheduler scheduler;
 
-	@Override
-	public <T extends Event> T invoke(T event) {
-		final Set<EventExecutor> executors = events.get(event.getClass());
-		// Check if there are any event executors for this event
-		if (executors != null) {
-			executors.forEach((EventExecutor executor) -> {
-				executor.execute(event);
-			});
-		}
-		return event;
+	/**
+	 * The default constructor for {@link EventManager}.
+	 *
+	 * @param scheduler The engine scheduler
+	 */
+	public EventManager(IScheduler scheduler) {
+		this.events = new THashMap<>();
+		this.scheduler = scheduler;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public <T extends Event> T invokeAsync(T event) {
+	public <T extends Event> void invoke(T event) {
 		final Set<EventExecutor> executors = events.get(event.getClass());
-		// Check if there are any event executors for this event
 		if (executors != null) {
-			executors.forEach((EventExecutor executor) -> {
-				threadPool.submit(() -> executor.execute(event));
-			});
+			executors.forEach(executor -> executor.execute(event));
 		}
-		return event;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T extends Event> void invokeDelayed(T event, long delay) {
+		this.scheduler.invokeDelayed(() -> invoke(event), TaskPriority.HIGHEST, delay);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T extends Event> void invokeAsync(T event) {
+		this.scheduler.invokeAsync(() -> invoke(event), TaskPriority.HIGHEST);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T extends Event> void invokeAsync(T event, Consumer<T> callback) {
+		this.scheduler.invokeAsync(() -> {
+			invoke(event);
+			callback.accept(event);
+		}, TaskPriority.HIGHEST);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public <T extends Event> void register(Consumer<T> handler, EventPriority priority, boolean ignoreCancelled) {
 		final Class<T> eventClass = ReflectionHelper.getGenericClass();
 		SortedSet<EventExecutor> executors = events.get(eventClass);
 		if (executors == null) {
 			executors = new TreeSet<>();
+			this.events.put(eventClass, executors);
 		}
-		if (!executors.add(new EventExecutor<>(handler, priority, ignoreCancelled))) {
-			throw new IllegalStateException("Duplicate events registered: " + eventClass.getName());
-		}
-		this.events.put(eventClass, executors);
+		executors.add(new EventExecutor(handler, priority, ignoreCancelled));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T extends Event> void unregister(Consumer<T> handler) {
+		final Class<T> eventClass = ReflectionHelper.getGenericClass();
+		final SortedSet<EventExecutor> executors = events.get(eventClass);
+		if (executors == null) {
+			throw new IllegalArgumentException("No events to unregister of type " + eventClass.getName());
+		}
+		final boolean isRemoved = executors.removeIf(executor -> executor.function.equals(handler));
+		if (!isRemoved) {
+			throw new IllegalStateException("Failed to unregister event " + eventClass.getName());
+		}
+	}
+
+	/**
+	 * A class wrapper to hold the function handler for the event
+	 *
+	 * @param <T> The type of event
+	 */
 	private class EventExecutor<T extends Event> implements Comparable<EventExecutor> {
 		private final Consumer<T> function;
 		private final EventPriority priority;
 		private final boolean ignoreCancelled;
 
+		/**
+		 * The default constructor for {@link EventExecutor}.
+		 *
+		 * @param function        The event handler function
+		 * @param priority        The priority of the event
+		 * @param ignoreCancelled True if this event executor ignores cancelled events
+		 */
 		private EventExecutor(Consumer<T> function, EventPriority priority, boolean ignoreCancelled) {
 			this.function = function;
 			this.priority = priority;
 			this.ignoreCancelled = ignoreCancelled;
 		}
 
+		/**
+		 * Invokes the event handler function with the given event.
+		 *
+		 * @param event The event to handle
+		 */
 		public void execute(T event) {
 			if (!event.isCancelled() || ignoreCancelled) {
 				this.function.accept(event);
 			}
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public int compareTo(EventExecutor other) {
 			return priority.getPriority() - other.priority.getPriority();

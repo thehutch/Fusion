@@ -26,22 +26,37 @@ public interface IEventManager {
 	/**
 	 * Executes the event synchronously.
 	 *
-	 * @param <T>   The type of event being called
-	 * @param event The event being called
-	 *
-	 * @return The final result of the event
+	 * @param <T>   The type of event being invoked
+	 * @param event The event to invoke
 	 */
-	public <T extends Event> T invoke(T event);
+	public <T extends Event> void invoke(T event);
+
+	/**
+	 * Executes the event synchronously after the delay period.
+	 *
+	 * @param <T>   The type of event being invoked
+	 * @param event The event to invoke
+	 * @param delay The number of ticks to delay the task by
+	 */
+	public <T extends Event> void invokeDelayed(T event, long delay);
 
 	/**
 	 * Executes the event asynchronously.
 	 *
-	 * @param <T>   The type of event being called
-	 * @param event The event being called
-	 *
-	 * @return The final result of the event
+	 * @param <T>   The type of event being invoked
+	 * @param event The event to invoke
 	 */
-	public <T extends Event> T invokeAsync(T event);
+	public <T extends Event> void invokeAsync(T event);
+
+	/**
+	 * Executes the event asynchronously and executes the callback
+	 * after the event has been handled.
+	 *
+	 * @param <T>      The type of event being invoked
+	 * @param event    The event to invoke
+	 * @param callback The callback to be executed
+	 */
+	public <T extends Event> void invokeAsync(T event, Consumer<T> callback);
 
 	/**
 	 * Registers the event handler with the given priority and ignore flag.
@@ -52,4 +67,12 @@ public interface IEventManager {
 	 * @param ignoreCancelled If the handler ignores the cancellation state of the event
 	 */
 	public <T extends Event> void register(Consumer<T> handler, EventPriority priority, boolean ignoreCancelled);
+
+	/**
+	 * Unregisters the event handler from the event manager.
+	 *
+	 * @param <T>     The type of event
+	 * @param handler The handler to unregister
+	 */
+	public <T extends Event> void unregister(Consumer<T> handler);
 }

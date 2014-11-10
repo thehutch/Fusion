@@ -31,6 +31,7 @@ public class MouseMotionEvent extends Event {
 	private final int y;
 
 	public MouseMotionEvent(float dx, float dy, int x, int y) {
+		super(true);
 		this.dx = dx;
 		this.dy = dy;
 		this.x = x;
