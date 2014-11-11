@@ -24,20 +24,25 @@ import me.thehutch.fusion.api.event.Event;
  *
  * @author thehutch
  */
-public class MouseWheelMotionEvent extends Event {
-	private final float delta;
+public final class MouseWheelMotionEvent extends Event {
+	private final int delta;
 
-	public MouseWheelMotionEvent(float delta) {
+	/**
+	 * The default constructor for {@link MouseWheelMotionEvent}.
+	 *
+	 * @param delta The amount the mouse wheel moved
+	 */
+	public MouseWheelMotionEvent(int delta) {
 		super(true);
 		this.delta = delta;
 	}
 
 	/**
-	 * The amount the mouse wheel was moved.
+	 * The amount the mouse wheel moved.
 	 *
 	 * @return The mouse wheel motion delta
 	 */
-	public float getDelta() {
+	public int getDelta() {
 		return delta;
 	}
 }

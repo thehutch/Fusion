@@ -22,14 +22,21 @@ import me.thehutch.fusion.api.event.Event;
 /**
  * @author thehutch
  */
-public class KeyboardEvent extends Event {
-	private final Key keycode;
+public final class KeyboardEvent extends Event {
+	private final Key key;
 	private final boolean state;
 	private final boolean repeat;
 
-	public KeyboardEvent(Key keycode, boolean state, boolean repeat) {
+	/**
+	 * The default constructor for {@link KeyboardEvent}.
+	 *
+	 * @param key    The key
+	 * @param state  The state of the key
+	 * @param repeat True if this is a repeated key event
+	 */
+	public KeyboardEvent(Key key, boolean state, boolean repeat) {
 		super(true);
-		this.keycode = keycode;
+		this.key = key;
 		this.state = state;
 		this.repeat = repeat;
 	}
@@ -39,8 +46,8 @@ public class KeyboardEvent extends Event {
 	 *
 	 * @return The event key
 	 */
-	public final Key getKeycode() {
-		return keycode;
+	public Key getKey() {
+		return key;
 	}
 
 	/**
@@ -48,7 +55,7 @@ public class KeyboardEvent extends Event {
 	 *
 	 * @return True if the key is pressed down
 	 */
-	public final boolean getState() {
+	public boolean getState() {
 		return state;
 	}
 
@@ -57,7 +64,7 @@ public class KeyboardEvent extends Event {
 	 *
 	 * @return True if the event is for a repeat key
 	 */
-	public final boolean isRepeat() {
+	public boolean isRepeat() {
 		return repeat;
 	}
 }

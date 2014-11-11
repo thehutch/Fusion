@@ -42,6 +42,11 @@ public final class InputManager implements IInputManager {
 	private final EventManager eventManager;
 	private final Engine engine;
 
+	/**
+	 * Default constructor for {@link InputManager}.
+	 *
+	 * @param engine The game engine
+	 */
 	public InputManager(Engine engine) {
 		this.engine = engine;
 		this.eventManager = engine.getEventManager();
@@ -56,80 +61,34 @@ public final class InputManager implements IInputManager {
 		enableRepeatKeyEvents(true);
 	}
 
-	@Override
-	public int getMouseX() {
-		return Mouse.getX();
-	}
-
-	@Override
-	public int getMouseY() {
-		return Mouse.getY();
-	}
-
-	@Override
-	public boolean isMouseDown(int button) {
-		return Mouse.isButtonDown(button);
-	}
-
-	@Override
-	public boolean isMouseGrabbed() {
-		return Mouse.isGrabbed();
-	}
-
-	@Override
-	public void setMouseGrabbed(boolean grabbed) {
-		Mouse.setGrabbed(grabbed);
-	}
-
-	@Override
-	public void toggleMouseGrab() {
-		setMouseGrabbed(!isMouseGrabbed());
-	}
-
-	@Override
-	public boolean isKeyDown(Key key) {
-		return Keyboard.isKeyDown(key.getKeycode());
-	}
-
-	@Override
-	public void enableRepeatKeyEvents(boolean enable) {
-		Keyboard.enableRepeatEvents(enable);
-	}
-
-	@Override
-	public void registerKeyBinding(Runnable function, Key... keys) {
-		if (keys.length == 0) {
-			throw new IllegalArgumentException("Can not register key binding with no keys bound.");
-		}
-		for (int i = 0; i < keys.length; ++i) {
-			Set<Runnable> functions = keyBindings.get(keys[i]);
-			if (functions == null) {
-				functions = new THashSet<>();
-				this.keyBindings.put(keys[i], functions);
-			}
-			functions.add(function);
-		}
-	}
-
+	/**
+	 * Polls the OS for input events and then invoke events based on it.
+	 */
 	public void execute() {
 		// Check for display close
 		if (Display.isCloseRequested()) {
 			this.engine.stop("Displayed Closed");
 		}
 
+		// Get the keybindings
+		final TMap<Key, Set<Runnable>> bindings = keyBindings;
+
 		// Check and execute each key binding
-		this.keyBindings.keySet().stream().filter(key -> isKeyDown(key)).map(key -> keyBindings.get(key)).forEach(executors -> {
+		bindings.keySet().stream().filter(key -> isKeyDown(key)).map(key -> bindings.get(key)).forEach(executors -> {
 			executors.stream().forEach(executor -> {
 				executor.run();
 			});
 		});
+
+		// Get the event manager
+		final EventManager evManager = eventManager;
 
 		// Check for keyboard events
 		while (Keyboard.next()) {
 			// Get the event keycode
 			final int keycode = Keyboard.getEventKey();
 			// Call the KeyboardEvent
-			this.eventManager.invoke(new KeyboardEvent(Key.fromKeycode(keycode), Keyboard.getEventKeyState(), Keyboard.isRepeatEvent()));
+			evManager.invoke(new KeyboardEvent(Key.fromKeycode(keycode), Keyboard.getEventKeyState(), Keyboard.isRepeatEvent()));
 		}
 
 		// Check for mouse events
@@ -137,18 +96,21 @@ public final class InputManager implements IInputManager {
 			// Get the event mouse button
 			final int mouseButton = Mouse.getEventButton();
 			if (mouseButton != -1) {
-				// Call the mouse button event
-				this.eventManager.invoke(new MouseButtonEvent(mouseButton, Mouse.getEventX(), Mouse.getY(), Mouse.getEventButtonState()));
+				// Invoke the mouse button event
+				evManager.invoke(new MouseButtonEvent(mouseButton, Mouse.getEventX(), Mouse.getEventY(), Mouse.getEventButtonState()));
 			}
 			// Check if the mouse has moved
-			if (Mouse.getEventDX() != 0.0f || Mouse.getEventDY() != 0.0f) {
-				// Call the mouse motion event
-				this.eventManager.invoke(new MouseMotionEvent(Mouse.getEventDX(), Mouse.getEventDY(), Mouse.getEventX(), Mouse.getEventY()));
+			final int mouseDX = Mouse.getEventDX();
+			final int mouseDY = Mouse.getEventDY();
+			if (mouseDX != 0 || mouseDY != 0) {
+				// Invoke the mouse motion event
+				evManager.invoke(new MouseMotionEvent(mouseDX, mouseDY, Mouse.getEventX(), Mouse.getEventY()));
 			}
 			// Check if the mouse wheel has moved
-			if (Mouse.getEventDWheel() != 0.0f) {
-				// Call the mouse wheel motion event
-				this.eventManager.invoke(new MouseWheelMotionEvent(Mouse.getEventDWheel()));
+			final int mouseWheelDelta = Mouse.getEventDWheel();
+			if (mouseWheelDelta != 0) {
+				// Invoke the mouse wheel motion event
+				evManager.invoke(new MouseWheelMotionEvent(mouseWheelDelta));
 			}
 		}
 
@@ -160,6 +122,92 @@ public final class InputManager implements IInputManager {
 		//TODO: Possibilty of other input devices (Joystick, Touchscreen etc...)
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getMouseX() {
+		return Mouse.getX();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getMouseY() {
+		return Mouse.getY();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isMouseDown(int button) {
+		return Mouse.isButtonDown(button);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isMouseGrabbed() {
+		return Mouse.isGrabbed();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setMouseGrabbed(boolean grabbed) {
+		Mouse.setGrabbed(grabbed);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void toggleMouseGrab() {
+		setMouseGrabbed(!isMouseGrabbed());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isKeyDown(Key key) {
+		return Keyboard.isKeyDown(key.getKeycode());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void enableRepeatKeyEvents(boolean enable) {
+		Keyboard.enableRepeatEvents(enable);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void registerKeyBinding(Runnable function, Key... keys) {
+		if (keys.length == 0) {
+			throw new IllegalArgumentException("Can not register key binding with no keys bound.");
+		}
+		final TMap<Key, Set<Runnable>> bindings = keyBindings;
+		for (int i = 0; i < keys.length; ++i) {
+			Set<Runnable> functions = bindings.get(keys[i]);
+			if (functions == null) {
+				functions = new THashSet<>();
+				bindings.put(keys[i], functions);
+			}
+			functions.add(function);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void dispose() {
 		if (Keyboard.isCreated()) {

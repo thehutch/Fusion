@@ -42,7 +42,7 @@ public abstract class SequentialEntityProcessor extends EntityProcessor {
 
 	@Override
 	protected final void processEntities(ImmutableBag<Entity> entities) {
-		entities.stream().forEachOrdered(this::process);
+		entities.forEach(this::process);
 	}
 
 	@Override

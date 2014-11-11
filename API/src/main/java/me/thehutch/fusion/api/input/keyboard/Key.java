@@ -155,26 +155,44 @@ public enum Key {
 	KEY_APPS(0xDD),
 	KEY_POWER(0xDE),
 	KEY_SLEEP(0xDF);
-	private static final TIntObjectMap<Key> KEYCODES = new TIntObjectHashMap<>();
+	private static final TIntObjectMap<Key> KEYCODES;
 	private final int keycode;
 
 	static {
 		final Key[] keys = Key.values();
 		final int numKeys = keys.length;
+
+		KEYCODES = new TIntObjectHashMap<>((numKeys * 3) / 2, 0.95f);
+
 		for (int i = 0; i < numKeys; ++i) {
 			final Key keycode = keys[i];
 			KEYCODES.put(keycode.getKeycode(), keycode);
 		}
 	}
 
+	/**
+	 * Default constructor for {@link Key}.
+	 *
+	 * @param keycode The key keycode
+	 */
 	private Key(int keycode) {
 		this.keycode = keycode;
 	}
 
+	/**
+	 * @return The key's keycode
+	 */
 	public int getKeycode() {
 		return keycode;
 	}
 
+	/**
+	 * Converts the keycode into the coresponding {@link Key}.
+	 *
+	 * @param keycode The keycode
+	 *
+	 * @return The key
+	 */
 	public static Key fromKeycode(int keycode) {
 		return KEYCODES.get(keycode);
 	}

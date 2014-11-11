@@ -24,13 +24,21 @@ import me.thehutch.fusion.api.event.Event;
  *
  * @author thehutch
  */
-public class MouseMotionEvent extends Event {
-	private final float dx;
-	private final float dy;
+public final class MouseMotionEvent extends Event {
+	private final int dx;
+	private final int dy;
 	private final int x;
 	private final int y;
 
-	public MouseMotionEvent(float dx, float dy, int x, int y) {
+	/**
+	 * The default constructor for {@link MouseMotionEvent}.
+	 *
+	 * @param dx The relative motion of the mouse in the x-axis
+	 * @param dy The relative motion of the mouse in the y-axis
+	 * @param x  The x position of the mouse
+	 * @param y  The y position of the mouse
+	 */
+	public MouseMotionEvent(int dx, int dy, int x, int y) {
 		super(true);
 		this.dx = dx;
 		this.dy = dy;
@@ -57,20 +65,20 @@ public class MouseMotionEvent extends Event {
 	}
 
 	/**
-	 * The relative motion of the move in the x-axis.
+	 * The relative motion of the mouse in the x-axis.
 	 *
 	 * @return The amount the mouse moved in the x-axis
 	 */
-	public float getDX() {
+	public int getDX() {
 		return dx;
 	}
 
 	/**
-	 * The relative motion of the move in the y-axis.
+	 * The relative motion of the mouse in the y-axis.
 	 *
 	 * @return The amount the mouse moved in the y-axis
 	 */
-	public float getDY() {
+	public int getDY() {
 		return dy;
 	}
 }

@@ -24,12 +24,20 @@ import me.thehutch.fusion.api.event.Event;
  *
  * @author thehutch
  */
-public class MouseButtonEvent extends Event {
+public final class MouseButtonEvent extends Event {
 	private final boolean state;
 	private final int button;
 	private final int x;
 	private final int y;
 
+	/**
+	 * The default constructor for {@link MouseButtonEvent}.
+	 *
+	 * @param button The button of the event
+	 * @param x      The x position of the mouse
+	 * @param y      The y position of the mouse
+	 * @param state  The new state of the button
+	 */
 	public MouseButtonEvent(int button, int x, int y, boolean state) {
 		super(true);
 		this.button = button;
