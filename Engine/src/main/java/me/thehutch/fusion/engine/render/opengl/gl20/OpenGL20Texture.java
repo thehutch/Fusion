@@ -30,7 +30,7 @@ import static org.lwjgl.opengl.GL14.GL_TEXTURE_COMPARE_FUNC;
 import static org.lwjgl.opengl.GL14.GL_TEXTURE_COMPARE_MODE;
 
 import java.nio.ByteBuffer;
-import me.thehutch.fusion.api.maths.MathsHelper;
+import me.thehutch.fusion.api.maths.FastMaths;
 import me.thehutch.fusion.api.util.GLVersion;
 import me.thehutch.fusion.engine.render.opengl.Texture;
 import me.thehutch.fusion.engine.render.texture.CompareFunc;
@@ -119,7 +119,7 @@ public class OpenGL20Texture extends Texture {
 		// Check if the driver is capable of anisotropic filtering
 		if (value > 0.0f && GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
 			final float maxFiltering = GL11.glGetFloat(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-			GL11.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, MathsHelper.clamp(value, 0.0f, maxFiltering));
+			GL11.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, FastMaths.clamp(value, 0.0f, maxFiltering));
 		}
 	}
 

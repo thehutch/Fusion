@@ -217,6 +217,7 @@ public final class ComponentSystem {
 
 					field.setAccessible(true);
 					field.set(target, system.getMapper(componentType));
+					field.setAccessible(false);
 				}
 			}
 		} catch (IllegalArgumentException | IllegalAccessException | SecurityException ex) {

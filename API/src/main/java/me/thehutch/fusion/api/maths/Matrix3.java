@@ -20,7 +20,23 @@ package me.thehutch.fusion.api.maths;
 /**
  * @author thehutch
  */
-public class Matrix3 {
+public final class Matrix3 {
+
+	/**
+	 * The column size.
+	 */
+	public static final int COL_SIZE = 3;
+	/**
+	 * The row size.
+	 */
+	public static final int ROW_SIZE = 3;
+	/**
+	 * The size of the matrix.
+	 */
+	public static final int SIZE = COL_SIZE * ROW_SIZE;
+	/**
+	 * The identity matrix.
+	 */
 	public static final Matrix3 IDENTITY = new Matrix3(1, 0, 0,
 													   0, 1, 0,
 													   0, 0, 1);
@@ -28,12 +44,19 @@ public class Matrix3 {
 	private final float m10, m11, m12;
 	private final float m20, m21, m22;
 
-	public Matrix3(Matrix3 m) {
-		this(m.m00, m.m01, m.m02,
-			 m.m10, m.m11, m.m12,
-			 m.m20, m.m21, m.m22);
-	}
-
+	/**
+	 * Default constructor for {@link Matrix4}.
+	 *
+	 * @param m00 The first element of the first column
+	 * @param m01 The first element of the second column
+	 * @param m02 The first element of the third column
+	 * @param m10 The second element of the first column
+	 * @param m11 The second element of the second column
+	 * @param m12 The second element of the third column
+	 * @param m20 The third element of the first column
+	 * @param m21 The third element of the second column
+	 * @param m22 The third element of the third column
+	 */
 	public Matrix3(float m00, float m01, float m02,
 				   float m10, float m11, float m12,
 				   float m20, float m21, float m22) {
@@ -48,24 +71,89 @@ public class Matrix3 {
 		this.m22 = m22;
 	}
 
+	/**
+	 * Copy constructor for {@link Matrix4}.
+	 *
+	 * @param m The matrix to copy
+	 */
+	public Matrix3(Matrix3 m) {
+		this(m.m00, m.m01, m.m02,
+			 m.m10, m.m11, m.m12,
+			 m.m20, m.m21, m.m22);
+	}
+
+	/**
+	 * Adds two {@link Matrix3} together.
+	 *
+	 * @param m The {@link Matrix3} to add to this {@link Matrix3}
+	 *
+	 * @return A new {@link Matrix3}
+	 */
 	public Matrix3 add(Matrix3 m) {
 		return new Matrix3(m00 + m.m00, m01 + m.m01, m02 + m.m02,
 						   m10 + m.m10, m11 + m.m11, m12 + m.m12,
 						   m20 + m.m20, m21 + m.m21, m22 + m.m22);
 	}
 
+	/**
+	 * Subtract two {@link Matrix3} from each other.
+	 *
+	 * @param m The {@link Matrix3} to subtract from this {@link Matrix3}
+	 *
+	 * @return A new {@link Matrix3}
+	 */
 	public Matrix3 sub(Matrix3 m) {
 		return new Matrix3(m00 - m.m00, m01 - m.m01, m02 - m.m02,
 						   m10 - m.m10, m11 - m.m11, m12 - m.m12,
 						   m20 - m.m20, m21 - m.m21, m22 - m.m22);
 	}
 
-	public Matrix3 mul(float a) {
-		return new Matrix3(m00 * a, m01 * a, m02 * a,
-						   m10 * a, m11 * a, m12 * a,
-						   m20 * a, m21 * a, m22 * a);
+	/**
+	 * Multiplies this {@link Matrix3} by a scalar.
+	 *
+	 * @param scalar The scalar to multiply by
+	 *
+	 * @return A new {@link Matrix3}
+	 */
+	public Matrix3 mul(float scalar) {
+		return new Matrix3(m00 * scalar, m01 * scalar, m02 * scalar,
+						   m10 * scalar, m11 * scalar, m12 * scalar,
+						   m20 * scalar, m21 * scalar, m22 * scalar);
 	}
 
+	/**
+	 * Multiplies this matrix by a {@link Vector3}.
+	 *
+	 * @param vec The {@link Vector3} to multiply by
+	 *
+	 * @return A new {@link Vector3}
+	 */
+	public Vector3 mul(Vector3 vec) {
+		return mul(vec.getX(), vec.getY(), vec.getZ());
+	}
+
+	/**
+	 * Multiplies this matrix by three floats (A vector of size 3).
+	 *
+	 * @param x The x-component of the vector
+	 * @param y The y-component of the vector
+	 * @param z The z-component of the vector
+	 *
+	 * @return A new {@link Vector3}
+	 */
+	public Vector3 mul(float x, float y, float z) {
+		return new Vector3(m00 * x + m01 * y + m02 * z,
+						   m10 * x + m11 * y + m12 * z,
+						   m20 * x + m21 * y + m22 * z);
+	}
+
+	/**
+	 * Multiples two {@link Matrix3} together.
+	 *
+	 * @param m The {@link Matrix3} to multiply with this {@link Matrix3}
+	 *
+	 * @return A new {@link Matrix3}
+	 */
 	public Matrix3 mul(Matrix3 m) {
 		return new Matrix3(m00 * m.m00 + m01 * m.m10 + m02 * m.m20,
 						   m00 * m.m01 + m01 * m.m11 + m02 * m.m21,
@@ -78,66 +166,46 @@ public class Matrix3 {
 						   m20 * m.m02 + m21 * m.m12 + m22 * m.m22);
 	}
 
-	public Matrix3 div(float a) {
-		return new Matrix3(m00 / a, m01 / a, m02 / a,
-						   m10 / a, m11 / a, m12 / a,
-						   m20 / a, m21 / a, m22 / a);
+	/**
+	 * Divides this {@link Matrix3} by a scalar.
+	 *
+	 * @param scalar The scalr to divide by
+	 *
+	 * @return A new {@link Matrix3}
+	 */
+	public Matrix3 div(float scalar) {
+		final float rScalar = 1.0f / scalar;
+		return new Matrix3(m00 * rScalar, m01 * rScalar, m02 * rScalar,
+						   m10 * rScalar, m11 * rScalar, m12 * rScalar,
+						   m20 * rScalar, m21 * rScalar, m22 * rScalar);
 	}
 
-	public Matrix3 div(Matrix3 m) {
-		return mul(m.invert());
-	}
-
-	public Matrix3 translate(Vector2 v) {
-		return translate(v.getX(), v.getY());
-	}
-
-	public Matrix3 translate(float x, float y) {
-		return createTranslation(x, y).mul(this);
-	}
-
-	public Matrix3 scale(float scale) {
-		return scale(scale, scale, scale);
-	}
-
-	public Matrix3 scale(Vector3 v) {
-		return scale(v.getX(), v.getY(), v.getZ());
-	}
-
-	public Matrix3 scale(float x, float y, float z) {
-		return createScale(x, y, z).mul(this);
-	}
-
-	public Matrix3 rotate(Quaternion rot) {
-		return createRotation(rot).mul(this);
-	}
-
-	public Vector3 transform(Vector3 v) {
-		return transform(v.getX(), v.getY(), v.getZ());
-	}
-
-	public Vector3 transform(float x, float y, float z) {
-		return new Vector3(m00 * x + m01 * y + m02 * z,
-						   m10 * x + m11 * y + m12 * z,
-						   m20 * x + m21 * y + m22 * z);
-	}
-
+	/**
+	 * Creates the transpose of this matrix.
+	 *
+	 * @return A new transposed {@link Matrix4}
+	 */
 	public Matrix3 transpose() {
 		return new Matrix3(m00, m10, m20,
 						   m01, m11, m21,
 						   m02, m12, m22);
 	}
 
-	public float trace() {
-		return m00 + m11 + m22;
-	}
-
+	/**
+	 * @return The determinant of this matrix
+	 */
 	public float determinant() {
 		return m00 * ((m11 * m22) - (m12 * m21))
 			   - m01 * ((m10 * m22) - (m12 * m20))
 			   + m02 * ((m10 * m21) - (m11 * m20));
 	}
 
+	/**
+	 * Creates the inverse of this matrix. If the determinant is zero then this
+	 * method will fail and return null.
+	 *
+	 * @return A new inverse {@link Matrix3}
+	 */
 	public Matrix3 invert() {
 		final float det = determinant();
 		if (det == 0.0f) {
@@ -148,6 +216,50 @@ public class Matrix3 {
 						   (m10 * m21 - m20 * m11) / det, -(m00 * m21 - m20 * m01) / det, (m00 * m11 - m01 * m10) / det);
 	}
 
+	/**
+	 * Inserts the matrix into the provided float[]. The matrix is inserted the
+	 * beginning of the array.
+	 *
+	 * @param array       The array to inser the matrix into
+	 * @param columnMajor True if to insert the matrix in column order
+	 */
+	public void toArray(float[] array, boolean columnMajor) {
+		// Check if the array is not null and has space
+		if (array == null || array.length < SIZE) {
+			throw new IllegalArgumentException("Array null or too small to hold Matrix4");
+		}
+
+		// Insert the matrix into the array in the correct order
+		if (columnMajor) {
+			array[0] = m00;
+			array[1] = m10;
+			array[2] = m20;
+			array[3] = m01;
+			array[4] = m11;
+			array[5] = m21;
+			array[6] = m02;
+			array[7] = m12;
+			array[8] = m22;
+		} else {
+			array[0] = m00;
+			array[1] = m01;
+			array[2] = m02;
+			array[3] = m10;
+			array[4] = m11;
+			array[5] = m12;
+			array[6] = m20;
+			array[7] = m21;
+			array[8] = m22;
+		}
+	}
+
+	/**
+	 * Creates a new float[] and inserts the matrix into it.
+	 *
+	 * @param columnMajor True if to insert the matrix in column order
+	 *
+	 * @return A new float[]
+	 */
 	public float[] toArray(boolean columnMajor) {
 		if (columnMajor) {
 			return new float[] {
@@ -164,52 +276,88 @@ public class Matrix3 {
 		}
 	}
 
-	public Matrix2 toMatrix2() {
-		return new Matrix2(m00, m01,
-						   m10, m11);
+	/**
+	 * Create a new translation matrix.
+	 *
+	 * @param vec The vector to translate by
+	 *
+	 * @return A new translation {@link Matrix3}
+	 */
+	public static Matrix3 newTranslation(Vector2 vec) {
+		return new Matrix3(1.0f, 0.0f, 0.0f,
+						   0.0f, 1.0f, 0.0f,
+						   vec.getX(), vec.getY(), 1.0f);
 	}
 
-	@Override
-	public String toString() {
-		return m00 + " " + m01 + " " + m02 + "\n"
-			   + m10 + " " + m11 + " " + m12 + "\n"
-			   + m20 + " " + m21 + " " + m22 + "\n";
+	/**
+	 * Creates a new translation matrix.
+	 *
+	 * @param x The x-component of the translation
+	 * @param y The y-component of the translation
+	 *
+	 * @return A new translation {@link Matrix3}
+	 */
+	public static Matrix3 newTranslation(float x, float y) {
+		return new Matrix3(1.0f, 0.0f, 0.0f,
+						   0.0f, 1.0f, 0.0f,
+						   x, y, 1.0f);
 	}
 
-	public static Matrix3 createScale(float scale) {
-		return createScale(scale, scale, scale);
+	/**
+	 * Creates a new scale matrix.
+	 *
+	 * @param scale The amount to scale each axis by
+	 *
+	 * @return A new scale {@link Matrix3}
+	 */
+	public static Matrix3 newScale(float scale) {
+		return new Matrix3(scale, 0.0f, 0.0f,
+						   0.0f, scale, 0.0f,
+						   0.0f, 0.0f, 1.0f);
 	}
 
-	public static Matrix3 createScale(Vector3 v) {
-		return createScale(v.getX(), v.getY(), v.getZ());
+	/**
+	 * Creates a new scale matrix.
+	 *
+	 * @param scale A vector to scale each component by
+	 *
+	 * @return A new scale {@link Matrix3}
+	 */
+	public static Matrix3 newScale(Vector2 scale) {
+		return new Matrix3(scale.getX(), 0.0f, 0.0f,
+						   0.0f, scale.getY(), 0.0f,
+						   0.0f, 0.0f, 1.0f);
 	}
 
-	public static Matrix3 createScale(float x, float y, float z) {
-		return new Matrix3(x, 0, 0,
-						   0, y, 0,
-						   0, 0, z);
+	/**
+	 * Creates a new scale matrix
+	 *
+	 * @param scaleX The x-component of the scale
+	 * @param scaleY The y-component of the scale
+	 *
+	 * @return A new scale {@link Matrix3}
+	 */
+	public static Matrix3 newScale(float scaleX, float scaleY) {
+		return new Matrix3(scaleX, 0.0f, 0.0f,
+						   0.0f, scaleY, 0.0f,
+						   0.0f, 0.0f, 1.0f);
 	}
 
-	public static Matrix3 createTranslation(Vector2 v) {
-		return createTranslation(v.getX(), v.getY());
-	}
-
-	public static Matrix3 createTranslation(float x, float y) {
-		return new Matrix3(1, 0, x,
-						   0, 1, y,
-						   0, 0, 1);
-	}
-
-	public static Matrix3 createRotation(Quaternion rot) {
-		rot = rot.normalise();
-		return new Matrix3(1 - 2 * rot.getY() * rot.getY() - 2 * rot.getZ() * rot.getZ(),
-						   2 * rot.getX() * rot.getY() - 2 * rot.getW() * rot.getZ(),
-						   2 * rot.getX() * rot.getZ() + 2 * rot.getW() * rot.getY(),
-						   2 * rot.getX() * rot.getY() + 2 * rot.getW() * rot.getZ(),
-						   1 - 2 * rot.getX() * rot.getX() - 2 * rot.getZ() * rot.getZ(),
-						   2 * rot.getY() * rot.getZ() - 2 * rot.getW() * rot.getX(),
-						   2 * rot.getX() * rot.getZ() - 2 * rot.getW() * rot.getY(),
-						   2 * rot.getY() * rot.getZ() + 2 * rot.getX() * rot.getW(),
-						   1 - 2 * rot.getX() * rot.getX() - 2 * rot.getY() * rot.getY());
+	/**
+	 * Creates a new rotation matrix.
+	 *
+	 * @param rot The quaternion to rotate by
+	 *
+	 * @return A new rotation {@link Matrix3}
+	 */
+	public static Matrix3 newRotation(Quaternion rot) {
+		final Quaternion normRot = rot.normalise();
+		final float x = normRot.getX();
+		final float y = normRot.getY();
+		final float z = normRot.getZ();
+		final float w = normRot.getW();
+		return new Matrix3(1.0f - (2.0f * y * y) - (2.0f * z * z), (2.0f * x * y) - (2.0f * w * z), (2.0f * x * z) + (2.0f * w * y),
+						   (2.0f * x * y) + (2.0f * w * z), 1.0f - (2.0f * x * x) - (2.0f * z * z), 2.0f * y * z - 2.0f * w * x,
+						   (2.0f * x * z) - (2.0f * w * y), (2.0f * y * z) + (2.0f * x * w), 1.0f - (2.0f * x * x) - (2.0f * y * y));
 	}
 }

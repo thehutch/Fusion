@@ -23,8 +23,8 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
-import me.thehutch.fusion.api.maths.Rectangle;
 import me.thehutch.fusion.api.maths.Vector3;
+import me.thehutch.fusion.api.maths.geometry.Rectangle;
 import me.thehutch.fusion.api.render.IContext;
 import me.thehutch.fusion.api.render.Resolution;
 import me.thehutch.fusion.api.util.Creatable;
@@ -51,25 +51,25 @@ public abstract class GLContext extends Creatable implements IContext, GLVersion
 
 	@Override
 	public String getWindowTitle() {
-		ensureCreated("Can not get window title if the context is not created.");
+		ensureCreated("Can not get window title if the context has not been created");
 		return Display.getTitle();
 	}
 
 	@Override
 	public void setWindowTitle(String title) {
-		ensureCreated("Can not set window title if the context is not created.");
+		ensureCreated("Can not set window title if the context has not been created");
 		Display.setTitle(title);
 	}
 
 	@Override
 	public void setWindowPosition(int x, int y) {
-		ensureCreated("Can not set window position if the context is not created.");
+		ensureCreated("Can not set window position if the context has not been created");
 		Display.setLocation(x, y);
 	}
 
 	@Override
 	public void setWindowSize(int width, int height) {
-		ensureCreated("Can not set window size if the context is not created.");
+		ensureCreated("Can not set window size if the context has not been created");
 		try {
 			Display.setDisplayMode(new DisplayMode(width, height));
 		} catch (LWJGLException ex) {
@@ -79,20 +79,20 @@ public abstract class GLContext extends Creatable implements IContext, GLVersion
 
 	@Override
 	public Rectangle getWindowPositionAndSize() {
-		ensureCreated("Can not get window position and size if the context is not created.");
+		ensureCreated("Can not get window position and size if the context has not been created");
 		return new Rectangle(Display.getX(), Display.getY(), Display.getWidth(), Display.getHeight());
 	}
 
 	@Override
 	public void setWindowPositionAndSize(Rectangle window) {
-		ensureCreated("Can not set window position and size if the context is not created.");
+		ensureCreated("Can not set window position and size if the context has not been created");
 		setWindowPosition(window.getX(), window.getY());
 		setWindowSize(window.getWidth(), window.getHeight());
 	}
 
 	@Override
 	public void enableFullscreen(boolean enable) {
-		ensureCreated("Can not enable fullscreen if the context is not created.");
+		ensureCreated("Can not enable fullscreen if the context has not been created");
 		try {
 			Display.setFullscreen(enable);
 		} catch (LWJGLException ex) {
@@ -102,7 +102,7 @@ public abstract class GLContext extends Creatable implements IContext, GLVersion
 
 	@Override
 	public void enableVSync(boolean enabled) {
-		ensureCreated("Can not enable vsync if the context is not created.");
+		ensureCreated("Can not enable vsync if the context has not been created");
 		Display.setVSyncEnabled(enabled);
 	}
 
@@ -113,13 +113,13 @@ public abstract class GLContext extends Creatable implements IContext, GLVersion
 
 	@Override
 	public void setClearColour(float r, float g, float b) {
-		ensureCreated("Can not set clear colour if the context is not created.");
+		ensureCreated("Can not set clear colour if the context has not been created");
 		GL11.glClearColor(r, g, b, 1.0f);
 	}
 
 	@Override
 	public void setViewPort(Rectangle viewport) {
-		ensureCreated("Can not set viewport if the context is not created.");
+		ensureCreated("Can not set viewport if the context has not been created");
 		GL11.glViewport(viewport.getX(), viewport.getY(), viewport.getWidth(), viewport.getHeight());
 	}
 
@@ -140,13 +140,13 @@ public abstract class GLContext extends Creatable implements IContext, GLVersion
 
 	@Override
 	public void dispose() {
-		ensureCreated("Can not dispose of the context if it is not created.");
+		ensureCreated("Can not dispose of the context if it has not been created");
 		Display.destroy();
 		super.dispose();
 	}
 
 	public void clearCurrentBuffer() {
-		ensureCreated("Can not clear the current buffer if the context is not created.");
+		ensureCreated("Can not clear the current buffer if the context has not been created");
 		GL11.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 }

@@ -42,6 +42,14 @@ public enum GLVersion {
 	private final int glslMajor;
 	private final int glslMinor;
 
+	/**
+	 * Default constructor for {@link GLVersion}.
+	 *
+	 * @param major     The OpenGL major version
+	 * @param minor     The OpenGL minor version
+	 * @param glslMajor The GLSL major version
+	 * @param glslMinor The GLSL minor version
+	 */
 	private GLVersion(int major, int minor, int glslMajor, int glslMinor) {
 		this.major = major;
 		this.minor = minor;
@@ -49,34 +57,74 @@ public enum GLVersion {
 		this.glslMinor = glslMinor;
 	}
 
+	/**
+	 * Returns the minimum OpenGL major version required to use this {@link GLVersion}.
+	 *
+	 * @return The minimum OpenGL major version
+	 */
 	public int getMajor() {
 		return major;
 	}
 
+	/**
+	 * Returns the minimum OpenGL minor version required to use this {@link GLVersion}.
+	 *
+	 * @return The minimum OpenGL minor version
+	 */
 	public int getMinor() {
 		return minor;
 	}
 
+	/**
+	 * Returns the minimum GLSL major version required to use this {@link GLVersion}.
+	 *
+	 * @return The minimum GLSL major version
+	 */
 	public int getGLSLMajor() {
 		return glslMajor;
 	}
 
+	/**
+	 * Returns the minimum GLSL minor version required to use this {@link GLVersion}.
+	 *
+	 * @return The minimum GLSL minor version
+	 */
 	public int getGLSLMinor() {
 		return glslMinor;
 	}
 
+	/**
+	 * Returns the OpenGL version as an integer (e.g. OpenGL 3.3 == 33)
+	 *
+	 * @return The OpenGL version
+	 */
 	public int getVersion() {
-		return major * 10 + minor;
+		return (major * 10) + minor;
 	}
 
+	/**
+	 * Returns the GLSL version as an integer (e.g. GLSL 1.5 == 150)
+	 *
+	 * @return The OpenGL version
+	 */
 	public int getGLSLVersion() {
-		return glslMajor * 100 + glslMinor * 10;
+		return (glslMajor * 100) + (glslMinor * 10);
 	}
 
+	/**
+	 * @return True if this GLVersion supports shaders
+	 */
 	public boolean supportsGLSL() {
 		return glslMajor != 0;
 	}
 
+	/**
+	 * Used to check if this {@link GLVersion} supports another (e.g. GL30 supports GL20)
+	 *
+	 * @param version The GLVersion
+	 *
+	 * @return True if this {@link GLVersion} supports the given {@link GLVersion}
+	 */
 	public boolean supportsGLVersion(GLVersion version) {
 		return major >= version.major && minor >= version.minor;
 	}

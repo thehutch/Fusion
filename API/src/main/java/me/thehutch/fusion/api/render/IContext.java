@@ -18,8 +18,8 @@
 package me.thehutch.fusion.api.render;
 
 import java.util.Collection;
-import me.thehutch.fusion.api.maths.Rectangle;
 import me.thehutch.fusion.api.maths.Vector3;
+import me.thehutch.fusion.api.maths.geometry.Rectangle;
 
 /**
  * @author thehutch

@@ -22,7 +22,7 @@ package me.thehutch.fusion.api.util;
  */
 public interface Disposable {
 	/**
-	 * Disposes of any resources used by this class.
+	 * Override this method to dispose of any resources.
 	 */
 	public void dispose();
 }

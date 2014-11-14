@@ -27,28 +27,28 @@ import me.thehutch.fusion.api.util.GLVersion;
  */
 public interface IClient extends IEngine {
 	/**
-	 * Gets the camera used by the client.
+	 * Returns the camera used by the client.
 	 *
 	 * @return The camera
 	 */
 	public Camera getCamera();
 
 	/**
-	 * Gets the opengl context used by the client.
+	 * Returns the opengl context used by the client.
 	 *
 	 * @return The window
 	 */
 	public IContext getContext();
 
 	/**
-	 * Gets the input manager used by the client.
+	 * Returns the input manager used by the client.
 	 *
 	 * @return The input manager
 	 */
 	public IInputManager getInputManager();
 
 	/**
-	 * Gets the version of OpenGL used by the engine.
+	 * Returns the version of OpenGL used by the engine.
 	 *
 	 * @return The OpenGL version
 	 */

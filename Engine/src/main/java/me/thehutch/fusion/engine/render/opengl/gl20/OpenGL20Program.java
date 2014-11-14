@@ -37,7 +37,6 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import me.thehutch.fusion.api.maths.Matrix2;
 import me.thehutch.fusion.api.maths.Matrix3;
 import me.thehutch.fusion.api.maths.Matrix4;
 import me.thehutch.fusion.api.maths.Vector2;
@@ -53,7 +52,6 @@ import org.lwjgl.opengl.GL20;
  * @author thehutch
  */
 public class OpenGL20Program extends Program {
-	private static final FloatBuffer MATRIX_2X2_BUFFER = BufferUtils.createFloatBuffer(4);
 	private static final FloatBuffer MATRIX_3X3_BUFFER = BufferUtils.createFloatBuffer(9);
 	private static final FloatBuffer MATRIX_4X4_BUFFER = BufferUtils.createFloatBuffer(16);
 	private final TObjectIntMap<String> uniforms = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
@@ -258,31 +256,6 @@ public class OpenGL20Program extends Program {
 		final int loc = uniforms.get(name);
 		if (loc >= 0) {
 			GL20.glUniform4f(loc, vec.getX(), vec.getY(), vec.getZ(), vec.getW());
-		}
-	}
-
-	@Override
-	public void setUniform(String name, Matrix2 matrix) {
-		final int loc = uniforms.get(name);
-		if (loc >= 0) {
-			MATRIX_2X2_BUFFER.put(matrix.toArray(true));
-			MATRIX_2X2_BUFFER.flip();
-			GL20.glUniformMatrix2(loc, false, MATRIX_2X2_BUFFER);
-			MATRIX_2X2_BUFFER.clear();
-		}
-	}
-
-	@Override
-	public void setUniform(String name, Matrix2[] matrix) {
-		final int loc = uniforms.get(name);
-		if (loc >= 0) {
-			final int length = matrix.length;
-			final FloatBuffer buffer = BufferUtils.createFloatBuffer(4 * length);
-			for (int i = 0; i < length; ++i) {
-				buffer.put(matrix[i].toArray(true));
-			}
-			buffer.flip();
-			GL20.glUniformMatrix2(loc, false, buffer);
 		}
 	}
 

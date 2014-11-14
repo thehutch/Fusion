@@ -17,7 +17,6 @@
  */
 package me.thehutch.fusion.engine.render.data;
 
-import me.thehutch.fusion.api.maths.Matrix2;
 import me.thehutch.fusion.api.maths.Matrix3;
 import me.thehutch.fusion.api.maths.Matrix4;
 import me.thehutch.fusion.api.maths.Vector2;
@@ -194,31 +193,6 @@ public abstract class Uniform {
 		}
 
 		public void set(Vector4 value) {
-			this.value = value;
-		}
-
-		@Override
-		public void upload(Program program) {
-			program.setUniform(name, value);
-		}
-	}
-
-	/**
-	 * A Matrix2 shader uniform.
-	 */
-	public static class Matrix2Uniform extends Uniform {
-		private Matrix2 value;
-
-		public Matrix2Uniform(String name, Matrix2 value) {
-			super(name);
-			this.value = value;
-		}
-
-		public Matrix2 get() {
-			return value;
-		}
-
-		public void set(Matrix2 value) {
 			this.value = value;
 		}
 

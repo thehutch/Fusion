@@ -17,7 +17,6 @@
  */
 package me.thehutch.fusion.engine.render.opengl;
 
-import me.thehutch.fusion.api.maths.Matrix2;
 import me.thehutch.fusion.api.maths.Matrix3;
 import me.thehutch.fusion.api.maths.Matrix4;
 import me.thehutch.fusion.api.maths.Vector2;
@@ -51,10 +50,6 @@ public abstract class Program extends Creatable implements GLVersioned {
 	public abstract void setUniform(String name, Vector3 vec);
 
 	public abstract void setUniform(String name, Vector4 vec);
-
-	public abstract void setUniform(String name, Matrix2 matrix);
-
-	public abstract void setUniform(String name, Matrix2[] matrix);
 
 	public abstract void setUniform(String name, Matrix3 matrix);
 

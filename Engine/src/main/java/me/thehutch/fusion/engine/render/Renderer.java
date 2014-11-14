@@ -62,8 +62,7 @@ public final class Renderer extends BatchEntityProcessor {
 	private ComponentMapper<TransformComponent> transformMapper;
 
 	public Renderer(Client engine, Camera camera) {
-		super(Aspect.getAspectFor(RenderComponent.class,
-								  TransformComponent.class));
+		super(Aspect.newAspectForAll(RenderComponent.class, TransformComponent.class));
 		this.camera = camera;
 		this.engine = engine;
 	}
@@ -190,8 +189,13 @@ public final class Renderer extends BatchEntityProcessor {
 		// Set the camera matrix
 		program.setUniform("cameraMatrix", camera);
 
+		// Create the scale, rotation and translation matrices
+		final Matrix4 scaleMatrix = Matrix4.newScale(transform.getScale());
+		final Matrix4 rotationMatrix = Matrix4.newRotation(transform.getRotation());
+		final Matrix4 translationMatrix = Matrix4.newTranslation(transform.getPosition());
+
 		// Set the model and normal matrix uniforms
-		final Matrix4 modelMatrix = Matrix4.createScale(transform.getScale()).rotate(transform.getRotation()).translate(transform.getPosition());
+		final Matrix4 modelMatrix = scaleMatrix.mul(rotationMatrix).mul(translationMatrix);
 		program.setUniform("modelMatrix", modelMatrix);
 		program.setUniform("normalMatrix", modelMatrix.invert().transpose().toMatrix3());
 

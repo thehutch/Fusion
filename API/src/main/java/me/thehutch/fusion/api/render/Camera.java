@@ -24,7 +24,7 @@ import me.thehutch.fusion.api.maths.Vector3;
 /**
  * @author thehutch
  */
-public class Camera {
+public final class Camera {
 	private final Matrix4 projection;
 	private Matrix4 viewMatrix;
 	private Quaternion rotation;
@@ -45,20 +45,12 @@ public class Camera {
 
 	public Matrix4 getViewMatrix() {
 		if (dirty) {
-			final Matrix4 rotationMatrix = Matrix4.createRotation(rotation.invert());
-			final Matrix4 positionMatrix = Matrix4.createTranslation(position.negate());
+			final Matrix4 rotationMatrix = Matrix4.newRotation(rotation.invert());
+			final Matrix4 positionMatrix = Matrix4.newTranslation(position.negate());
 			this.viewMatrix = rotationMatrix.mul(positionMatrix);
 			this.dirty = false;
 		}
 		return viewMatrix;
-	}
-
-	public boolean isDirty() {
-		return dirty;
-	}
-
-	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
 	}
 
 	public Vector3 getPosition() {
@@ -153,10 +145,10 @@ public class Camera {
 	}
 
 	public static Camera createPerspective(float fov, float aspectRatio, float near, float far) {
-		return new Camera(Matrix4.createPerspective(fov, aspectRatio, near, far));
+		return new Camera(Matrix4.newPerspective(fov, aspectRatio, near, far));
 	}
 
 	public static Camera createOrthographic(float right, float left, float top, float bottom, float near, float far) {
-		return new Camera(Matrix4.createOrthographic(right, left, top, bottom, near, far));
+		return new Camera(Matrix4.newOrthographic(right, left, top, bottom, near, far));
 	}
 }

@@ -30,30 +30,6 @@ public final class Aspect {
 	private Aspect() {
 	}
 
-	public Aspect all(Class<? extends Component> type, Class<? extends Component>... types) {
-		this.allSet.set(ComponentType.getIndexFor(type));
-		for (Class<? extends Component> t : types) {
-			this.allSet.set(ComponentType.getIndexFor(t));
-		}
-		return this;
-	}
-
-	public Aspect one(Class<? extends Component> type, Class<? extends Component>... types) {
-		this.oneSet.set(ComponentType.getIndexFor(type));
-		for (Class<? extends Component> t : types) {
-			this.oneSet.set(ComponentType.getIndexFor(t));
-		}
-		return this;
-	}
-
-	public Aspect exclude(Class<? extends Component> type, Class<? extends Component>... types) {
-		this.exclusionSet.set(ComponentType.getIndexFor(type));
-		for (Class<? extends Component> t : types) {
-			this.exclusionSet.set(ComponentType.getIndexFor(t));
-		}
-		return this;
-	}
-
 	BitSet getAllSet() {
 		return allSet;
 	}
@@ -66,23 +42,43 @@ public final class Aspect {
 		return exclusionSet;
 	}
 
-	public static Aspect getAspectFor(Class<? extends Component> type, Class<? extends Component>... types) {
-		return getAspectForAll(type, types);
-	}
-
-	public static Aspect getAspectForAll(Class<? extends Component> type, Class<? extends Component>... types) {
+	public static Aspect newAspectForAll(Class<? extends Component>... types) {
+		if (types == null || types.length == 0) {
+			throw new IllegalArgumentException("Number of Aspect types must be greater than 0");
+		}
 		final Aspect aspect = new Aspect();
-		aspect.all(type, types);
+		final BitSet bitSet = aspect.getAllSet();
+		for (Class<? extends Component> type : types) {
+			bitSet.set(ComponentType.getIndexFor(type));
+		}
 		return aspect;
 	}
 
-	public static Aspect getAspectForOne(Class<? extends Component> type, Class<? extends Component>... types) {
+	public static Aspect newAspectForOne(Class<? extends Component>... types) {
+		if (types == null || types.length == 0) {
+			throw new IllegalArgumentException("Number of Aspect types must be greater than 0");
+		}
 		final Aspect aspect = new Aspect();
-		aspect.one(type, types);
+		final BitSet bitSet = aspect.getOneSet();
+		for (Class<? extends Component> type : types) {
+			bitSet.set(ComponentType.getIndexFor(type));
+		}
 		return aspect;
 	}
 
-	public static Aspect getEmpty() {
+	public static Aspect newAspectForExclude(Class<? extends Component>... types) {
+		if (types == null || types.length == 0) {
+			throw new IllegalArgumentException("Number of Aspect types must be greater than 0");
+		}
+		final Aspect aspect = new Aspect();
+		final BitSet bitSet = aspect.getExclusionSet();
+		for (Class<? extends Component> type : types) {
+			bitSet.set(ComponentType.getIndexFor(type));
+		}
+		return aspect;
+	}
+
+	public static Aspect newEmpty() {
 		return new Aspect();
 	}
 }

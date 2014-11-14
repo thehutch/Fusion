@@ -20,13 +20,18 @@ package me.thehutch.fusion.api.maths;
 /**
  * @author thehutch
  */
-public class MathsHelper {
+public final class FastMaths {
 	public static final float E = 2.718281828f;
 	public static final float PI = 3.141592653f;
+	public static final float HALF_PI = PI * 0.5f;
+	public static final float EPSILON = 1e-4f;
 	private static final float DEG_TO_RAD = PI / 180.0f;
 	private static final float RAD_TO_DEG = 180.0f / PI;
 
-	private MathsHelper() {
+	/**
+	 * Private constructor for {@link FastMaths}.
+	 */
+	private FastMaths() {
 	}
 
 	/**
@@ -59,7 +64,7 @@ public class MathsHelper {
 	 * @return The absolute value
 	 */
 	public static int abs(int value) {
-		return value < 0 ? -value : value;
+		return value < +0 ? -value : value;
 	}
 
 	/**
@@ -238,39 +243,58 @@ public class MathsHelper {
 	}
 
 	/**
-	 * Interpolates between the two values given.
+	 * Uses the faster linear interpolation method but is less accurate.
 	 *
-	 * @param a          The start value
-	 * @param b          The end value
+	 * @param from       The value to start from
+	 * @param to         The value to end on
 	 * @param percentage The amount of interpolate by
 	 *
 	 * @return The interpolated value
 	 */
-	public static float lerp(float a, float b, float percentage) {
-		return a + (b - a) * percentage;
+	public static float fastLerp(float from, float to, float percentage) {
+		return from + ((to - from) * percentage);
 	}
 
-	public static Quaternion slerp(Quaternion a, Quaternion b, float percent) {
-		final float EPSILON = 1e-3f;
-		final float inverted;
-		float cos = a.dot(b);
+	/**
+	 * Uses the more accurate method of linear interpolation.
+	 *
+	 * @param from       The value to start from
+	 * @param to         The value to end on
+	 * @param percentage The amount of interpolate by
+	 *
+	 * @return The interpolated value
+	 */
+	public static float lerp(float from, float to, float percentage) {
+		return ((1.0f - percentage) * from) + (percentage * to);
+	}
+
+	/**
+	 * Spherically interpolates between two rotations.
+	 *
+	 * @param from    The rotation to start from
+	 * @param to      The rotation to end on
+	 * @param percent The amount to interpolate by
+	 *
+	 * @return A new interpolated rotation
+	 */
+	public static Quaternion slerp(Quaternion from, Quaternion to, float percent) {
+		float cos = from.dot(to);
+		float inverted = 1.0f;
 		if (cos < 0.0f) {
 			cos = -cos;
-			inverted = -1.0f;
-		} else {
-			inverted = 1.0f;
+			inverted = -inverted;
 		}
 
-		if (1 - cos < EPSILON) {
-			return a.mul(1 - percent).add(b.mul(percent * inverted));
+		if (1.0f - cos < FastMaths.EPSILON) {
+			return from.mul(1.0f - percent).add(to.mul(percent * inverted));
 		}
 
 		final float theta = (float) Math.acos(cos);
 		final float sinTheta = (float) Math.sin(theta);
 
-		final float coeff1 = (float) (Math.sin((1 - percent) * theta) / sinTheta);
+		final float coeff1 = (float) (Math.sin((1.0f - percent) * theta) / sinTheta);
 		final float coeff2 = (float) (Math.sin(percent * theta) / sinTheta * inverted);
-		return a.mul(coeff1).add(b.mul(coeff2));
+		return from.mul(coeff1).add(to.mul(coeff2));
 	}
 
 	/**
@@ -281,7 +305,7 @@ public class MathsHelper {
 	 *
 	 * @return The square root of the value
 	 */
-	public static float sqrt(float x) {
+	public static float fastSqrt(float x) {
 		return x * inverseSqrt(x);
 	}
 
@@ -292,7 +316,7 @@ public class MathsHelper {
 	 *
 	 * @return The inverse square root of the value
 	 */
-	private static float inverseSqrt(float value) {
+	public static float inverseSqrt(float value) {
 		final float xhalves = 0.5f * value;
 		final float x = Float.intBitsToFloat(0x5F3759DF - (Float.floatToRawIntBits(value) >> 1));
 		return x * (1.5f - xhalves * x * x);

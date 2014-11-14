@@ -20,18 +20,27 @@ package me.thehutch.fusion.api.maths;
 /**
  * @author thehutch
  */
-public class Vector4 {
+public final class Vector4 {
 	public static final Vector4 ONE = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	public static final Vector4 ZERO = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 	public static final Vector4 UNIT_X = new Vector4(1.0f, 0.0f, 0.0f, 0.0f);
 	public static final Vector4 UNIT_Y = new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
 	public static final Vector4 UNIT_Z = new Vector4(0.0f, 0.0f, 1.0f, 0.0f);
 	public static final Vector4 UNIT_W = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+
 	private final float x;
 	private final float y;
 	private final float z;
 	private final float w;
 
+	/**
+	 * Default constructor for {@link Vector4}.
+	 * <p>
+	 * @param x The x-component
+	 * @param y The y-component
+	 * @param z The z-component
+	 * @param w The w-component
+	 */
 	public Vector4(float x, float y, float z, float w) {
 		this.x = x;
 		this.y = y;
@@ -39,63 +48,142 @@ public class Vector4 {
 		this.w = w;
 	}
 
+	/**
+	 * @return The x-component
+	 */
 	public float getX() {
 		return x;
 	}
 
+	/**
+	 * @return The y-component
+	 */
 	public float getY() {
 		return y;
 	}
 
+	/**
+	 * @return The z-component
+	 */
 	public float getZ() {
 		return z;
 	}
 
+	/**
+	 * @return The w-component
+	 */
 	public float getW() {
 		return w;
 	}
 
+	/**
+	 * @return The floored x-component
+	 */
 	public int getFloorX() {
-		return MathsHelper.floor(x);
+		return FastMaths.floor(x);
 	}
 
+	/**
+	 * @return The floored y-component
+	 */
 	public int getFloorY() {
-		return MathsHelper.floor(y);
+		return FastMaths.floor(y);
 	}
 
+	/**
+	 * @return The floored z-component
+	 */
 	public int getFloorZ() {
-		return MathsHelper.floor(z);
+		return FastMaths.floor(z);
 	}
 
+	/**
+	 * @return The floored w-component
+	 */
 	public int getFloorW() {
-		return MathsHelper.floor(w);
+		return FastMaths.floor(w);
 	}
 
+	/**
+	 * The length of the {@link Vector4}.
+	 * <p>
+	 * @return The length
+	 */
 	public float length() {
-		return MathsHelper.sqrt(lengthSquared());
+		final float lenSq = x * x + y * y + z * z + w * w;
+		return FastMaths.fastSqrt(lenSq);
 	}
 
+	/**
+	 * The length squared of the {@link Vector4}.
+	 * <p>
+	 * @return The length squared
+	 */
 	public float lengthSquared() {
 		return x * x + y * y + z * z + w * w;
 	}
 
+	/**
+	 * Calculates the distance between the vectors.
+	 * <p>
+	 * @param vec The other vector
+	 * <p>
+	 * @return The distance between this vector and another
+	 */
 	public float distance(Vector4 vec) {
-		return MathsHelper.sqrt(distanceSquared(vec));
+		final float diffX = x - vec.x;
+		final float diffY = y - vec.y;
+		final float diffZ = z - vec.z;
+		final float diffW = w - vec.w;
+		final float distSquared = (diffX * diffX) + (diffY * diffY) + (diffZ * diffZ) + (diffW * diffW);
+		return FastMaths.fastSqrt(distSquared);
 	}
 
+	/**
+	 * Calculates the distance squared between the vectors.
+	 * <p>
+	 * @param vec The other vector
+	 * <p>
+	 * @return The distance squared between this vector and another
+	 */
 	public float distanceSquared(Vector4 vec) {
-		return ((x - vec.x) * (x - vec.x)) + ((y - vec.y) * (y - vec.y)) + ((z - vec.z) * (z - vec.z)) + ((w - vec.w) * (w - vec.w));
+		final float diffX = x - vec.x;
+		final float diffY = y - vec.y;
+		final float diffZ = z - vec.z;
+		final float diffW = w - vec.w;
+		return (diffX * diffX) + (diffY * diffY) + (diffZ * diffZ) + (diffW * diffW);
 	}
 
+	/**
+	 * Calculates the dot product of the vectors.
+	 * <p>
+	 * @param vec The vector to dot with
+	 * <p>
+	 * @return The dot product of the two vectors
+	 */
 	public float dot(Vector4 vec) {
 		return (x * vec.x) + (y * vec.y) + (z * vec.z) + (w * vec.w);
 	}
 
+	/**
+	 * Creates a new normalised {@link Vector3}.
+	 * <p>
+	 * @return A new normalised {@link Vector3}
+	 */
 	public Vector4 normalise() {
-		final float length = length();
-		return new Vector4(x / length, y / length, z / length, w / length);
+		final float lenSq = x * x + y * y + z * z + w * w;
+		if (lenSq == 1.0f || lenSq == 0.0f) {
+			return this;
+		}
+		final float invLenSq = 1.0f / FastMaths.fastSqrt(lenSq);
+		return new Vector4(x * invLenSq, y * invLenSq, z * invLenSq, w * invLenSq);
 	}
 
+	/**
+	 * Creates the negative {@link Vector3} of this vector.
+	 * <p>
+	 * @return A new negated {@link Vector3}
+	 */
 	public Vector4 negate() {
 		return new Vector4(-x, -y, -z, -w);
 	}
@@ -146,10 +234,5 @@ public class Vector4 {
 
 	public Vector4 div(Vector4 vec) {
 		return new Vector4(x / vec.x, y / vec.y, z / vec.z, w / vec.w);
-	}
-
-	@Override
-	public String toString() {
-		return "[" + x + ", " + y + ", " + z + ", " + w + "]";
 	}
 }
