@@ -20,5 +20,5 @@ package me.thehutch.fusion.api.component;
 /**
  * @author thehutch
  */
-public interface Component {
+public interface IComponent {
 }

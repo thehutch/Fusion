@@ -17,14 +17,14 @@
  */
 package me.thehutch.fusion.engine.component;
 
-import me.thehutch.fusion.api.component.Component;
+import me.thehutch.fusion.api.component.IComponent;
 import me.thehutch.fusion.api.maths.Quaternion;
 import me.thehutch.fusion.api.maths.Vector3;
 
 /**
  * @author thehutch
  */
-public class TransformComponent implements Component {
+public class TransformComponent implements IComponent {
 	private Quaternion rotation;
 	private Vector3 position;
 	private Vector3 scale;

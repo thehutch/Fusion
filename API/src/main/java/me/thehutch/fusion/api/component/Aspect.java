@@ -27,57 +27,95 @@ public final class Aspect {
 	private final BitSet oneSet = new BitSet();
 	private final BitSet exclusionSet = new BitSet();
 
+	/**
+	 * Private constructor for {@link Aspect}.
+	 */
 	private Aspect() {
 	}
 
+	/**
+	 * @return The all set
+	 */
 	BitSet getAllSet() {
 		return allSet;
 	}
 
+	/**
+	 * @return The one set
+	 */
 	BitSet getOneSet() {
 		return oneSet;
 	}
 
+	/**
+	 * @return The exclude set
+	 */
 	BitSet getExclusionSet() {
 		return exclusionSet;
 	}
 
-	public static Aspect newAspectForAll(Class<? extends Component>... types) {
+	/**
+	 * Creates a new {@link Aspect} for all of the provided component classes.
+	 * <p>
+	 * @param types The types of classes
+	 * <p>
+	 * @return A new aspect
+	 */
+	public static Aspect newAspectForAll(Class<? extends IComponent>... types) {
 		if (types == null || types.length == 0) {
 			throw new IllegalArgumentException("Number of Aspect types must be greater than 0");
 		}
 		final Aspect aspect = new Aspect();
 		final BitSet bitSet = aspect.getAllSet();
-		for (Class<? extends Component> type : types) {
+		for (Class<? extends IComponent> type : types) {
 			bitSet.set(ComponentType.getIndexFor(type));
 		}
 		return aspect;
 	}
 
-	public static Aspect newAspectForOne(Class<? extends Component>... types) {
+	/**
+	 * Creates a new {@link Aspect} for all of the provided component classes.
+	 * <p>
+	 * @param types The types of classes
+	 * <p>
+	 * @return A new aspect
+	 */
+	public static Aspect newAspectForOne(Class<? extends IComponent>... types) {
 		if (types == null || types.length == 0) {
 			throw new IllegalArgumentException("Number of Aspect types must be greater than 0");
 		}
 		final Aspect aspect = new Aspect();
 		final BitSet bitSet = aspect.getOneSet();
-		for (Class<? extends Component> type : types) {
+		for (Class<? extends IComponent> type : types) {
 			bitSet.set(ComponentType.getIndexFor(type));
 		}
 		return aspect;
 	}
 
-	public static Aspect newAspectForExclude(Class<? extends Component>... types) {
+	/**
+	 * Creates a new {@link Aspect} for all of the provided component classes.
+	 * <p>
+	 * @param types The types of classes
+	 * <p>
+	 * @return A new aspect
+	 */
+	public static Aspect newAspectForExclude(Class<? extends IComponent>... types) {
 		if (types == null || types.length == 0) {
 			throw new IllegalArgumentException("Number of Aspect types must be greater than 0");
 		}
 		final Aspect aspect = new Aspect();
 		final BitSet bitSet = aspect.getExclusionSet();
-		for (Class<? extends Component> type : types) {
+		for (Class<? extends IComponent> type : types) {
 			bitSet.set(ComponentType.getIndexFor(type));
 		}
 		return aspect;
 	}
 
+	/**
+	 * Creates a new empty {@link Aspect}.
+	 * <p>
+	 * @return A new empty aspect
+	 */
 	public static Aspect newEmpty() {
 		return new Aspect();
 	}

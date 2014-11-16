@@ -17,14 +17,14 @@
  */
 package me.thehutch.fusion.engine.component;
 
-import me.thehutch.fusion.api.component.Component;
+import me.thehutch.fusion.api.component.IComponent;
 import me.thehutch.fusion.engine.render.Material;
 import me.thehutch.fusion.engine.render.opengl.VertexArray;
 
 /**
  * @author thehutch
  */
-public class RenderComponent implements Component {
+public class RenderComponent implements IComponent {
 	private final Material material;
 	private final VertexArray mesh;
 

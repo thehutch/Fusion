@@ -18,8 +18,8 @@
 package me.thehutch.fusion.api.component.processors;
 
 import me.thehutch.fusion.api.component.Aspect;
-import me.thehutch.fusion.api.component.Entity;
 import me.thehutch.fusion.api.component.EntityProcessor;
+import me.thehutch.fusion.api.component.IEntity;
 import me.thehutch.fusion.api.util.container.ImmutableBag;
 
 /**
@@ -29,6 +29,11 @@ import me.thehutch.fusion.api.util.container.ImmutableBag;
  */
 public abstract class ParallelEntityProcessor extends EntityProcessor {
 
+	/**
+	 * Default constructor for {@link ParallelEntityProcessor}.
+	 * <p>
+	 * @param aspect The aspect for this processor
+	 */
 	public ParallelEntityProcessor(Aspect aspect) {
 		super(aspect);
 	}
@@ -38,15 +43,21 @@ public abstract class ParallelEntityProcessor extends EntityProcessor {
 	 *
 	 * @param entity The entity to process
 	 */
-	public abstract void process(Entity entity);
+	public abstract void process(IEntity entity);
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	protected final void processEntities(ImmutableBag<Entity> entities) {
+	public final void processEntities(ImmutableBag<IEntity> entities) {
 		entities.parallelStream().forEach(this::process);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	protected boolean checkProcessing() {
+	public boolean checkProcessing() {
 		return true;
 	}
 }

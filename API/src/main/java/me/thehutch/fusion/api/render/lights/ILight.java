@@ -17,13 +17,13 @@
  */
 package me.thehutch.fusion.api.render.lights;
 
-import me.thehutch.fusion.api.component.Component;
+import me.thehutch.fusion.api.component.IComponent;
 import me.thehutch.fusion.api.maths.Vector3;
 
 /**
  * @author thehutch
  */
-public interface ILight extends Component {
+public interface ILight extends IComponent {
 	/**
 	 * Gets the colour of the light in RGB format.
 	 *

@@ -26,8 +26,8 @@ import static org.lwjgl.opengl.GL32.GL_DEPTH_CLAMP;
 
 import java.nio.file.Path;
 import me.thehutch.fusion.api.component.Aspect;
-import me.thehutch.fusion.api.component.ComponentMapper;
-import me.thehutch.fusion.api.component.Entity;
+import me.thehutch.fusion.api.component.IComponentMapper;
+import me.thehutch.fusion.api.component.IEntity;
 import me.thehutch.fusion.api.component.annotations.Mapper;
 import me.thehutch.fusion.api.component.processors.BatchEntityProcessor;
 import me.thehutch.fusion.api.maths.Matrix4;
@@ -56,10 +56,10 @@ public final class Renderer extends BatchEntityProcessor {
 	private final Client engine;
 	// Render component mapper
 	@Mapper
-	private ComponentMapper<RenderComponent> renderMapper;
+	private IComponentMapper<RenderComponent> renderMapper;
 	// Transform component mapper
 	@Mapper
-	private ComponentMapper<TransformComponent> transformMapper;
+	private IComponentMapper<TransformComponent> transformMapper;
 
 	public Renderer(Client engine, Camera camera) {
 		super(Aspect.newAspectForAll(RenderComponent.class, TransformComponent.class));
@@ -72,7 +72,7 @@ public final class Renderer extends BatchEntityProcessor {
 	}
 
 	@Override
-	protected void initialise() {
+	public void initialise() {
 		// Enable depth testing
 		GL11.glEnable(GL_DEPTH_TEST);
 		GL11.glEnable(GL_DEPTH_CLAMP);
@@ -85,21 +85,21 @@ public final class Renderer extends BatchEntityProcessor {
 		final RenderComponent render = new RenderComponent(getMaterial("ground.fmat"), getMesh("ground.obj"));
 		final TransformComponent transform = new TransformComponent();
 
-		final Entity e = system.createEntity();
+		final IEntity e = mSystem.createEntity();
 		e.addComponent(render);
 		e.addComponent(transform);
 
-		this.system.addEntity(e);
+		mSystem.addEntity(e);
 	}
 
 	@Override
-	protected void begin() {
+	public void begin() {
 		// Clear the colour and depth buffers
 		GL11.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	@Override
-	protected void end() {
+	public void end() {
 		// Update the display
 		Display.update();
 
@@ -108,12 +108,12 @@ public final class Renderer extends BatchEntityProcessor {
 	}
 
 	@Override
-	protected void processEntities(ImmutableBag<Entity> entities) {
+	public void processEntities(ImmutableBag<IEntity> entities) {
 		// Calculate the camera matrix (projection * view)
 		final Matrix4 cameraMatrix = camera.getProjectionMatrix().mul(camera.getViewMatrix());
 
 		// Render the models
-		entities.forEach((Entity e) -> {
+		entities.forEach((IEntity e) -> {
 			// Get the render and transform components
 			final RenderComponent render = renderMapper.get(e);
 			final TransformComponent transform = transformMapper.get(e);
@@ -156,17 +156,17 @@ public final class Renderer extends BatchEntityProcessor {
 	}
 
 	@Override
-	protected boolean checkProcessing() {
+	public boolean checkProcessing() {
 		return !getActives().isEmpty();
 	}
 
 	@Override
-	protected void inserted(Entity e) {
+	public void inserted(IEntity e) {
 		Engine.getLogger().info("Entity added to Renderer");
 	}
 
 	@Override
-	protected void removed(Entity e) {
+	public void removed(IEntity e) {
 		Engine.getLogger().info("Entity removed from Renderer");
 	}
 

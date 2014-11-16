@@ -17,7 +17,7 @@
  */
 package me.thehutch.fusion.api;
 
-import me.thehutch.fusion.api.component.ComponentSystem;
+import me.thehutch.fusion.api.component.IComponentSystem;
 import me.thehutch.fusion.api.event.IEventManager;
 import me.thehutch.fusion.api.filesystem.IFileSystem;
 import me.thehutch.fusion.api.plugin.IPluginManager;
@@ -70,11 +70,11 @@ public interface IEngine {
 	public IFileSystem getFileSystem();
 
 	/**
-	 * Gets the {@link ComponentSystem} used by the engine.
+	 * Gets the {@link IComponentSystem} used by the engine.
 	 *
 	 * @return The component system
 	 */
-	public ComponentSystem getComponentSystem();
+	public IComponentSystem getComponentSystem();
 
 	/**
 	 * Returns true if debug mode is enabled. Debug mode is more verbose and

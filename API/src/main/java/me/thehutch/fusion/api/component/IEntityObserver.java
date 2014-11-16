@@ -20,14 +20,39 @@ package me.thehutch.fusion.api.component;
 /**
  * @author thehutch
  */
-public interface EntityObserver {
-	public void added(Entity e);
+public interface IEntityObserver {
+	/**
+	 * Called when an entity is added to a manager.
+	 * <p>
+	 * @param e The entity added
+	 */
+	public void added(IEntity e);
 
-	public void deleted(Entity e);
+	/**
+	 * Called when an entity is deleted from a manager.
+	 * <p>
+	 * @param e The entity deleted
+	 */
+	public void deleted(IEntity e);
 
-	public void changed(Entity e);
+	/**
+	 * Called when an entity is changed in a manager.
+	 * <p>
+	 * @param e The entity changed
+	 */
+	public void changed(IEntity e);
 
-	public void enabled(Entity e);
+	/**
+	 * Called when an entity is enabled in a manager.
+	 * <p>
+	 * @param e The entity enabled
+	 */
+	public void enabled(IEntity e);
 
-	public void disabled(Entity e);
+	/**
+	 * Called when an entity is disabled in a manager.
+	 * <p>
+	 * @param e The entity disabled
+	 */
+	public void disabled(IEntity e);
 }

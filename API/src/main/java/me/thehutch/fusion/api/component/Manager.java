@@ -20,16 +20,39 @@ package me.thehutch.fusion.api.component;
 /**
  * @author thehutch
  */
-public abstract class Manager implements EntityObserver {
-	private ComponentSystem system;
+public abstract class Manager implements IEntityObserver {
+	private IComponentSystem mSystem;
 
-	protected abstract void initialise();
-
-	protected ComponentSystem getSystem() {
-		return system;
+	/**
+	 * Default constructor for {@link Manager}.
+	 */
+	public Manager() {
+		mSystem = null;
 	}
 
-	protected void setSystem(ComponentSystem system) {
-		this.system = system;
+	/**
+	 * Called when this manager is initialised.
+	 */
+	public abstract void initialise();
+
+	/**
+	 * Returns the {@link IComponentSystem} of this manager.
+	 * <p>
+	 * @return The component system
+	 */
+	public IComponentSystem getSystem() {
+		return mSystem;
+	}
+
+	/**
+	 * Sets the {@link IComponentSystem} of this manager.
+	 * <p>
+	 * @param system The component system
+	 */
+	public void setSystem(IComponentSystem system) {
+		if (mSystem != null) {
+			throw new IllegalStateException("Can not set manager component system more than once");
+		}
+		mSystem = system;
 	}
 }
