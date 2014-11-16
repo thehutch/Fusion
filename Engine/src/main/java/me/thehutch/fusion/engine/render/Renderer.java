@@ -85,11 +85,13 @@ public final class Renderer extends BatchEntityProcessor {
 		final RenderComponent render = new RenderComponent(getMaterial("ground.fmat"), getMesh("ground.obj"));
 		final TransformComponent transform = new TransformComponent();
 
+		// Create a temporary entity
 		final IEntity e = mSystem.createEntity();
+		// Add the render & transform components
 		e.addComponent(render);
 		e.addComponent(transform);
-
-		mSystem.addEntity(e);
+		// Add the entity to the system
+		e.addToSystem();
 	}
 
 	@Override

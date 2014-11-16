@@ -117,6 +117,30 @@ public final class Entity implements IEntity {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void addToSystem() {
+		mSystem.addEntity(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void deleteFromSystem() {
+		mSystem.deleteEntity(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void changedInSystem() {
+		mSystem.changeEntity(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public IComponent getComponent(ComponentType type) {
 		return mComponentManager.getComponent(this, type);
 	}
@@ -178,16 +202,4 @@ public final class Entity implements IEntity {
 		mComponentManager.removeComponent(this, type);
 		return this;
 	}
-
-//	private void addToSystem() {
-//		mSystem.addEntity(this);
-//	}
-//
-//	private void deleteFromSystem() {
-//		mSystem.deleteEntity(this);
-//	}
-//
-//	private void changedInSystem() {
-//		mSystem.changeEntity(this);
-//	}
 }

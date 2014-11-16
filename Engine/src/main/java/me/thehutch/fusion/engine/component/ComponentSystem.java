@@ -113,7 +113,7 @@ public final class ComponentSystem implements IComponentSystem {
 	 */
 	@Override
 	public void addEntity(IEntity e) {
-		this.mAdded.add(e);
+		mAdded.add(e);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public final class ComponentSystem implements IComponentSystem {
 	 */
 	@Override
 	public void deleteEntity(IEntity e) {
-		this.mDeleted.add(e);
+		mDeleted.add(e);
 	}
 
 	/**
@@ -129,7 +129,7 @@ public final class ComponentSystem implements IComponentSystem {
 	 */
 	@Override
 	public void changeEntity(IEntity e) {
-		this.mChanged.add(e);
+		mChanged.add(e);
 	}
 
 	/**
@@ -137,7 +137,7 @@ public final class ComponentSystem implements IComponentSystem {
 	 */
 	@Override
 	public void enable(IEntity e) {
-		this.mEnabled.add(e);
+		mEnabled.add(e);
 	}
 
 	/**
@@ -145,22 +145,22 @@ public final class ComponentSystem implements IComponentSystem {
 	 */
 	@Override
 	public void disable(IEntity e) {
-		this.mDisabled.add(e);
+		mDisabled.add(e);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IEntity getEntity(int entityId) {
-		return mEntityManager.getEntity(entityId);
+	public Entity getEntity(int entityId) {
+		return (Entity) mEntityManager.getEntity(entityId);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IEntity createEntity() {
+	public Entity createEntity() {
 		return mEntityManager.createEntityInstance();
 	}
 
@@ -177,8 +177,8 @@ public final class ComponentSystem implements IComponentSystem {
 	 */
 	@Override
 	public <T extends Manager> T addManager(T manager) {
-		this.mManagers.put(manager.getClass(), manager);
-		this.mManagersBag.add(manager);
+		mManagers.put(manager.getClass(), manager);
+		mManagersBag.add(manager);
 		manager.setSystem(this);
 		return manager;
 	}
@@ -188,8 +188,8 @@ public final class ComponentSystem implements IComponentSystem {
 	 */
 	@Override
 	public void removeManager(Manager manager) {
-		this.mManagers.remove(manager.getClass());
-		this.mManagersBag.remove(manager);
+		mManagers.remove(manager.getClass());
+		mManagersBag.remove(manager);
 	}
 
 	/**
@@ -224,8 +224,8 @@ public final class ComponentSystem implements IComponentSystem {
 		processor.setPassive(passive);
 		processor.setSystem(this);
 
-		this.mProcessors.put(processor.getClass(), processor);
-		this.mProcessorsBag.add(processor);
+		mProcessors.put(processor.getClass(), processor);
+		mProcessorsBag.add(processor);
 
 		return processor;
 	}
@@ -235,8 +235,8 @@ public final class ComponentSystem implements IComponentSystem {
 	 */
 	@Override
 	public void removeProcessor(EntityProcessor processor) {
-		this.mProcessors.remove(processor.getClass());
-		this.mProcessorsBag.remove(processor);
+		mProcessors.remove(processor.getClass());
+		mProcessorsBag.remove(processor);
 	}
 
 	/**
@@ -248,7 +248,7 @@ public final class ComponentSystem implements IComponentSystem {
 		check(mDisabled, (observer, e) -> observer.disabled(e));
 		check(mEnabled, (observer, e) -> observer.enabled(e));
 		check(mDeleted, (observer, e) -> observer.deleted(e));
-		this.mComponentManager.clean();
+		mComponentManager.clean();
 
 		// Process the processors
 		final ImmutableBag<EntityProcessor> processorBag = mProcessorsBag;

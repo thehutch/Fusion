@@ -69,6 +69,21 @@ public interface IEntity {
 	public void disable();
 
 	/**
+	 * Called to add this entity to the component system.
+	 */
+	public void addToSystem();
+
+	/**
+	 * Called to delete this entity from the {@link IComponentSystem}.
+	 */
+	public void deleteFromSystem();
+
+	/**
+	 * Called to signal that this entity has changed within the {@link IComponentSystem}.
+	 */
+	public void changedInSystem();
+
+	/**
 	 * Returns the {@link IComponent} specified by the given {@link ComponentType}.
 	 * <p>
 	 * @param type The type of component

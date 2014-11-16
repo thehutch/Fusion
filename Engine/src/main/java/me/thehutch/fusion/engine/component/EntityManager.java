@@ -56,7 +56,6 @@ public final class EntityManager extends Manager {
 	@Override
 	public void added(IEntity e) {
 		final int entityID = e.getId();
-
 		mEntities.set(entityID, e);
 		++mActive;
 		++mAdded;

@@ -38,8 +38,8 @@ public final class ComponentMapper<T extends IComponent> implements IComponentMa
 	 * @param manager The component manager
 	 */
 	private ComponentMapper(Class<T> type, ComponentManager manager) {
-		this.mComponents = manager.getComponentsByType(ComponentType.getTypeFor(type));
-		this.mClassType = type;
+		mComponents = manager.getComponentsByType(ComponentType.getTypeFor(type));
+		mClassType = type;
 	}
 
 	/**

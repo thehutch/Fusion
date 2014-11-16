@@ -39,9 +39,8 @@ public abstract class EntityProcessor implements IEntityObserver {
 	 * @param aspect The aspect for this processor
 	 */
 	public EntityProcessor(Aspect aspect) {
-		this.mIndex = ProcessorIndexManager.getIndexFor(getClass());
-		this.mAspect = aspect;
-
+		mIndex = ProcessorIndexManager.getIndexFor(getClass());
+		mAspect = aspect;
 		mSystem = null;
 	}
 
@@ -62,7 +61,7 @@ public abstract class EntityProcessor implements IEntityObserver {
 		if (processorBits.get(mIndex)) {
 			// Remove the entity from the processor
 			processorBits.clear(mIndex);
-			this.mActives.remove(e);
+			mActives.remove(e);
 			removed(e);
 		}
 	}
@@ -92,7 +91,7 @@ public abstract class EntityProcessor implements IEntityObserver {
 		if (processorBits.get(mIndex)) {
 			// Remove the entity from the processor
 			processorBits.clear(mIndex);
-			this.mActives.remove(e);
+			mActives.remove(e);
 			removed(e);
 		}
 	}
@@ -121,7 +120,7 @@ public abstract class EntityProcessor implements IEntityObserver {
 	 * @param passive True to set this {@link EntityProcessor} as mIsPassive
 	 */
 	public final void setPassive(boolean passive) {
-		this.mIsPassive = passive;
+		mIsPassive = passive;
 	}
 
 	/**
@@ -133,7 +132,7 @@ public abstract class EntityProcessor implements IEntityObserver {
 		if (mSystem != null) {
 			throw new IllegalStateException("Can not set processor system more than once");
 		}
-		this.mSystem = system;
+		mSystem = system;
 	}
 
 	/**
@@ -226,12 +225,12 @@ public abstract class EntityProcessor implements IEntityObserver {
 		if (interested && !contains) {
 			// Insert the entity into the processor
 			e.getProcessorBits().set(mIndex);
-			this.mActives.add(e);
+			mActives.add(e);
 			inserted(e);
 		} else if (!interested && contains) {
 			// Remove the entity from the processor
 			e.getProcessorBits().clear(mIndex);
-			this.mActives.remove(e);
+			mActives.remove(e);
 			removed(e);
 		}
 	}
