@@ -86,4 +86,11 @@ public interface IScheduler {
 	 * @param taskId Id of the task to be cancelled
 	 */
 	public void cancelTask(int taskId);
+
+	/**
+	 * Returns the number of milliseconds since the last tick.
+	 * <p>
+	 * @return The number of milliseconds since the last tick
+	 */
+	public float getDelta();
 }

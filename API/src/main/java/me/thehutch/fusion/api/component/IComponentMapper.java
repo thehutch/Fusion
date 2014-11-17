@@ -29,8 +29,6 @@ public interface IComponentMapper<T extends IComponent> {
 	 * @param e The entity to get the component from
 	 * <p>
 	 * @return The component
-	 * <p>
-	 * @see #getSafe(me.thehutch.fusion.api.component.IEntity)
 	 */
 	public T get(IEntity e);
 
@@ -44,8 +42,6 @@ public interface IComponentMapper<T extends IComponent> {
 	 * @param e The entity to get the component from
 	 * <p>
 	 * @return The component, null if not found
-	 * <p>
-	 * @see #get(me.thehutch.fusion.api.component.IEntity)
 	 */
 	public T getSafe(IEntity e);
 

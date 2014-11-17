@@ -24,34 +24,23 @@ public enum EventPriority {
 	/**
 	 * High priority event, called before all other priorities.
 	 */
-	HIGH(0),
+	HIGH,
 	/**
 	 * Medium priority event, called after {@link #HIGH} priority.
 	 */
-	MEDIUM(1),
+	MEDIUM,
 	/**
 	 * Low priority event, called after {@link #MEDIUM} priority.
 	 */
-	LOW(2);
+	LOW;
 	private static final EventPriority[] VALUES = EventPriority.values();
-	private final int priority;
 
 	/**
 	 * Default constructor for {@link EventPriority}.
 	 *
 	 * @param priority The level of priority
 	 */
-	private EventPriority(int priority) {
-		this.priority = priority;
-	}
-
-	/**
-	 * Gets the priority level of this priority. The lower the value, the more priority it has.
-	 *
-	 * @return The value of this priority
-	 */
-	public int getPriority() {
-		return priority;
+	private EventPriority() {
 	}
 
 	/**

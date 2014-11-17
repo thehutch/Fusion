@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import me.thehutch.fusion.api.scheduler.IScheduler;
@@ -33,19 +34,20 @@ import me.thehutch.fusion.api.scheduler.TaskPriority;
 /**
  * @author thehutch
  */
-public class Scheduler implements IScheduler {
+public final class Scheduler implements IScheduler {
 	private static final float OVERLOAD_FACTOR = 1.5f;
 	private static final long SECOND_AS_MILLISECOND = 1000L;
 	private static final AtomicInteger TASK_ID_COUNTER = new AtomicInteger(0);
-	private final Queue<Task> currentTasks;
-	private final Queue<Task> pendingTasks;
-	private final ExecutorService executor;
-	private final AtomicBoolean isOverloaded;
-	private final AtomicBoolean isActive;
-	private final long ticksPerSecond;
-	private final long timePerTick;
-	private long nextTick;
-	private long uptime;
+	private final Queue<Task> mCurrentTasks;
+	private final Queue<Task> mPendingTasks;
+	private final ExecutorService mExecutor;
+	private final AtomicBoolean mIsOverloaded;
+	private final AtomicBoolean mIsActive;
+	private final AtomicLong mDelta;
+	private final long mTicksPerSecond;
+	private final long mTimePerTick;
+	private long mNextTick;
+	private long mUptime;
 
 	/**
 	 * The default constructor for {@link Scheduler}.
@@ -53,17 +55,18 @@ public class Scheduler implements IScheduler {
 	 * @param ticksPerSecond The number of scheduler updates per second
 	 */
 	public Scheduler(long ticksPerSecond) {
-		this.currentTasks = new PriorityQueue<>();
-		this.pendingTasks = new ArrayDeque<>();
-		this.isOverloaded = new AtomicBoolean(false);
-		this.isActive = new AtomicBoolean(true);
-		this.ticksPerSecond = ticksPerSecond;
-		this.timePerTick = SECOND_AS_MILLISECOND / ticksPerSecond;
-		this.nextTick = timePerTick;
-		this.uptime = 0L;
+		mCurrentTasks = new PriorityQueue<>();
+		mPendingTasks = new ArrayDeque<>();
+		mDelta = new AtomicLong(0L);
+		mIsOverloaded = new AtomicBoolean(false);
+		mIsActive = new AtomicBoolean(true);
+		mTicksPerSecond = ticksPerSecond;
+		mTimePerTick = SECOND_AS_MILLISECOND / ticksPerSecond;
+		mNextTick = mTimePerTick;
+		mUptime = 0L;
 
 		final int availableCores = Runtime.getRuntime().availableProcessors();
-		this.executor = Executors.newFixedThreadPool(availableCores > 0 ? availableCores : 1);
+		mExecutor = Executors.newFixedThreadPool(availableCores > 0 ? availableCores : 1);
 	}
 
 	/**
@@ -80,33 +83,33 @@ public class Scheduler implements IScheduler {
 			// At the start of the tickm add all tasks which
 			// have been marked to be added to the loop to
 			// prevent any race condition or lock mechanism
-			this.currentTasks.addAll(pendingTasks);
-			this.pendingTasks.clear();
+			mCurrentTasks.addAll(mPendingTasks);
+			mPendingTasks.clear();
 
 			// Execute the tick of the scheduler and calculate
 			// the time the scheduler spent executing
-			if (!currentTasks.isEmpty()) {
+			if (!mCurrentTasks.isEmpty()) {
 				// Seperate all the tasks which need to be executed asynchronously
 				// from those which need to be executed synchronously
 				final Queue<Task> tasks = new ArrayDeque<>();
 				boolean hasExecuted;
 				do {
-					final Task task = currentTasks.peek();
+					final Task task = mCurrentTasks.peek();
 					final boolean isAlive = task.isAlive();
 
-					hasExecuted = task.getTime() <= uptime;
+					hasExecuted = task.getTime() <= mUptime;
 
 					if (hasExecuted && isAlive) {
 						if (task.isAsync()) {
-							executor.submit(task.getRunnable());
+							mExecutor.submit(task.getRunnable());
 						} else {
 							tasks.add(task);
 						}
-						currentTasks.remove();
+						mCurrentTasks.remove();
 					} else if (!isAlive) {
-						currentTasks.remove();
+						mCurrentTasks.remove();
 					}
-				} while (!currentTasks.isEmpty() && hasExecuted);
+				} while (!mCurrentTasks.isEmpty() && hasExecuted);
 
 				// Generate a stream on which all tasks which requested
 				// to be executed synchronously, executes with default order
@@ -119,11 +122,11 @@ public class Scheduler implements IScheduler {
 					}
 
 					// Update the task tick time
-					task.setTime(uptime + task.getPeriod() + (isOverloaded.get() ? convertToTick(task.getPriority().getMaxDeferred(), TimeUnit.MILLISECONDS) : 0L));
+					task.setTime(mUptime + task.getPeriod() + (mIsOverloaded.get() ? convertToTick(task.getPriority().getMaxDeferred(), TimeUnit.MILLISECONDS) : 0L));
 
 					// If the task is repeating then add it back to the scheduler
 					if (task.isRepeating() && task.isAlive()) {
-						pendingTasks.add(task);
+						mPendingTasks.add(task);
 					}
 				};
 				tasks.forEach(consumer);
@@ -131,14 +134,17 @@ public class Scheduler implements IScheduler {
 
 			timeTick = System.currentTimeMillis() - timeTick;
 
+			// Update the delta
+			mDelta.set(timeTick);
+
 			// Advance the tick counter to one and check if
 			// the scheduler has been advanced a frame
-			if (++uptime == nextTick) {
+			if (++mUptime == mNextTick) {
 				timeTick = System.currentTimeMillis() - timeFrame;
 
-				this.nextTick += ticksPerSecond;
+				mNextTick += mTicksPerSecond;
 
-				this.isOverloaded.set(timeTick > SECOND_AS_MILLISECOND * OVERLOAD_FACTOR);
+				mIsOverloaded.set(timeTick > SECOND_AS_MILLISECOND * OVERLOAD_FACTOR);
 
 				if (timeTick < SECOND_AS_MILLISECOND) {
 					try {
@@ -149,29 +155,29 @@ public class Scheduler implements IScheduler {
 					}
 				}
 				timeFrame = System.currentTimeMillis();
-			} else if (timeTick < timePerTick) {
+			} else if (timeTick < mTimePerTick) {
 				try {
-					Thread.sleep(timePerTick - timeTick);
+					Thread.sleep(mTimePerTick - timeTick);
 				} catch (InterruptedException ex) {
 					throw new IllegalStateException("Exception trying to sleep current thread", ex);
 				}
 			}
-		} while (isActive.get());
+		} while (mIsActive.get());
 
 		// Remove all reference to old tasks to ensure GC collects
 		// thems when the service has been stopped
-		this.currentTasks.clear();
-		this.pendingTasks.clear();
+		mCurrentTasks.clear();
+		mPendingTasks.clear();
 
 		// Shutdown and wait for the executor to complete async tasks
-		this.executor.shutdown();
+		mExecutor.shutdown();
 	}
 
 	/**
 	 * Shuts down the scheduler.
 	 */
 	public void shutdown() {
-		this.isActive.set(false);
+		mIsActive.set(false);
 	}
 
 	/**
@@ -220,10 +226,15 @@ public class Scheduler implements IScheduler {
 	@Override
 	public void cancelTask(int taskId) {
 		final Predicate<Task> predicate = task -> (task.getId() == taskId);
-		this.currentTasks.stream()
+		mCurrentTasks.stream()
 			.filter(predicate)
 			.forEach(Task::cancel);
-		this.pendingTasks.removeIf(predicate);
+		mPendingTasks.removeIf(predicate);
+	}
+
+	@Override
+	public float getDelta() {
+		return mDelta.get() / 1000.0f;
 	}
 
 	/**
@@ -239,8 +250,8 @@ public class Scheduler implements IScheduler {
 	 */
 	private int addTask(Runnable executor, TaskPriority priority, long delay, long period, boolean isAsync) {
 		final int taskId = TASK_ID_COUNTER.getAndIncrement();
-		final Task task = new Task(taskId, executor, priority, isAsync, uptime, delay, period);
-		this.pendingTasks.add(task);
+		final Task task = new Task(taskId, executor, priority, isAsync, mUptime, delay, period);
+		mPendingTasks.add(task);
 		return taskId;
 	}
 
@@ -253,6 +264,6 @@ public class Scheduler implements IScheduler {
 	 * @return The tick representation of the time
 	 */
 	private long convertToTick(long time, TimeUnit timeUnit) {
-		return timeUnit.toMillis(time) / ticksPerSecond;
+		return timeUnit.toMillis(time) / mTicksPerSecond;
 	}
 }

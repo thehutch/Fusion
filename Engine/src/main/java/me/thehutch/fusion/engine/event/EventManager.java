@@ -109,52 +109,9 @@ public class EventManager implements IEventManager {
 		if (executors == null) {
 			throw new IllegalArgumentException("No events to unregister of type " + eventClass.getName());
 		}
-		final boolean isRemoved = executors.removeIf(executor -> executor.function.equals(handler));
+		final boolean isRemoved = executors.removeIf(executor -> executor.mFunction.equals(handler));
 		if (!isRemoved) {
 			throw new IllegalStateException("Failed to unregister event " + eventClass.getName());
-		}
-	}
-
-	/**
-	 * A class wrapper to hold the function handler for the event
-	 *
-	 * @param <T> The type of event
-	 */
-	private class EventExecutor<T extends Event> implements Comparable<EventExecutor> {
-		private final Consumer<T> function;
-		private final EventPriority priority;
-		private final boolean ignoreCancelled;
-
-		/**
-		 * The default constructor for {@link EventExecutor}.
-		 *
-		 * @param function        The event handler function
-		 * @param priority        The priority of the event
-		 * @param ignoreCancelled True if this event executor ignores cancelled events
-		 */
-		private EventExecutor(Consumer<T> function, EventPriority priority, boolean ignoreCancelled) {
-			this.function = function;
-			this.priority = priority;
-			this.ignoreCancelled = ignoreCancelled;
-		}
-
-		/**
-		 * Invokes the event handler function with the given event.
-		 *
-		 * @param event The event to handle
-		 */
-		public void execute(T event) {
-			if (!event.isCancelled() || ignoreCancelled) {
-				this.function.accept(event);
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public int compareTo(EventExecutor other) {
-			return priority.getPriority() - other.priority.getPriority();
 		}
 	}
 }
