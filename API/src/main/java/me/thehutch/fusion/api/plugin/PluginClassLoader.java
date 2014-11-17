@@ -29,17 +29,17 @@ import me.thehutch.fusion.api.plugin.exceptions.InvalidPluginException;
  * @author thehutch
  */
 public final class PluginClassLoader extends URLClassLoader {
-	private final PluginDescriptionFile description;
-	private final IEngine engine;
-	private final Path dataFolder;
-	private final Plugin plugin;
+	private final PluginDescriptionFile mDesc;
+	private final IEngine mEngine;
+	private final Path mDataFolder;
+	private final Plugin mPlugin;
 
 	public PluginClassLoader(IEngine engine, ClassLoader parent, PluginDescriptionFile description, Path dataFolder, Path file) throws MalformedURLException, InvalidPluginException {
 		super(new URL[] { file.toUri().toURL() }, parent);
 
-		this.engine = engine;
-		this.description = description;
-		this.dataFolder = dataFolder;
+		mEngine = engine;
+		mDesc = description;
+		mDataFolder = dataFolder;
 
 		final Class<?> mainClass;
 		try {
@@ -55,7 +55,7 @@ public final class PluginClassLoader extends URLClassLoader {
 			throw new InvalidPluginException("Main class '" + description.getMain() + "' does not extend Plugin", ex);
 		}
 		try {
-			this.plugin = pluginClass.newInstance();
+			mPlugin = pluginClass.newInstance();
 		} catch (InstantiationException ex) {
 			throw new InvalidPluginException("Unable to instantiate plugin: " + description.getMain(), ex);
 		} catch (IllegalAccessException ex) {
@@ -64,22 +64,22 @@ public final class PluginClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Returns the loaded plugin.
+	 * Returns the loaded mPlugin.
 	 *
-	 * @return The loaded plugin
+	 * @return The loaded mPlugin
 	 */
 	public Plugin getPlugin() {
-		return plugin;
+		return mPlugin;
 	}
 
 	void initialise(Plugin plugin) {
 		Objects.requireNonNull(plugin, "Initialising plugin can not be null.");
 
-		// Make sure the plugin was loaded by this class loader
+		// Make sure the mPlugin was loaded by this class loader
 		if (plugin.getClass().getClassLoader() != this) {
 			throw new IllegalArgumentException("Can not initialise plugin outside of the class loader.");
 		}
-		// Initialise the plugin
-		plugin.initialise(engine, description, dataFolder, this);
+		// Initialise the mPlugin
+		plugin.initialise(mEngine, mDesc, mDataFolder, this);
 	}
 }

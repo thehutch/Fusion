@@ -21,23 +21,23 @@ package me.thehutch.fusion.api.render;
  * @author thehutch
  */
 public class Resolution {
-	private final int width;
-	private final int height;
+	private final int mWidth;
+	private final int mHeight;
 
 	public Resolution(int width, int height) {
-		this.width = width;
-		this.height = height;
+		mWidth = width;
+		mHeight = height;
 	}
 
 	public int getWidth() {
-		return width;
+		return mWidth;
 	}
 
 	public int getHeight() {
-		return height;
+		return mHeight;
 	}
 
 	public float getAspectRatio() {
-		return (float) width / height;
+		return (float) mWidth / mHeight;
 	}
 }

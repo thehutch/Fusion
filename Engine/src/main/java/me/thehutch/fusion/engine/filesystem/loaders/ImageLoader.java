@@ -35,7 +35,6 @@ import org.lwjgl.BufferUtils;
  * @author thehutch
  */
 public class ImageLoader implements IResourceManager<ImageData> {
-
 	public ImageLoader() {
 	}
 

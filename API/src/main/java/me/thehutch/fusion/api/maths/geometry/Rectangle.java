@@ -23,18 +23,18 @@ import me.thehutch.fusion.api.maths.Vector2;
  * @author thehutch
  */
 public final class Rectangle {
-	private final int x;
-	private final int y;
-	private final int width;
-	private final int height;
+	private final int mX;
+	private final int mY;
+	private final int mWidth;
+	private final int mHeight;
 
 	/**
 	 * The default constructor for {@link Rectangle}.
 	 * <p>
 	 * The rectangle's position is at (0, 0).
 	 *
-	 * @param width  The width of the rectangle
-	 * @param height The height of the rectangle
+	 * @param width  The mWidth of the rectangle
+	 * @param height The mHeight of the rectangle
 	 */
 	public Rectangle(int width, int height) {
 		this(0, 0, width, height);
@@ -43,8 +43,8 @@ public final class Rectangle {
 	/**
 	 * Constructor for {@link Rectangle}.
 	 *
-	 * @param position The position of the rectangle (x, y)
-	 * @param size     The size of the rectangle (width, height)
+	 * @param position The position of the rectangle (mX, mY)
+	 * @param size     The size of the rectangle (mWidth, mHeight)
 	 */
 	public Rectangle(Vector2 position, Vector2 size) {
 		this(position.getFloorX(), position.getFloorY(), size.getFloorX(), size.getFloorY());
@@ -53,83 +53,83 @@ public final class Rectangle {
 	/**
 	 * Constructor for {@link Rectangle}.
 	 *
-	 * @param x      The x-coordinate of the rectangle
-	 * @param y      The y-coordinate of the rectangle
-	 * @param width  The width of the rectangle
-	 * @param height The height of the rectangle
+	 * @param x      The mX-coordinate of the rectangle
+	 * @param y      The mY-coordinate of the rectangle
+	 * @param width  The mWidth of the rectangle
+	 * @param height The mHeight of the rectangle
 	 */
 	public Rectangle(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+		mX = x;
+		mY = y;
+		mWidth = width;
+		mHeight = height;
 	}
 
 	/**
-	 * @return The x-coordinate of the rectangle
+	 * @return The mX-coordinate of the rectangle
 	 */
 	public int getX() {
-		return x;
+		return mX;
 	}
 
 	/**
-	 * @return The x-coordinate of the rectangle
+	 * @return The mX-coordinate of the rectangle
 	 */
 	public int getY() {
-		return y;
+		return mY;
 	}
 
 	/**
-	 * @return The width of the rectangle
+	 * @return The mWidth of the rectangle
 	 */
 	public int getWidth() {
-		return width;
+		return mWidth;
 	}
 
 	/**
-	 * @return The height of the rectangle
+	 * @return The mHeight of the rectangle
 	 */
 	public int getHeight() {
-		return height;
+		return mHeight;
 	}
 
 	/**
-	 * A new {@link Vector2} containing the x, y coordinates of rectangle.
+	 * A new {@link Vector2} containing the mX, mY coordinates of rectangle.
 	 *
 	 * @return The position of the rectangle
 	 */
 	public Vector2 getPosition() {
-		return new Vector2(x, y);
+		return new Vector2(mX, mY);
 	}
 
 	/**
-	 * A new {@link Vector2} containing the width and height of rectangle.
+	 * A new {@link Vector2} containing the mWidth and mHeight of rectangle.
 	 *
 	 * @return The size of the rectangle
 	 */
 	public Vector2 getSize() {
-		return new Vector2(width, height);
+		return new Vector2(mWidth, mHeight);
 	}
 
 	/**
 	 * Returns the area of the rectangle.
 	 * <p>
-	 * {@code area = width * height}
+	 * {@code area = mWidth * mHeight}
 	 *
 	 * @return The area of the rectangle
 	 */
 	public int getArea() {
-		return width * height;
+		return mWidth * mHeight;
 	}
 
 	/**
 	 * Returns the aspect ratio of the rectangle.
 	 * <p>
-	 * {@code aspect ratio = width / height}
+	 * {@code aspect ratio = mWidth / mHeight}
 	 *
 	 * @return The aspect ratio of the rectangle
 	 */
 	public float getAspectRatio() {
-		return (float) width / height;
+		return (float) mWidth / mHeight;
 	}
 }

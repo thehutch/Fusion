@@ -24,12 +24,12 @@ import me.thehutch.fusion.api.IEngine;
  * @author thehutch
  */
 public abstract class Plugin {
-	private ClassLoader classLoader;
-	private PluginDescriptionFile description;
-	private Path dataFolder;
-	private Path configFile;
-	private IEngine engine;
-	private boolean enabled;
+	private ClassLoader mClassLoader;
+	private PluginDescriptionFile mDesc;
+	private Path mDataFolder;
+	private Path mConfigFile;
+	private IEngine mEngine;
+	private boolean mEnabled;
 
 	public Plugin() {
 		final ClassLoader loader = getClass().getClassLoader();
@@ -48,7 +48,7 @@ public abstract class Plugin {
 	}
 
 	/**
-	 * Called when the plugin is enabled.
+	 * Called when the plugin is mEnabled.
 	 */
 	protected abstract void onEnable();
 
@@ -63,16 +63,16 @@ public abstract class Plugin {
 	 * @return The name of the plugin
 	 */
 	public final String getName() {
-		return description.getName();
+		return mDesc.getName();
 	}
 
 	/**
-	 * Returns the description file of the plugin (plugin.yml).
+	 * Returns the mDesc file of the plugin (plugin.yml).
 	 *
-	 * @return The description file
+	 * @return The mDesc file
 	 */
 	public final PluginDescriptionFile getDescription() {
-		return description;
+		return mDesc;
 	}
 
 	/**
@@ -81,7 +81,7 @@ public abstract class Plugin {
 	 * @return The classloader
 	 */
 	public final ClassLoader getClassLoader() {
-		return classLoader;
+		return mClassLoader;
 	}
 
 	/**
@@ -91,7 +91,7 @@ public abstract class Plugin {
 	 * @return The path to the data folder
 	 */
 	public final Path getDataFolder() {
-		return dataFolder;
+		return mDataFolder;
 	}
 
 	/**
@@ -102,25 +102,25 @@ public abstract class Plugin {
 	 * @return The path to the configuration file
 	 */
 	public final Path getConfigFile() {
-		return configFile;
+		return mConfigFile;
 	}
 
 	/**
-	 * Returns the engine which loaded this plugin.
+	 * Returns the mEngine which loaded this plugin.
 	 *
-	 * @return The engine
+	 * @return The mEngine
 	 */
 	public final IEngine getEngine() {
-		return engine;
+		return mEngine;
 	}
 
 	/**
-	 * Returns the current enabled state of this plugin.
+	 * Returns the current mEnabled state of this plugin.
 	 *
-	 * @return True if the plugin is enabled
+	 * @return True if the plugin is mEnabled
 	 */
 	public final boolean isEnabled() {
-		return enabled;
+		return mEnabled;
 	}
 
 	@Override
@@ -137,14 +137,14 @@ public abstract class Plugin {
 	}
 
 	/**
-	 * Sets the plugin's enabled state. This should only be called
+	 * Sets the plugin's mEnabled state. This should only be called
 	 * by the plugin loader and not by the plugin itself.
 	 *
 	 * @param enabled True to enable the plugin
 	 */
 	public final void setEnabled(boolean enabled) {
 		if (enabled != isEnabled()) {
-			this.enabled = enabled;
+			mEnabled = enabled;
 			if (enabled) {
 				onEnable();
 			} else {
@@ -154,10 +154,10 @@ public abstract class Plugin {
 	}
 
 	final void initialise(IEngine engine, PluginDescriptionFile description, Path dataFolder, ClassLoader classLoader) {
-		this.engine = engine;
-		this.description = description;
-		this.dataFolder = dataFolder;
-		this.classLoader = classLoader;
-		this.configFile = dataFolder.resolve("config.yml");
+		mEngine = engine;
+		mDesc = description;
+		mDataFolder = dataFolder;
+		mClassLoader = classLoader;
+		mConfigFile = dataFolder.resolve("config.yml");
 	}
 }

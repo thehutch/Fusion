@@ -38,9 +38,9 @@ import org.lwjgl.opengl.Display;
  * @author thehutch
  */
 public final class InputManager implements IInputManager {
-	private final TMap<Key, Set<Runnable>> keyBindings = new THashMap<>();
-	private final EventManager eventManager;
-	private final Engine engine;
+	private final TMap<Key, Set<Runnable>> mKeyBindings = new THashMap<>();
+	private final EventManager mEventManager;
+	private final Engine mEngine;
 
 	/**
 	 * Default constructor for {@link InputManager}.
@@ -48,8 +48,8 @@ public final class InputManager implements IInputManager {
 	 * @param engine The game engine
 	 */
 	public InputManager(Engine engine) {
-		this.engine = engine;
-		this.eventManager = engine.getEventManager();
+		mEngine = engine;
+		mEventManager = engine.getEventManager();
 		try {
 			// Create the mouse and keyboard
 			Keyboard.create();
@@ -67,11 +67,11 @@ public final class InputManager implements IInputManager {
 	public void execute() {
 		// Check for display close
 		if (Display.isCloseRequested()) {
-			this.engine.stop("Displayed Closed");
+			mEngine.stop("Displayed Closed");
 		}
 
 		// Get the keybindings
-		final TMap<Key, Set<Runnable>> bindings = keyBindings;
+		final TMap<Key, Set<Runnable>> bindings = mKeyBindings;
 
 		// Check and execute each key binding
 		bindings.keySet().stream().filter(key -> isKeyDown(key)).map(key -> bindings.get(key)).forEach(executors -> {
@@ -81,7 +81,7 @@ public final class InputManager implements IInputManager {
 		});
 
 		// Get the event manager
-		final EventManager evManager = eventManager;
+		final EventManager evManager = mEventManager;
 
 		// Check for keyboard events
 		while (Keyboard.next()) {
@@ -116,7 +116,7 @@ public final class InputManager implements IInputManager {
 
 		// Check for display close
 		if (Display.isCloseRequested()) {
-			this.engine.stop("Displayed Closed");
+			mEngine.stop("Displayed Closed");
 		}
 
 		//TODO: Possibilty of other input devices (Joystick, Touchscreen etc...)
@@ -194,7 +194,7 @@ public final class InputManager implements IInputManager {
 		if (keys.length == 0) {
 			throw new IllegalArgumentException("Can not register key binding with no keys bound.");
 		}
-		final TMap<Key, Set<Runnable>> bindings = keyBindings;
+		final TMap<Key, Set<Runnable>> bindings = mKeyBindings;
 		for (int i = 0; i < keys.length; ++i) {
 			Set<Runnable> functions = bindings.get(keys[i]);
 			if (functions == null) {

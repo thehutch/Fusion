@@ -26,46 +26,46 @@ public final class Vector2 {
 	public static final Vector2 UNIT_X = new Vector2(1.0f, 0.0f);
 	public static final Vector2 UNIT_Y = new Vector2(0.0f, 1.0f);
 
-	private final float x;
-	private final float y;
+	private final float mX;
+	private final float mY;
 
 	/**
 	 * Default constructor for {@link Vector2}.
 	 * <p>
-	 * @param x The x-component
-	 * @param y The y-component
+	 * @param x The mX-component
+	 * @param y The mY-component
 	 */
 	public Vector2(float x, float y) {
-		this.x = x;
-		this.y = y;
+		mX = x;
+		mY = y;
 	}
 
 	/**
-	 * @return The x-component
+	 * @return The mX-component
 	 */
 	public float getX() {
-		return x;
+		return mX;
 	}
 
 	/**
-	 * @return The y-component
+	 * @return The mY-component
 	 */
 	public float getY() {
-		return y;
+		return mY;
 	}
 
 	/**
-	 * @return The floored x-component
+	 * @return The floored mX-component
 	 */
 	public int getFloorX() {
-		return FastMaths.floor(x);
+		return FastMaths.floor(mX);
 	}
 
 	/**
-	 * @return The floored y-component
+	 * @return The floored mY-component
 	 */
 	public int getFloorY() {
-		return FastMaths.floor(y);
+		return FastMaths.floor(mY);
 	}
 
 	/**
@@ -74,7 +74,7 @@ public final class Vector2 {
 	 * @return The length
 	 */
 	public float length() {
-		final float lenSq = x * x + y * y;
+		final float lenSq = mX * mX + mY * mY;
 		return FastMaths.fastSqrt(lenSq);
 	}
 
@@ -84,7 +84,7 @@ public final class Vector2 {
 	 * @return The length squared
 	 */
 	public float lengthSquared() {
-		return x * x + y * y;
+		return mX * mX + mY * mY;
 	}
 
 	/**
@@ -95,8 +95,8 @@ public final class Vector2 {
 	 * @return The distance between this vector and another
 	 */
 	public float distance(Vector2 vec) {
-		final float diffX = x - vec.x;
-		final float diffY = y - vec.y;
+		final float diffX = mX - vec.mX;
+		final float diffY = mY - vec.mY;
 		return FastMaths.fastSqrt((diffX * diffX) + (diffY * diffY));
 	}
 
@@ -108,8 +108,8 @@ public final class Vector2 {
 	 * @return The distance squared between this vector and another
 	 */
 	public float distanceSquared(Vector2 vec) {
-		final float diffX = x - vec.x;
-		final float diffY = y - vec.y;
+		final float diffX = mX - vec.mX;
+		final float diffY = mY - vec.mY;
 		return (diffX * diffX) + (diffY * diffY);
 	}
 
@@ -121,7 +121,7 @@ public final class Vector2 {
 	 * @return The dot product of the two vectors
 	 */
 	public float dot(Vector2 vec) {
-		return (x * vec.x) + (y * vec.y);
+		return (mX * vec.mX) + (mY * vec.mY);
 	}
 
 	/**
@@ -130,12 +130,12 @@ public final class Vector2 {
 	 * @return A new normalised {@link Vector2}
 	 */
 	public Vector2 normalise() {
-		final float lenSq = x * x + y * y;
+		final float lenSq = mX * mX + mY * mY;
 		if (lenSq == 1.0f || lenSq == 0.0f) {
 			return this;
 		}
 		final float invLenSq = 1.0f / FastMaths.fastSqrt(lenSq);
-		return new Vector2(x * invLenSq, y * invLenSq);
+		return new Vector2(mX * invLenSq, mY * invLenSq);
 	}
 
 	/**
@@ -144,54 +144,54 @@ public final class Vector2 {
 	 * @return A new negated {@link Vector2}
 	 */
 	public Vector2 negate() {
-		return new Vector2(-x, -y);
+		return new Vector2(-mX, -mY);
 	}
 
 	public Vector2 add(float v) {
-		return new Vector2(x + v, y + v);
+		return new Vector2(mX + v, mY + v);
 	}
 
 	public Vector2 add(float vx, float vy) {
-		return new Vector2(x + vx, y + vy);
+		return new Vector2(mX + vx, mY + vy);
 	}
 
 	public Vector2 add(Vector2 vec) {
-		return new Vector2(x + vec.x, y + vec.y);
+		return new Vector2(mX + vec.mX, mY + vec.mY);
 	}
 
 	public Vector2 sub(float v) {
-		return new Vector2(x - v, y - v);
+		return new Vector2(mX - v, mY - v);
 	}
 
 	public Vector2 sub(float vx, float vy) {
-		return new Vector2(x - vx, y - vy);
+		return new Vector2(mX - vx, mY - vy);
 	}
 
 	public Vector2 sub(Vector2 vec) {
-		return new Vector2(x - vec.x, y - vec.y);
+		return new Vector2(mX - vec.mX, mY - vec.mY);
 	}
 
 	public Vector2 mul(float v) {
-		return new Vector2(x * v, y * v);
+		return new Vector2(mX * v, mY * v);
 	}
 
 	public Vector2 mul(float vx, float vy) {
-		return new Vector2(x * vx, y * vy);
+		return new Vector2(mX * vx, mY * vy);
 	}
 
 	public Vector2 mul(Vector2 vec) {
-		return new Vector2(x * vec.x, y * vec.y);
+		return new Vector2(mX * vec.mX, mY * vec.mY);
 	}
 
 	public Vector2 div(float v) {
-		return new Vector2(x / v, y / v);
+		return new Vector2(mX / v, mY / v);
 	}
 
 	public Vector2 div(float vx, float vy) {
-		return new Vector2(x / vx, y / vy);
+		return new Vector2(mX / vx, mY / vy);
 	}
 
 	public Vector2 div(Vector2 vec) {
-		return new Vector2(x / vec.x, y / vec.y);
+		return new Vector2(mX / vec.mX, mY / vec.mY);
 	}
 }

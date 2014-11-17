@@ -25,60 +25,60 @@ import me.thehutch.fusion.api.event.Event;
  * @author thehutch
  */
 public final class MouseMotionEvent extends Event {
-	private final int dx;
-	private final int dy;
-	private final int x;
-	private final int y;
+	private final int mDX;
+	private final int mDY;
+	private final int mX;
+	private final int mY;
 
 	/**
 	 * The default constructor for {@link MouseMotionEvent}.
 	 *
-	 * @param dx The relative motion of the mouse in the x-axis
-	 * @param dy The relative motion of the mouse in the y-axis
-	 * @param x  The x position of the mouse
-	 * @param y  The y position of the mouse
+	 * @param dx The relative motion of the mouse in the mX-axis
+	 * @param dy The relative motion of the mouse in the mY-axis
+	 * @param x  The mX position of the mouse
+	 * @param y  The mY position of the mouse
 	 */
 	public MouseMotionEvent(int dx, int dy, int x, int y) {
 		super(true);
-		this.dx = dx;
-		this.dy = dy;
-		this.x = x;
-		this.y = y;
+		mDX = dx;
+		mDY = dy;
+		mX = x;
+		mY = y;
 	}
 
 	/**
-	 * The new x-coordinate of the mouse.
+	 * The new mX-coordinate of the mouse.
 	 *
-	 * @return The x-coordinate of the mouse
+	 * @return The mX-coordinate of the mouse
 	 */
 	public int getX() {
-		return x;
+		return mX;
 	}
 
 	/**
-	 * The new y-coordinate of the mouse.
+	 * The new mY-coordinate of the mouse.
 	 *
-	 * @return The y-coordinate of the mouse
+	 * @return The mY-coordinate of the mouse
 	 */
 	public int getY() {
-		return y;
+		return mY;
 	}
 
 	/**
-	 * The relative motion of the mouse in the x-axis.
+	 * The relative motion of the mouse in the mX-axis.
 	 *
-	 * @return The amount the mouse moved in the x-axis
+	 * @return The amount the mouse moved in the mX-axis
 	 */
 	public int getDX() {
-		return dx;
+		return mDX;
 	}
 
 	/**
-	 * The relative motion of the mouse in the y-axis.
+	 * The relative motion of the mouse in the mY-axis.
 	 *
-	 * @return The amount the mouse moved in the y-axis
+	 * @return The amount the mouse moved in the mY-axis
 	 */
 	public int getDY() {
-		return dy;
+		return mDY;
 	}
 }

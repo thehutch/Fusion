@@ -25,50 +25,50 @@ import me.thehutch.fusion.api.maths.Vector3;
  * @author thehutch
  */
 public final class Camera {
-	private final Matrix4 projection;
-	private Matrix4 viewMatrix;
-	private Quaternion rotation;
-	private Vector3 position;
-	private boolean dirty;
+	private final Matrix4 mProjection;
+	private Matrix4 mViewMatrix;
+	private Quaternion mRotation;
+	private Vector3 mPosition;
+	private boolean mDirty;
 
 	private Camera(Matrix4 projection) {
-		this.projection = projection;
-		this.viewMatrix = Matrix4.IDENTITY;
-		this.rotation = Quaternion.IDENTITY;
-		this.position = Vector3.ZERO;
-		this.dirty = true;
+		mProjection = projection;
+		mViewMatrix = Matrix4.IDENTITY;
+		mRotation = Quaternion.IDENTITY;
+		mPosition = Vector3.ZERO;
+		mDirty = true;
 	}
 
 	public Matrix4 getProjectionMatrix() {
-		return projection;
+		return mProjection;
 	}
 
 	public Matrix4 getViewMatrix() {
-		if (dirty) {
-			final Matrix4 rotationMatrix = Matrix4.newRotation(rotation.invert());
-			final Matrix4 positionMatrix = Matrix4.newTranslation(position.negate());
-			this.viewMatrix = rotationMatrix.mul(positionMatrix);
-			this.dirty = false;
+		if (mDirty) {
+			final Matrix4 rotationMatrix = Matrix4.newRotation(mRotation.invert());
+			final Matrix4 positionMatrix = Matrix4.newTranslation(mPosition.negate());
+			mViewMatrix = rotationMatrix.mul(positionMatrix);
+			mDirty = false;
 		}
-		return viewMatrix;
+		return mViewMatrix;
 	}
 
 	public Vector3 getPosition() {
-		return position;
+		return mPosition;
 	}
 
 	public void setPosition(Vector3 position) {
-		this.position = position;
-		this.dirty = true;
+		mPosition = position;
+		mDirty = true;
 	}
 
 	public Quaternion getRotation() {
-		return rotation;
+		return mRotation;
 	}
 
 	public void setRotation(Quaternion rotation) {
-		this.rotation = rotation;
-		this.dirty = true;
+		mRotation = rotation;
+		mDirty = true;
 	}
 
 	public void moveX(float dx) {
@@ -76,8 +76,8 @@ public final class Camera {
 	}
 
 	public void moveLocalX(float dx) {
-		this.position = getPosition().add(getRight().mul(dx));
-		this.dirty = true;
+		mPosition = getPosition().add(getRight().mul(dx));
+		mDirty = true;
 	}
 
 	public void moveY(float dy) {
@@ -85,8 +85,8 @@ public final class Camera {
 	}
 
 	public void moveLocalY(float dy) {
-		this.position = getPosition().add(getUp().mul(dy));
-		this.dirty = true;
+		mPosition = getPosition().add(getUp().mul(dy));
+		mDirty = true;
 	}
 
 	public void moveZ(float dz) {
@@ -94,13 +94,13 @@ public final class Camera {
 	}
 
 	public void moveLocalZ(float dz) {
-		this.position = getPosition().add(getForward().mul(dz));
-		this.dirty = true;
+		mPosition = getPosition().add(getForward().mul(dz));
+		mDirty = true;
 	}
 
 	public void move(float dx, float dy, float dz) {
-		this.position = getPosition().add(dx, dy, dz);
-		this.dirty = true;
+		mPosition = getPosition().add(dx, dy, dz);
+		mDirty = true;
 	}
 
 	public void rotateX(float angle) {
@@ -128,20 +128,20 @@ public final class Camera {
 	}
 
 	public void rotate(Quaternion rotation) {
-		this.rotation = rotation.normalise().mul(getRotation());
-		this.dirty = true;
+		mRotation = rotation.normalise().mul(getRotation());
+		mDirty = true;
 	}
 
 	public Vector3 getRight() {
-		return Vector3.UNIT_X.rotate(rotation);
+		return Vector3.UNIT_X.rotate(mRotation);
 	}
 
 	public Vector3 getUp() {
-		return Vector3.UNIT_Y.rotate(rotation);
+		return Vector3.UNIT_Y.rotate(mRotation);
 	}
 
 	public Vector3 getForward() {
-		return Vector3.UNIT_Z.negate().rotate(rotation);
+		return Vector3.UNIT_Z.negate().rotate(mRotation);
 	}
 
 	public static Camera createPerspective(float fov, float aspectRatio, float near, float far) {

@@ -20,65 +20,65 @@ package me.thehutch.fusion.api.input.mouse;
 import me.thehutch.fusion.api.event.Event;
 
 /**
- * An event to represent when a mouse button is clicked or released.
+ * An event to represent when a mouse mButton is clicked or released.
  *
  * @author thehutch
  */
 public final class MouseButtonEvent extends Event {
-	private final boolean state;
-	private final int button;
-	private final int x;
-	private final int y;
+	private final boolean mState;
+	private final int mButton;
+	private final int mX;
+	private final int mY;
 
 	/**
 	 * The default constructor for {@link MouseButtonEvent}.
 	 *
-	 * @param button The button of the event
-	 * @param x      The x position of the mouse
-	 * @param y      The y position of the mouse
-	 * @param state  The new state of the button
+	 * @param button The mButton of the event
+	 * @param x      The mx position of the mouse
+	 * @param y      The mY position of the mouse
+	 * @param state  The new state of the mButton
 	 */
 	public MouseButtonEvent(int button, int x, int y, boolean state) {
 		super(true);
-		this.button = button;
-		this.state = state;
-		this.x = x;
-		this.y = y;
+		mButton = button;
+		mState = state;
+		mX = x;
+		mY = y;
 	}
 
 	/**
-	 * The x-coordinate of the mouse.
+	 * The mx-coordinate of the mouse.
 	 *
-	 * @return The x-coordinate
+	 * @return The mx-coordinate
 	 */
 	public int getX() {
-		return x;
+		return mX;
 	}
 
 	/**
-	 * The y-coordinate of the mouse.
+	 * The mY-coordinate of the mouse.
 	 *
-	 * @return The y-coordinate
+	 * @return The mY-coordinate
 	 */
 	public int getY() {
-		return y;
+		return mY;
 	}
 
 	/**
-	 * The button used in this event.
+	 * The mButton used in this event.
 	 *
-	 * @return The event mouse button
+	 * @return The event mouse mButton
 	 */
 	public int getButton() {
-		return button;
+		return mButton;
 	}
 
 	/**
-	 * The state of the mouse button.
+	 * The state of the mouse mButton.
 	 *
-	 * @return True if the mouse button is down
+	 * @return True if the mouse mButton is down
 	 */
 	public boolean getState() {
-		return state;
+		return mState;
 	}
 }

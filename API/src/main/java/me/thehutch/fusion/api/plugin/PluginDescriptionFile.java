@@ -33,32 +33,32 @@ public final class PluginDescriptionFile {
 			return new Yaml();
 		}
 	};
-	private final String main;
-	private final String name;
-	private final String version;
-	private final String description;
+	private final String mMain;
+	private final String mName;
+	private final String mVersion;
+	private final String mDesc;
 
 	public PluginDescriptionFile(String main, String name, String version, String description) {
-		this.main = main;
-		this.name = name;
-		this.version = version;
-		this.description = description;
+		mMain = main;
+		mName = name;
+		mVersion = version;
+		mDesc = description;
 	}
 
 	public String getMain() {
-		return main;
+		return mMain;
 	}
 
 	public String getName() {
-		return name;
+		return mName;
 	}
 
 	public String getVersion() {
-		return version;
+		return mVersion;
 	}
 
 	public String getDescription() {
-		return description;
+		return mDesc;
 	}
 
 	public static PluginDescriptionFile loadFromStream(InputStream stream) throws InvalidDescriptionException {
@@ -69,7 +69,7 @@ public final class PluginDescriptionFile {
 		final String version;
 		final String description;
 
-		// Get the plugin main
+		// Get the plugin mMain
 		try {
 			main = map.get("main").toString().trim();
 			if (main.startsWith("me.thehutch.fusion")) {
@@ -80,7 +80,7 @@ public final class PluginDescriptionFile {
 		} catch (ClassCastException ex) {
 			throw new InvalidDescriptionException("Main is of wrong type", ex);
 		}
-		// Get the plugin name
+		// Get the plugin mName
 		try {
 			name = map.get("name").toString().trim().replace(' ', '_');
 			if (!name.matches("^[A-Za-z0-9 _.-]+$")) {
@@ -91,7 +91,7 @@ public final class PluginDescriptionFile {
 		} catch (ClassCastException ex) {
 			throw new InvalidDescriptionException("Name is of wrong type", ex);
 		}
-		// Get the plugin version
+		// Get the plugin mVersion
 		try {
 			version = map.get("version").toString().trim();
 		} catch (NullPointerException ex) {
@@ -99,7 +99,7 @@ public final class PluginDescriptionFile {
 		} catch (ClassCastException ex) {
 			throw new InvalidDescriptionException("Version is of wrong type", ex);
 		}
-		// Get the plugin description
+		// Get the plugin mDesc
 		final Object desc = map.get("description");
 		if (desc != null) {
 			description = desc.toString();

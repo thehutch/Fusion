@@ -50,7 +50,7 @@ public class FileSystem implements IFileSystem, Disposable {
 	public static final Path BASE_DIRECTORY = Paths.get(System.getProperty("user.dir"));
 	public static final Path DATA_DIRECTORY = BASE_DIRECTORY.resolve("data");
 	public static final Path PLUGIN_DIRECTORY = BASE_DIRECTORY.resolve("plugins");
-	private final TMap<String, IResourceManager<?>> managers = new THashMap<>();
+	private final TMap<String, IResourceManager<?>> mManagers = new THashMap<>();
 
 	public FileSystem() {
 		try {
@@ -82,7 +82,7 @@ public class FileSystem implements IFileSystem, Disposable {
 	public <R> R getResource(Path path, boolean load) {
 		final String extension = getPathExtension(path);
 		// Retrieve the loader for the file extension
-		return (R) managers.get(extension).get(path, load);
+		return (R) mManagers.get(extension).get(path, load);
 	}
 
 	@Override
@@ -96,23 +96,23 @@ public class FileSystem implements IFileSystem, Disposable {
 
 	@Override
 	public void unloadResource(Path path) {
-		this.managers.get(getPathExtension(path)).unload(path);
+		mManagers.get(getPathExtension(path)).unload(path);
 	}
 
 	@Override
 	public void registerResourceManager(IResourceManager<?> manager, String... extensions) {
 		for (String extension : extensions) {
-			this.managers.put(extension, manager);
+			mManagers.put(extension, manager);
 		}
 	}
 
 	@Override
 	public void dispose() {
-		this.managers.forEachValue((IResourceManager<?> manager) -> {
+		mManagers.forEachValue((IResourceManager<?> manager) -> {
 			manager.dispose();
 			return true;
 		});
-		this.managers.clear();
+		mManagers.clear();
 	}
 
 	/**
@@ -212,19 +212,19 @@ public class FileSystem implements IFileSystem, Disposable {
 	}
 
 	private static final class CopyFileVisitor implements FileVisitor<Path> {
-		private final Path source;
-		private final Path target;
-		private final boolean overwrite;
+		private final Path mSource;
+		private final Path mTarget;
+		private final boolean mOverwrite;
 
 		private CopyFileVisitor(Path source, Path target, boolean overwrite) {
-			this.source = source;
-			this.target = target;
-			this.overwrite = overwrite;
+			mSource = source;
+			mTarget = target;
+			mOverwrite = overwrite;
 		}
 
 		@Override
 		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-			final Path newDir = target.resolve(source.relativize(dir));
+			final Path newDir = mTarget.resolve(mSource.relativize(dir));
 			try {
 				Files.copy(dir, newDir);
 			} catch (FileAlreadyExistsException ex) {
@@ -238,15 +238,15 @@ public class FileSystem implements IFileSystem, Disposable {
 
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-			copyFile(file, target.resolve(source.relativize(file)), overwrite);
+			copyFile(file, mTarget.resolve(mSource.relativize(file)), mOverwrite);
 			return CONTINUE;
 		}
 
 		@Override
 		public FileVisitResult postVisitDirectory(Path dir, IOException exception) throws IOException {
 			// Update the modification time of directory when done
-			if (exception == null && overwrite) {
-				final Path newDir = target.resolve(source.relativize(dir));
+			if (exception == null && mOverwrite) {
+				final Path newDir = mTarget.resolve(mSource.relativize(dir));
 				try {
 					final FileTime time = Files.getLastModifiedTime(dir);
 					Files.setLastModifiedTime(newDir, time);

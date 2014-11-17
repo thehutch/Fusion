@@ -26,52 +26,52 @@ public final class Quaternion {
 	 */
 	public static final Quaternion IDENTITY = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
 
-	private final float x;
-	private final float y;
-	private final float z;
-	private final float w;
+	private final float mX;
+	private final float mY;
+	private final float mZ;
+	private final float mW;
 
 	/**
 	 * Default constructor for {@link Quaternion}.
 	 *
-	 * @param x The x-component
-	 * @param y The y-component
-	 * @param z The z-component
-	 * @param w The w-component
+	 * @param x The mX-component
+	 * @param y The mY-component
+	 * @param z The mZ-component
+	 * @param w The mW-component
 	 */
 	public Quaternion(float x, float y, float z, float w) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.w = w;
+		mX = x;
+		mY = y;
+		mZ = z;
+		mW = w;
 	}
 
 	/**
-	 * @return The x-component
+	 * @return The mX-component
 	 */
 	public float getX() {
-		return x;
+		return mX;
 	}
 
 	/**
-	 * @return The y-component
+	 * @return The mY-component
 	 */
 	public float getY() {
-		return y;
+		return mY;
 	}
 
 	/**
-	 * @return The z-component
+	 * @return The mZ-component
 	 */
 	public float getZ() {
-		return z;
+		return mZ;
 	}
 
 	/**
-	 * @return The w-component
+	 * @return The mW-component
 	 */
 	public float getW() {
-		return w;
+		return mW;
 	}
 
 	/**
@@ -82,7 +82,7 @@ public final class Quaternion {
 	 * @return The resultant dot product
 	 */
 	public float dot(Quaternion q) {
-		return x * q.x + y * q.y + z * q.z + w * q.w;
+		return mX * q.mX + mY * q.mY + mZ * q.mZ + mW * q.mW;
 	}
 
 	/**
@@ -91,12 +91,12 @@ public final class Quaternion {
 	 * @return A new normalised {@link Quaternion}
 	 */
 	public Quaternion normalise() {
-		final float lenSq = x * x + y * y + z * z + w * w;
+		final float lenSq = mX * mX + mY * mY + mZ * mZ + mW * mW;
 		if (lenSq == 0.0f || lenSq == 1.0f) {
 			return this;
 		}
 		final float invLength = 1.0f / FastMaths.fastSqrt(lenSq);
-		return new Quaternion(x * invLength, y * invLength, z * invLength, w * invLength);
+		return new Quaternion(mX * invLength, mY * invLength, mZ * invLength, mW * invLength);
 	}
 
 	/**
@@ -105,7 +105,7 @@ public final class Quaternion {
 	 * @return A new conjugated {@link Quaternion}
 	 */
 	public Quaternion conjugate() {
-		return new Quaternion(-x, -y, -z, w);
+		return new Quaternion(-mX, -mY, -mZ, mW);
 	}
 
 	/**
@@ -114,10 +114,10 @@ public final class Quaternion {
 	 * @return A new inverted {@link Quaternion}
 	 */
 	public Quaternion invert() {
-		final float lenSq = x * x + y * y + z * z + w * w;
+		final float lenSq = mX * mX + mY * mY + mZ * mZ + mW * mW;
 		if (lenSq > 0.0f) {
 			final float invLenSq = 1.0f / lenSq;
-			return new Quaternion(-x * invLenSq, -y * invLenSq, -z * invLenSq, w * invLenSq);
+			return new Quaternion(-mX * invLenSq, -mY * invLenSq, -mZ * invLenSq, mW * invLenSq);
 		}
 		return null;
 	}
@@ -130,7 +130,7 @@ public final class Quaternion {
 	 * @return A new {@link Quaternion}
 	 */
 	public Quaternion add(Quaternion q) {
-		return new Quaternion(x + q.x, y + q.y, z + q.z, w + q.w);
+		return new Quaternion(mX + q.mX, mY + q.mY, mZ + q.mZ, mW + q.mW);
 	}
 
 	/**
@@ -141,7 +141,7 @@ public final class Quaternion {
 	 * @return A new {@link Quaternion}
 	 */
 	public Quaternion sub(Quaternion q) {
-		return new Quaternion(x - q.x, y - q.y, z - q.z, w - q.w);
+		return new Quaternion(mX - q.mX, mY - q.mY, mZ - q.mZ, mW - q.mW);
 	}
 
 	/**
@@ -152,7 +152,7 @@ public final class Quaternion {
 	 * @return A new {@link Quaternion}
 	 */
 	public Quaternion mul(float scalar) {
-		return new Quaternion(x * scalar, y * scalar, z * scalar, w * scalar);
+		return new Quaternion(mX * scalar, mY * scalar, mZ * scalar, mW * scalar);
 	}
 
 	/**
@@ -163,10 +163,10 @@ public final class Quaternion {
 	 * @return A new {@link Quaternion}
 	 */
 	public Quaternion mul(Vector3 vec) {
-		return new Quaternion(w * vec.getX() + y * vec.getZ() - z * vec.getY(),
-							  w * vec.getY() + z * vec.getX() - x * vec.getZ(),
-							  w * vec.getZ() + x * vec.getY() - y * vec.getX(),
-							  -x * vec.getX() - y * vec.getY() - z * vec.getZ());
+		return new Quaternion(mW * vec.getX() + mY * vec.getZ() - mZ * vec.getY(),
+							  mW * vec.getY() + mZ * vec.getX() - mX * vec.getZ(),
+							  mW * vec.getZ() + mX * vec.getY() - mY * vec.getX(),
+							  -mX * vec.getX() - mY * vec.getY() - mZ * vec.getZ());
 	}
 
 	/**
@@ -177,10 +177,10 @@ public final class Quaternion {
 	 * @return A new {@link Quaternion}
 	 */
 	public Quaternion mul(Quaternion q) {
-		return new Quaternion(w * q.x + x * q.w + y * q.z - z * q.y,
-							  w * q.y + y * q.w + z * q.x - x * q.z,
-							  w * q.z + z * q.w + x * q.y - y * q.x,
-							  w * q.w - x * q.x - y * q.y - z * q.z);
+		return new Quaternion(mW * q.mX + mX * q.mW + mY * q.mZ - mZ * q.mY,
+							  mW * q.mY + mY * q.mW + mZ * q.mX - mX * q.mZ,
+							  mW * q.mZ + mZ * q.mW + mX * q.mY - mY * q.mX,
+							  mW * q.mW - mX * q.mX - mY * q.mY - mZ * q.mZ);
 	}
 
 	/**
@@ -192,7 +192,7 @@ public final class Quaternion {
 	 */
 	public Quaternion div(float scalar) {
 		final float inverseScalar = 1.0f / scalar;
-		return new Quaternion(x * inverseScalar, y * inverseScalar, z * inverseScalar, w * inverseScalar);
+		return new Quaternion(mX * inverseScalar, mY * inverseScalar, mZ * inverseScalar, mW * inverseScalar);
 	}
 
 	/**
@@ -202,7 +202,8 @@ public final class Quaternion {
 	 * @return A new direction {@link Quaternion}
 	 */
 	public Vector3 getDirection() {
-		return Matrix3.newRotation(this).mul(Vector3.UNIT_Z);
+		final Matrix3 asRotation = Matrix3.newRotation(this);
+		return asRotation.mul(Vector3.UNIT_Z);
 	}
 
 	/**
@@ -241,9 +242,9 @@ public final class Quaternion {
 	/**
 	 * Creates a new {@link Quaternion} using the given axis and angle in degrees.
 	 *
-	 * @param x     The x-component of the axis
-	 * @param y     The y-component of the axis
-	 * @param z     The z-component of the axis
+	 * @param x     The mX-component of the axis
+	 * @param y     The mY-component of the axis
+	 * @param z     The mZ-component of the axis
 	 * @param angle The angle in degrees
 	 *
 	 * @return A new {@link Quaternion}
@@ -267,9 +268,9 @@ public final class Quaternion {
 	/**
 	 * Creates a new {@link Quaternion} using the given axis and angle in radians.
 	 *
-	 * @param x     The x-component of the axis
-	 * @param y     The y-component of the axis
-	 * @param z     The z-component of the axis
+	 * @param x     The mX-component of the axis
+	 * @param y     The mY-component of the axis
+	 * @param z     The mZ-component of the axis
 	 * @param angle The angle in radians
 	 *
 	 * @return A new {@link Quaternion}

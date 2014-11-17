@@ -23,7 +23,7 @@ import java.lang.reflect.ParameterizedType;
 /**
  * @author thehutch
  */
-public class ReflectionHelper {
+public final class ReflectionHelper {
 
 	private ReflectionHelper() {
 	}
@@ -33,20 +33,20 @@ public class ReflectionHelper {
 	}
 
 	private static class ClassType<T> {
-		private final Class<T> classType;
+		private final Class<T> mClassType;
 
 		private ClassType() {
 			try {
 				final Field field = getClass().getDeclaredField("classType");
 				final ParameterizedType type = (ParameterizedType) field.getGenericType();
-				this.classType = (Class<T>) type.getActualTypeArguments()[0].getClass();
+				mClassType = (Class<T>) type.getActualTypeArguments()[0].getClass();
 			} catch (NoSuchFieldException | SecurityException ex) {
 				throw new IllegalStateException("Unable to locate field", ex);
 			}
 		}
 
 		public Class<T> getClassType() {
-			return classType;
+			return mClassType;
 		}
 	}
 }

@@ -23,48 +23,48 @@ import me.thehutch.fusion.api.event.Event;
  * @author thehutch
  */
 public final class KeyboardEvent extends Event {
-	private final Key key;
-	private final boolean state;
-	private final boolean repeat;
+	private final Key mKey;
+	private final boolean mState;
+	private final boolean mRepeat;
 
 	/**
 	 * The default constructor for {@link KeyboardEvent}.
 	 *
-	 * @param key    The key
-	 * @param state  The state of the key
-	 * @param repeat True if this is a repeated key event
+	 * @param key    The mKey
+	 * @param state  The state of the mKey
+	 * @param repeat True if this is a repeated mKey event
 	 */
 	public KeyboardEvent(Key key, boolean state, boolean repeat) {
 		super(true);
-		this.key = key;
-		this.state = state;
-		this.repeat = repeat;
+		mKey = key;
+		mState = state;
+		mRepeat = repeat;
 	}
 
 	/**
-	 * The key involved in the event.
+	 * The mKey involved in the event.
 	 *
-	 * @return The event key
+	 * @return The event mKey
 	 */
 	public Key getKey() {
-		return key;
+		return mKey;
 	}
 
 	/**
-	 * Gets the current state of the event key.
+	 * Gets the current state of the event mKey.
 	 *
-	 * @return True if the key is pressed down
+	 * @return True if the mKey is pressed down
 	 */
 	public boolean getState() {
-		return state;
+		return mState;
 	}
 
 	/**
-	 * A repeat key is when the key has been pressed down and continues to fire events.
+	 * A mRepeat mKey is when the mKey has been pressed down and continues to fire events.
 	 *
-	 * @return True if the event is for a repeat key
+	 * @return True if the event is for a mRepeat mKey
 	 */
 	public boolean isRepeat() {
-		return repeat;
+		return mRepeat;
 	}
 }

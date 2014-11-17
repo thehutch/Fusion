@@ -36,16 +36,16 @@ import me.thehutch.fusion.engine.render.opengl.Program;
  * @author thehutch
  */
 public class ProgramManager implements IResourceManager<Program> {
-	private final TMap<Path, Program> programs = new THashMap<>();
-	private final Client engine;
+	private final TMap<Path, Program> mPrograms = new THashMap<>();
+	private final Client mEngine;
 
 	public ProgramManager(Client engine) {
-		this.engine = engine;
+		mEngine = engine;
 	}
 
 	@Override
 	public Program get(Path path, boolean load) {
-		final Program program = programs.get(path);
+		final Program program = mPrograms.get(path);
 		if (program == null && load) {
 			return load(path);
 		}
@@ -60,7 +60,7 @@ public class ProgramManager implements IResourceManager<Program> {
 	@Override
 	public Program load(Path path) {
 		try (final Stream<String> lines = Files.lines(path)) {
-			final Program program = engine.getContext().newProgram();
+			final Program program = mEngine.getContext().newProgram();
 			program.create();
 			lines.forEach((String line) -> {
 				try {
@@ -84,7 +84,7 @@ public class ProgramManager implements IResourceManager<Program> {
 			// Link the program
 			program.link();
 			// Add the resource to the resource cache
-			this.programs.put(path, program);
+			mPrograms.put(path, program);
 			return program;
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to load model: " + path, ex);
@@ -93,7 +93,7 @@ public class ProgramManager implements IResourceManager<Program> {
 
 	@Override
 	public void unload(Path path) {
-		final Program program = programs.remove(path);
+		final Program program = mPrograms.remove(path);
 		if (program != null) {
 			program.dispose();
 		}
@@ -101,11 +101,11 @@ public class ProgramManager implements IResourceManager<Program> {
 
 	@Override
 	public void dispose() {
-		this.programs.forEachValue((Program program) -> {
+		mPrograms.forEachValue((Program program) -> {
 			program.dispose();
 			return true;
 		});
-		this.programs.clear();
+		mPrograms.clear();
 	}
 
 	private static void loadShaderSource(StringBuilder source, Stream<String> lines) {

@@ -34,16 +34,16 @@ import me.thehutch.fusion.engine.render.opengl.Texture;
  * @author thehutch
  */
 public class MaterialLoader implements IResourceManager<Material> {
-	private final TMap<Path, Material> materials = new THashMap<>();
-	private final FileSystem fileSystem;
+	private final TMap<Path, Material> mMaterials = new THashMap<>();
+	private final FileSystem mFileSystem;
 
 	public MaterialLoader(Client engine) {
-		this.fileSystem = engine.getFileSystem();
+		mFileSystem = engine.getFileSystem();
 	}
 
 	@Override
 	public Material get(Path path, boolean load) {
-		final Material material = materials.get(path);
+		final Material material = mMaterials.get(path);
 		if (material == null && load) {
 			return load(path);
 		}
@@ -69,9 +69,9 @@ public class MaterialLoader implements IResourceManager<Material> {
 				}
 			});
 			// Load the material program
-			final Program program = fileSystem.getResource(FileSystem.DATA_DIRECTORY.resolve(values.get("program")));
+			final Program program = mFileSystem.getResource(FileSystem.DATA_DIRECTORY.resolve(values.get("program")));
 			// Load the diffuse texture
-			final Texture diffuse = fileSystem.getResource(FileSystem.DATA_DIRECTORY.resolve(values.get("diffuse")));
+			final Texture diffuse = mFileSystem.getResource(FileSystem.DATA_DIRECTORY.resolve(values.get("diffuse")));
 
 			/*
 			 * TODO: Load other textures (normal etc...)
@@ -88,20 +88,20 @@ public class MaterialLoader implements IResourceManager<Material> {
 
 	@Override
 	public void unload(Path path) {
-		final Material material = materials.remove(path);
+		final Material material = mMaterials.remove(path);
 		if (material != null) {
 			material.unbind();
 		}
-		this.materials.clear();
+		mMaterials.clear();
 	}
 
 	@Override
 	public void dispose() {
-		this.materials.forEachValue((Material material) -> {
+		this.mMaterials.forEachValue((Material material) -> {
 			material.unbind();
 			return true;
 		});
-		this.materials.clear();
+		mMaterials.clear();
 	}
 
 	private static String getValue(String line) {

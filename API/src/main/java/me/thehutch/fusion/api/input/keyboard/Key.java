@@ -156,7 +156,7 @@ public enum Key {
 	KEY_POWER(0xDE),
 	KEY_SLEEP(0xDF);
 	private static final TIntObjectMap<Key> KEYCODES;
-	private final int keycode;
+	private final int mKeycode;
 
 	static {
 		final Key[] keys = Key.values();
@@ -173,23 +173,23 @@ public enum Key {
 	/**
 	 * Default constructor for {@link Key}.
 	 *
-	 * @param keycode The key keycode
+	 * @param keycode The key mKeycode
 	 */
 	private Key(int keycode) {
-		this.keycode = keycode;
+		mKeycode = keycode;
 	}
 
 	/**
-	 * @return The key's keycode
+	 * @return The key's mKeycode
 	 */
 	public int getKeycode() {
-		return keycode;
+		return mKeycode;
 	}
 
 	/**
-	 * Converts the keycode into the coresponding {@link Key}.
+	 * Converts the mKeycode into the coresponding {@link Key}.
 	 *
-	 * @param keycode The keycode
+	 * @param keycode The mKeycode
 	 *
 	 * @return The key
 	 */

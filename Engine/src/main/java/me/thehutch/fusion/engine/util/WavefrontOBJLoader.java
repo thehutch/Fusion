@@ -31,7 +31,7 @@ import me.thehutch.fusion.engine.render.opengl.VertexArray;
 /**
  * @author thehutch
  */
-public class WavefrontOBJLoader {
+public final class WavefrontOBJLoader {
 	private static final String COMPONENT_SEPARATOR = " ";
 	private static final String INDEX_SEPARATOR = "/";
 	private static final String POSITION_PREFIX = "v";

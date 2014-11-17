@@ -25,7 +25,7 @@ import org.lwjgl.util.glu.GLU;
 /**
  * @author thehutch
  */
-public class RenderUtil {
+public final class RenderUtil {
 	private RenderUtil() {
 	}
 

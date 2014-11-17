@@ -37,60 +37,60 @@ public enum GLVersion {
 	GL42(4, 2, 4, 2),
 	GL43(4, 3, 4, 3),
 	GL44(4, 4, 4, 4);
-	private final int major;
-	private final int minor;
-	private final int glslMajor;
-	private final int glslMinor;
+	private final int mGLMajor;
+	private final int mGLMinor;
+	private final int mGLSLMajor;
+	private final int mGLSLMinor;
 
 	/**
 	 * Default constructor for {@link GLVersion}.
 	 *
-	 * @param major     The OpenGL major version
-	 * @param minor     The OpenGL minor version
-	 * @param glslMajor The GLSL major version
-	 * @param glslMinor The GLSL minor version
+	 * @param major     The OpenGL mOpenGLMajor version
+	 * @param minor     The OpenGL mGLMinor version
+	 * @param glslMajor The GLSL mOpenGLMajor version
+	 * @param glslMinor The GLSL mGLMinor version
 	 */
 	private GLVersion(int major, int minor, int glslMajor, int glslMinor) {
-		this.major = major;
-		this.minor = minor;
-		this.glslMajor = glslMajor;
-		this.glslMinor = glslMinor;
+		mGLMajor = major;
+		mGLMinor = minor;
+		mGLSLMajor = glslMajor;
+		mGLSLMinor = glslMinor;
 	}
 
 	/**
-	 * Returns the minimum OpenGL major version required to use this {@link GLVersion}.
+	 * Returns the minimum OpenGL mOpenGLMajor version required to use this {@link GLVersion}.
 	 *
-	 * @return The minimum OpenGL major version
+	 * @return The minimum OpenGL mOpenGLMajor version
 	 */
 	public int getMajor() {
-		return major;
+		return mGLMajor;
 	}
 
 	/**
-	 * Returns the minimum OpenGL minor version required to use this {@link GLVersion}.
+	 * Returns the minimum OpenGL mGLMinor version required to use this {@link GLVersion}.
 	 *
-	 * @return The minimum OpenGL minor version
+	 * @return The minimum OpenGL mGLMinor version
 	 */
 	public int getMinor() {
-		return minor;
+		return mGLMinor;
 	}
 
 	/**
-	 * Returns the minimum GLSL major version required to use this {@link GLVersion}.
+	 * Returns the minimum GLSL mOpenGLMajor version required to use this {@link GLVersion}.
 	 *
-	 * @return The minimum GLSL major version
+	 * @return The minimum GLSL mOpenGLMajor version
 	 */
 	public int getGLSLMajor() {
-		return glslMajor;
+		return mGLSLMajor;
 	}
 
 	/**
-	 * Returns the minimum GLSL minor version required to use this {@link GLVersion}.
+	 * Returns the minimum GLSL mGLMinor version required to use this {@link GLVersion}.
 	 *
-	 * @return The minimum GLSL minor version
+	 * @return The minimum GLSL mGLMinor version
 	 */
 	public int getGLSLMinor() {
-		return glslMinor;
+		return mGLSLMinor;
 	}
 
 	/**
@@ -99,7 +99,7 @@ public enum GLVersion {
 	 * @return The OpenGL version
 	 */
 	public int getVersion() {
-		return (major * 10) + minor;
+		return (mGLMajor * 10) + mGLMinor;
 	}
 
 	/**
@@ -108,14 +108,14 @@ public enum GLVersion {
 	 * @return The OpenGL version
 	 */
 	public int getGLSLVersion() {
-		return (glslMajor * 100) + (glslMinor * 10);
+		return (mGLSLMajor * 100) + (mGLSLMinor * 10);
 	}
 
 	/**
 	 * @return True if this GLVersion supports shaders
 	 */
 	public boolean supportsGLSL() {
-		return glslMajor != 0;
+		return mGLSLMajor != 0;
 	}
 
 	/**
@@ -126,6 +126,6 @@ public enum GLVersion {
 	 * @return True if this {@link GLVersion} supports the given {@link GLVersion}
 	 */
 	public boolean supportsGLVersion(GLVersion version) {
-		return major >= version.major && minor >= version.minor;
+		return mGLMajor >= version.mGLMajor && mGLMinor >= version.mGLMinor;
 	}
 }

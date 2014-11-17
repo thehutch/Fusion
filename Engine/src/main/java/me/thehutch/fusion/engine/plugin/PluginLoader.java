@@ -41,11 +41,12 @@ import org.yaml.snakeyaml.error.YAMLException;
  * @author thehutch
  */
 public final class PluginLoader {
-	private final TMap<String, PluginClassLoader> loaders = new THashMap<>();
-	private final IEngine engine;
+	private final TMap<String, PluginClassLoader> mLoaders;
+	private final IEngine mEngine;
 
 	public PluginLoader(IEngine engine) {
-		this.engine = engine;
+		mLoaders = new THashMap<>();
+		mEngine = engine;
 	}
 
 	public Plugin load(Path path) throws InvalidDescriptionException, InvalidPluginException {
@@ -72,7 +73,7 @@ public final class PluginLoader {
 
 		final PluginClassLoader loader;
 		try {
-			loader = new PluginClassLoader(engine, getClass().getClassLoader(), description, dataFolder, path);
+			loader = new PluginClassLoader(mEngine, getClass().getClassLoader(), description, dataFolder, path);
 		} catch (MalformedURLException ex) {
 			throw new InvalidPluginException(ex);
 		} catch (InvalidPluginException ex) {
@@ -80,7 +81,7 @@ public final class PluginLoader {
 		}
 
 		// Register this plugin
-		this.loaders.put(description.getName(), loader);
+		mLoaders.put(description.getName(), loader);
 
 		// return the loaded plugin
 		return loader.getPlugin();
@@ -121,12 +122,11 @@ public final class PluginLoader {
 			final String pluginName = plugin.getName();
 
 			// Only add the plugin if it has not already been enabled before
-			this.loaders.putIfAbsent(pluginName, (PluginClassLoader) plugin.getClassLoader());
+			mLoaders.putIfAbsent(pluginName, (PluginClassLoader) plugin.getClassLoader());
 			// Set the plugin as enabled
 			plugin.setEnabled(true);
 
-			//TODO: Call plugin enable event
-			this.engine.getEventManager().invoke(new PluginEnabledEvent(plugin));
+			mEngine.getEventManager().invoke(new PluginEnabledEvent(plugin));
 		}
 	}
 
@@ -135,11 +135,11 @@ public final class PluginLoader {
 			//TODO: Log plugin disabling
 
 			// Remove the class loader
-			this.loaders.remove(plugin.getName());
+			mLoaders.remove(plugin.getName());
 			// Disable the plugin
 			plugin.setEnabled(false);
 			// Execute the plugin disabled event
-			this.engine.getEventManager().invoke(new PluginDisabledEvent(plugin));
+			mEngine.getEventManager().invoke(new PluginDisabledEvent(plugin));
 		}
 	}
 }

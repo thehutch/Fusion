@@ -30,12 +30,12 @@ import org.lwjgl.LWJGLUtil;
  * @author thehutch
  */
 public class Application {
-	protected final Platform platform;
-	protected final boolean debug;
+	protected final Platform mPlatform;
+	protected final boolean mDebug;
 
 	private Application(String[] args) {
-		this.platform = Platform.CLIENT;
-		this.debug = true;
+		mPlatform = Platform.CLIENT;
+		mDebug = true;
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -46,7 +46,7 @@ public class Application {
 		// Create Application
 		{
 			final Application application = new Application(args);
-			switch (application.platform) {
+			switch (application.mPlatform) {
 				case CLIENT:
 					engine = new Client(application);
 					break;
@@ -54,7 +54,7 @@ public class Application {
 					engine = new Server(application);
 					break;
 				default:
-					throw new IllegalStateException("Unknown Platform: " + application.platform);
+					throw new IllegalStateException("Unknown Platform: " + application.mPlatform);
 			}
 		}
 		engine.initialise();

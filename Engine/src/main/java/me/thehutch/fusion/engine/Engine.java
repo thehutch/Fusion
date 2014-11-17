@@ -47,12 +47,12 @@ public abstract class Engine implements IEngine {
 	public static final String ENGINE_VERSION = ENGINE_MAJOR_VERSION + "." + ENGINE_MINOR_VERSION + "." + ENGINE_BUILD_VERSION;
 	private static final Logger LOGGER;
 	private static final long TICKS_PER_SECOND = 60L;
-	private final PluginManager pluginManager;
-	private final EventManager eventManager;
-	private final ComponentSystem system;
-	private final FileSystem fileSystem;
-	private final Scheduler scheduler;
-	private final boolean debug;
+	private final PluginManager mPluginManager;
+	private final EventManager mEventManager;
+	private final ComponentSystem mSystem;
+	private final FileSystem mFileSystem;
+	private final Scheduler mScheduler;
+	private final boolean mIsDebug;
 
 	static {
 		final Formatter formatter = new Formatter() {
@@ -89,42 +89,42 @@ public abstract class Engine implements IEngine {
 	}
 
 	protected Engine(Application application) {
-		// Initialise debug status
-		this.debug = application.debug;
+		// Initialise mDebug status
+		mIsDebug = application.mDebug;
 
-		// Create the engine scheduler
-		this.scheduler = new Scheduler(TICKS_PER_SECOND);
+		// Create the engine mScheduler
+		mScheduler = new Scheduler(TICKS_PER_SECOND);
 
 		// Create the event manager
-		this.eventManager = new EventManager(scheduler);
+		mEventManager = new EventManager(mScheduler);
 
 		// Create the plugin manager
-		this.pluginManager = new PluginManager(this);
+		mPluginManager = new PluginManager(this);
 
 		// Create the file system
-		this.fileSystem = new FileSystem();
+		mFileSystem = new FileSystem();
 
 		// Create the component system
-		this.system = new ComponentSystem();
+		mSystem = new ComponentSystem();
 	}
 
 	public void initialise() {
 		// Schedule the component system task
-		this.scheduler.invokeRepeating(system::process, TaskPriority.CRITICAL, 0L, 1L);
+		mScheduler.invokeRepeating(mSystem::process, TaskPriority.CRITICAL, 0L, 1L);
 
 		// Initialise the component system
-		this.system.initialise();
+		mSystem.initialise();
 
 		// Attempt to load all the plugins
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(FileSystem.PLUGIN_DIRECTORY, "*.jar")) {
-			stream.forEach(pluginManager::loadPlugin);
+			stream.forEach(mPluginManager::loadPlugin);
 		} catch (IOException ex) {
 			getLogger().log(Level.WARNING, "Unable to load plugins!", ex);
 		}
 		// Enable the plugins
 		// TODO: Enable in dependencies order
-		final Collection<Plugin> plugins = pluginManager.getPlugins();
-		plugins.forEach(pluginManager::enablePlugin);
+		final Collection<Plugin> plugins = mPluginManager.getPlugins();
+		plugins.forEach(mPluginManager::enablePlugin);
 	}
 
 	@Override
@@ -134,32 +134,32 @@ public abstract class Engine implements IEngine {
 
 	@Override
 	public final Scheduler getScheduler() {
-		return scheduler;
+		return mScheduler;
 	}
 
 	@Override
 	public final PluginManager getPluginManager() {
-		return pluginManager;
+		return mPluginManager;
 	}
 
 	@Override
 	public final EventManager getEventManager() {
-		return eventManager;
+		return mEventManager;
 	}
 
 	@Override
 	public final FileSystem getFileSystem() {
-		return fileSystem;
+		return mFileSystem;
 	}
 
 	@Override
 	public final ComponentSystem getComponentSystem() {
-		return system;
+		return mSystem;
 	}
 
 	@Override
 	public final boolean debugMode() {
-		return debug;
+		return mIsDebug;
 	}
 
 	@Override

@@ -20,167 +20,167 @@ package me.thehutch.fusion.api.util.buffer;
 import java.nio.ByteBuffer;
 
 public class DynamicByteBuffer {
-	private ByteBuffer buffer;
+	private ByteBuffer mBuffer;
 
 	private DynamicByteBuffer(ByteBuffer buffer) {
-		this.buffer = buffer;
+		mBuffer = buffer;
 	}
 
 	public ByteBuffer getBuffer() {
-		return buffer;
+		return mBuffer;
 	}
 
 	public byte getByte() {
-		return buffer.get();
+		return mBuffer.get();
 	}
 
 	public ByteBuffer putByte(byte value) {
 		ensureCapacity(Byte.BYTES);
-		return buffer.put(value);
+		return mBuffer.put(value);
 	}
 
 	public char getChar() {
-		return buffer.getChar();
+		return mBuffer.getChar();
 	}
 
 	public ByteBuffer putChar(char value) {
 		ensureCapacity(Character.BYTES);
-		return buffer.putChar(value);
+		return mBuffer.putChar(value);
 	}
 
 	public ByteBuffer putChar(int index, char value) {
-		return buffer.putChar(index, value);
+		return mBuffer.putChar(index, value);
 	}
 
 	public short getShort() {
-		return buffer.getShort();
+		return mBuffer.getShort();
 	}
 
 	public ByteBuffer putShort(short value) {
 		ensureCapacity(Short.BYTES);
-		return buffer.putShort(value);
+		return mBuffer.putShort(value);
 	}
 
 	public ByteBuffer putShort(int index, short value) {
-		return buffer.putShort(index, value);
+		return mBuffer.putShort(index, value);
 	}
 
 	public int getInt() {
-		return buffer.getInt();
+		return mBuffer.getInt();
 	}
 
 	public ByteBuffer putInt(int value) {
 		ensureCapacity(Integer.BYTES);
-		return buffer.putInt(value);
+		return mBuffer.putInt(value);
 	}
 
 	public ByteBuffer putInt(int index, int value) {
-		return buffer.putInt(index, value);
+		return mBuffer.putInt(index, value);
 	}
 
 	public long getLong() {
-		return buffer.getLong();
+		return mBuffer.getLong();
 	}
 
 	public ByteBuffer putLong(long value) {
 		ensureCapacity(Long.BYTES);
-		return buffer.putLong(value);
+		return mBuffer.putLong(value);
 	}
 
 	public ByteBuffer putLong(int index, long value) {
-		return buffer.putLong(index, value);
+		return mBuffer.putLong(index, value);
 	}
 
 	public float getFloat() {
-		return buffer.getFloat();
+		return mBuffer.getFloat();
 	}
 
 	public ByteBuffer putFloat(float value) {
 		ensureCapacity(Float.BYTES);
-		return buffer.putFloat(value);
+		return mBuffer.putFloat(value);
 	}
 
 	public ByteBuffer putFloat(int index, float value) {
-		return buffer.putFloat(index, value);
+		return mBuffer.putFloat(index, value);
 	}
 
 	public double getDouble() {
-		return buffer.getDouble();
+		return mBuffer.getDouble();
 	}
 
 	public ByteBuffer putDouble(double value) {
 		ensureCapacity(Double.BYTES);
-		return buffer.putDouble(value);
+		return mBuffer.putDouble(value);
 	}
 
 	public ByteBuffer putDouble(int index, double value) {
-		return buffer.putDouble(index, value);
+		return mBuffer.putDouble(index, value);
 	}
 
 	public int limit() {
-		return buffer.limit();
+		return mBuffer.limit();
 	}
 
 	public int position() {
-		return buffer.position();
+		return mBuffer.position();
 	}
 
 	public int capacity() {
-		return buffer.capacity();
+		return mBuffer.capacity();
 	}
 
 	public byte[] array() {
-		return buffer.array();
+		return mBuffer.array();
 	}
 
 	public boolean isEmpty() {
-		return buffer.limit() == 0;
+		return mBuffer.limit() == 0;
 	}
 
 	public boolean hasRemaining() {
-		return buffer.hasRemaining();
+		return mBuffer.hasRemaining();
 	}
 
 	public DynamicByteBuffer flip() {
-		this.buffer.flip();
+		mBuffer.flip();
 		return this;
 	}
 
 	public DynamicByteBuffer compact() {
-		this.buffer.compact();
+		mBuffer.compact();
 		return this;
 	}
 
 	public DynamicByteBuffer clear() {
-		this.buffer.clear();
+		mBuffer.clear();
 		return this;
 	}
 
 	public DynamicByteBuffer duplicate() {
-		return new DynamicByteBuffer(buffer.duplicate());
+		return new DynamicByteBuffer(mBuffer.duplicate());
 	}
 
 	public DynamicByteBuffer slice() {
-		return new DynamicByteBuffer(buffer.slice());
+		return new DynamicByteBuffer(mBuffer.slice());
 	}
 
 	private void ensureCapacity(int size) {
-		final int remaining = buffer.remaining();
+		final int remaining = mBuffer.remaining();
 		if (size > remaining) {
-			reallocate((int) ((buffer.capacity() + (size - remaining)) * 1.5f));
+			reallocate((int) ((mBuffer.capacity() + (size - remaining)) * 1.5f));
 		}
 	}
 
 	private void reallocate(int newCapacity) {
-		// Store the current position of the buffer
-		final int oldPosition = buffer.position();
-		// Create a new buffer of the new capacity
+		// Store the current position of the mBuffer
+		final int oldPosition = mBuffer.position();
+		// Create a new mBuffer of the new capacity
 		final byte[] newBuffer = new byte[newCapacity];
-		// Copy the current buffer into the new one
-		System.arraycopy(buffer.array(), 0, newBuffer, 0, oldPosition);
-		// Reallocate the buffer
-		this.buffer = ByteBuffer.wrap(newBuffer);
-		this.buffer.position(oldPosition);
+		// Copy the current mBuffer into the new one
+		System.arraycopy(mBuffer.array(), 0, newBuffer, 0, oldPosition);
+		// Reallocate the mBuffer
+		mBuffer = ByteBuffer.wrap(newBuffer);
+		mBuffer.position(oldPosition);
 	}
 
 	public static DynamicByteBuffer allocate(int capacity) {

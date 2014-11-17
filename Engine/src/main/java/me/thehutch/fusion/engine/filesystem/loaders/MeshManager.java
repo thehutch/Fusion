@@ -30,16 +30,16 @@ import me.thehutch.fusion.engine.util.WavefrontOBJLoader;
  * @author thehutch
  */
 public class MeshManager implements IResourceManager<VertexArray> {
-	private final TMap<Path, VertexArray> meshes = new THashMap<>();
-	private final GLContext context;
+	private final TMap<Path, VertexArray> mMeshes = new THashMap<>();
+	private final GLContext mContext;
 
 	public MeshManager(GLContext context) {
-		this.context = context;
+		mContext = context;
 	}
 
 	@Override
 	public VertexArray get(Path path, boolean load) {
-		final VertexArray mesh = meshes.get(path);
+		final VertexArray mesh = mMeshes.get(path);
 		if (mesh == null && load) {
 			return load(path);
 		}
@@ -53,16 +53,16 @@ public class MeshManager implements IResourceManager<VertexArray> {
 
 	@Override
 	public VertexArray load(Path path) {
-		final VertexArray mesh = WavefrontOBJLoader.load(context, path);
+		final VertexArray mesh = WavefrontOBJLoader.load(mContext, path);
 		if (mesh != null) {
-			this.meshes.put(path, mesh);
+			mMeshes.put(path, mesh);
 		}
 		return mesh;
 	}
 
 	@Override
 	public void unload(Path path) {
-		final VertexArray mesh = meshes.remove(path);
+		final VertexArray mesh = mMeshes.remove(path);
 		if (mesh != null) {
 			mesh.dispose();
 		}
@@ -70,11 +70,11 @@ public class MeshManager implements IResourceManager<VertexArray> {
 
 	@Override
 	public void dispose() {
-		this.meshes.forEachValue((VertexArray mesh) -> {
+		mMeshes.forEachValue((VertexArray mesh) -> {
 			mesh.dispose();
 			return true;
 		});
-		this.meshes.clear();
+		mMeshes.clear();
 	}
 
 	private static Path getPath(String line) {

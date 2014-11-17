@@ -28,80 +28,80 @@ public final class Vector4 {
 	public static final Vector4 UNIT_Z = new Vector4(0.0f, 0.0f, 1.0f, 0.0f);
 	public static final Vector4 UNIT_W = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	private final float x;
-	private final float y;
-	private final float z;
-	private final float w;
+	private final float mX;
+	private final float mY;
+	private final float mZ;
+	private final float mW;
 
 	/**
 	 * Default constructor for {@link Vector4}.
 	 * <p>
-	 * @param x The x-component
-	 * @param y The y-component
-	 * @param z The z-component
-	 * @param w The w-component
+	 * @param x The mX-component
+	 * @param y The mY-component
+	 * @param z The mZ-component
+	 * @param w The mW-component
 	 */
 	public Vector4(float x, float y, float z, float w) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.w = w;
+		mX = x;
+		mY = y;
+		mZ = z;
+		mW = w;
 	}
 
 	/**
-	 * @return The x-component
+	 * @return The mX-component
 	 */
 	public float getX() {
-		return x;
+		return mX;
 	}
 
 	/**
-	 * @return The y-component
+	 * @return The mY-component
 	 */
 	public float getY() {
-		return y;
+		return mY;
 	}
 
 	/**
-	 * @return The z-component
+	 * @return The mZ-component
 	 */
 	public float getZ() {
-		return z;
+		return mZ;
 	}
 
 	/**
-	 * @return The w-component
+	 * @return The mW-component
 	 */
 	public float getW() {
-		return w;
+		return mW;
 	}
 
 	/**
-	 * @return The floored x-component
+	 * @return The floored mX-component
 	 */
 	public int getFloorX() {
-		return FastMaths.floor(x);
+		return FastMaths.floor(mX);
 	}
 
 	/**
-	 * @return The floored y-component
+	 * @return The floored mY-component
 	 */
 	public int getFloorY() {
-		return FastMaths.floor(y);
+		return FastMaths.floor(mY);
 	}
 
 	/**
-	 * @return The floored z-component
+	 * @return The floored mZ-component
 	 */
 	public int getFloorZ() {
-		return FastMaths.floor(z);
+		return FastMaths.floor(mZ);
 	}
 
 	/**
-	 * @return The floored w-component
+	 * @return The floored mW-component
 	 */
 	public int getFloorW() {
-		return FastMaths.floor(w);
+		return FastMaths.floor(mW);
 	}
 
 	/**
@@ -110,7 +110,7 @@ public final class Vector4 {
 	 * @return The length
 	 */
 	public float length() {
-		final float lenSq = x * x + y * y + z * z + w * w;
+		final float lenSq = mX * mX + mY * mY + mZ * mZ + mW * mW;
 		return FastMaths.fastSqrt(lenSq);
 	}
 
@@ -120,7 +120,7 @@ public final class Vector4 {
 	 * @return The length squared
 	 */
 	public float lengthSquared() {
-		return x * x + y * y + z * z + w * w;
+		return mX * mX + mY * mY + mZ * mZ + mW * mW;
 	}
 
 	/**
@@ -131,10 +131,10 @@ public final class Vector4 {
 	 * @return The distance between this vector and another
 	 */
 	public float distance(Vector4 vec) {
-		final float diffX = x - vec.x;
-		final float diffY = y - vec.y;
-		final float diffZ = z - vec.z;
-		final float diffW = w - vec.w;
+		final float diffX = mX - vec.mX;
+		final float diffY = mY - vec.mY;
+		final float diffZ = mZ - vec.mZ;
+		final float diffW = mW - vec.mW;
 		final float distSquared = (diffX * diffX) + (diffY * diffY) + (diffZ * diffZ) + (diffW * diffW);
 		return FastMaths.fastSqrt(distSquared);
 	}
@@ -147,10 +147,10 @@ public final class Vector4 {
 	 * @return The distance squared between this vector and another
 	 */
 	public float distanceSquared(Vector4 vec) {
-		final float diffX = x - vec.x;
-		final float diffY = y - vec.y;
-		final float diffZ = z - vec.z;
-		final float diffW = w - vec.w;
+		final float diffX = mX - vec.mX;
+		final float diffY = mY - vec.mY;
+		final float diffZ = mZ - vec.mZ;
+		final float diffW = mW - vec.mW;
 		return (diffX * diffX) + (diffY * diffY) + (diffZ * diffZ) + (diffW * diffW);
 	}
 
@@ -162,7 +162,7 @@ public final class Vector4 {
 	 * @return The dot product of the two vectors
 	 */
 	public float dot(Vector4 vec) {
-		return (x * vec.x) + (y * vec.y) + (z * vec.z) + (w * vec.w);
+		return (mX * vec.mX) + (mY * vec.mY) + (mZ * vec.mZ) + (mW * vec.mW);
 	}
 
 	/**
@@ -171,12 +171,12 @@ public final class Vector4 {
 	 * @return A new normalised {@link Vector3}
 	 */
 	public Vector4 normalise() {
-		final float lenSq = x * x + y * y + z * z + w * w;
+		final float lenSq = mX * mX + mY * mY + mZ * mZ + mW * mW;
 		if (lenSq == 1.0f || lenSq == 0.0f) {
 			return this;
 		}
 		final float invLenSq = 1.0f / FastMaths.fastSqrt(lenSq);
-		return new Vector4(x * invLenSq, y * invLenSq, z * invLenSq, w * invLenSq);
+		return new Vector4(mX * invLenSq, mY * invLenSq, mZ * invLenSq, mW * invLenSq);
 	}
 
 	/**
@@ -185,54 +185,54 @@ public final class Vector4 {
 	 * @return A new negated {@link Vector3}
 	 */
 	public Vector4 negate() {
-		return new Vector4(-x, -y, -z, -w);
+		return new Vector4(-mX, -mY, -mZ, -mW);
 	}
 
 	public Vector4 add(float v) {
-		return new Vector4(x + v, y + v, z + v, w + v);
+		return new Vector4(mX + v, mY + v, mZ + v, mW + v);
 	}
 
 	public Vector4 add(float vx, float vy, float vz, float vw) {
-		return new Vector4(x + vx, y + vy, z + vz, w + vw);
+		return new Vector4(mX + vx, mY + vy, mZ + vz, mW + vw);
 	}
 
 	public Vector4 add(Vector4 vec) {
-		return new Vector4(x + vec.x, y + vec.y, z + vec.z, w + vec.w);
+		return new Vector4(mX + vec.mX, mY + vec.mY, mZ + vec.mZ, mW + vec.mW);
 	}
 
 	public Vector4 sub(float v) {
-		return new Vector4(x - v, y - v, z - v, w - v);
+		return new Vector4(mX - v, mY - v, mZ - v, mW - v);
 	}
 
 	public Vector4 sub(float vx, float vy, float vz, float vw) {
-		return new Vector4(x - vx, y - vy, z - vz, w - vw);
+		return new Vector4(mX - vx, mY - vy, mZ - vz, mW - vw);
 	}
 
 	public Vector4 sub(Vector4 vec) {
-		return new Vector4(x - vec.x, y - vec.y, z - vec.z, w - vec.w);
+		return new Vector4(mX - vec.mX, mY - vec.mY, mZ - vec.mZ, mW - vec.mW);
 	}
 
 	public Vector4 mul(float v) {
-		return new Vector4(x * v, y * v, z * v, w * v);
+		return new Vector4(mX * v, mY * v, mZ * v, mW * v);
 	}
 
 	public Vector4 mul(float vx, float vy, float vz, float vw) {
-		return new Vector4(x * vx, y * vy, z * vz, w * vw);
+		return new Vector4(mX * vx, mY * vy, mZ * vz, mW * vw);
 	}
 
 	public Vector4 mul(Vector4 vec) {
-		return new Vector4(x * vec.x, y * vec.y, z * vec.z, w * vec.w);
+		return new Vector4(mX * vec.mX, mY * vec.mY, mZ * vec.mZ, mW * vec.mW);
 	}
 
 	public Vector4 div(float v) {
-		return new Vector4(x / v, y / v, z / v, w / v);
+		return new Vector4(mX / v, mY / v, mZ / v, mW / v);
 	}
 
 	public Vector4 div(float vx, float vy, float vz, float vw) {
-		return new Vector4(x / vx, y / vy, z / vz, w / vw);
+		return new Vector4(mX / vx, mY / vy, mZ / vz, mW / vw);
 	}
 
 	public Vector4 div(Vector4 vec) {
-		return new Vector4(x / vec.x, y / vec.y, z / vec.z, w / vec.w);
+		return new Vector4(mX / vec.mX, mY / vec.mY, mZ / vec.mZ, mW / vec.mW);
 	}
 }

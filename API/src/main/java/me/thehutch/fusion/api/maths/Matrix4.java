@@ -224,13 +224,6 @@ public final class Matrix4 {
 	}
 
 	/**
-	 * @return The trace of this matrix
-	 */
-	public float trace() {
-		return m00 + m11 + m22 + m33;
-	}
-
-	/**
 	 * @return The determinant of this matrix
 	 */
 	public float determinant() {

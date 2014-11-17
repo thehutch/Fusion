@@ -25,38 +25,38 @@ import java.util.Iterator;
  */
 public class Bag<E> implements ImmutableBag<E> {
 	private static final int DEFAULT_CAPACITY = 17;
-	private E[] data;
-	private int size;
+	private E[] mData;
+	private int mSize;
 
 	public Bag() {
 		this(DEFAULT_CAPACITY);
 	}
 
 	public Bag(int capacity) {
-		this.data = (E[]) new Object[capacity];
-		this.size = 0;
+		mData = (E[]) new Object[capacity];
+		mSize = 0;
 	}
 
 	@Override
 	public E get(int index) {
-		return data[index];
+		return mData[index];
 	}
 
 	public void set(int index, E item) {
-		if (index >= data.length) {
+		if (index >= mData.length) {
 			expand(index * 2);
-			this.size = index + 1;
-		} else if (index >= size) {
-			this.size = index + 1;
+			mSize = index + 1;
+		} else if (index >= mSize) {
+			mSize = index + 1;
 		}
-		this.data[index] = item;
+		mData[index] = item;
 	}
 
 	public void add(E item) {
-		if (size == data.length) {
+		if (mSize == mData.length) {
 			expand();
 		}
-		this.data[size++] = item;
+		mData[mSize++] = item;
 	}
 
 	public void addAll(Bag<E> items) {
@@ -66,17 +66,17 @@ public class Bag<E> implements ImmutableBag<E> {
 	}
 
 	public E remove(int index) {
-		final E obj = data[index];
-		this.data[index] = data[--size];
-		this.data[size] = null;
+		final E obj = mData[index];
+		mData[index] = mData[--mSize];
+		mData[mSize] = null;
 		return obj;
 	}
 
 	public boolean remove(E item) {
-		for (int i = 0; i < size; ++i) {
-			if (item == data[i]) {
-				this.data[i] = data[--size];
-				this.data[size] = null;
+		for (int i = 0; i < mSize; ++i) {
+			if (item == mData[i]) {
+				mData[i] = mData[--mSize];
+				mData[mSize] = null;
 				return true;
 			}
 		}
@@ -84,9 +84,9 @@ public class Bag<E> implements ImmutableBag<E> {
 	}
 
 	public E removeLast() {
-		if (size > 0) {
-			final E obj = data[--size];
-			this.data[size] = null;
+		if (mSize > 0) {
+			final E obj = mData[--mSize];
+			mData[mSize] = null;
 			return obj;
 		}
 		return null;
@@ -95,8 +95,8 @@ public class Bag<E> implements ImmutableBag<E> {
 	public boolean removeAll(ImmutableBag<E> bag) {
 		boolean modified = false;
 		for (int i = 0; i < bag.size(); ++i) {
-			for (int j = 0; j < size; ++j) {
-				if (bag.get(i) == data[j]) {
+			for (int j = 0; j < mSize; ++j) {
+				if (bag.get(i) == mData[j]) {
 					remove(j);
 					--j;
 					modified = true;
@@ -109,8 +109,8 @@ public class Bag<E> implements ImmutableBag<E> {
 
 	@Override
 	public boolean contains(E item) {
-		for (int i = 0; i < size; ++i) {
-			if (data[i] == item) {
+		for (int i = 0; i < mSize; ++i) {
+			if (mData[i] == item) {
 				return true;
 			}
 		}
@@ -119,24 +119,24 @@ public class Bag<E> implements ImmutableBag<E> {
 
 	@Override
 	public int size() {
-		return size;
+		return mSize;
 	}
 
 	@Override
 	public int capacity() {
-		return data.length;
+		return mData.length;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return size == 0;
+		return mSize == 0;
 	}
 
 	public void clear() {
-		for (int i = 0; i < size; ++i) {
-			this.data[i] = null;
+		for (int i = 0; i < mSize; ++i) {
+			mData[i] = null;
 		}
-		this.size = 0;
+		mSize = 0;
 	}
 
 	public boolean isIndexWithinBounds(int index) {
@@ -144,7 +144,7 @@ public class Bag<E> implements ImmutableBag<E> {
 	}
 
 	public void ensureCapacity(int index) {
-		if (index >= data.length) {
+		if (index >= mData.length) {
 			expand((index * 3) / 2 + 1);
 		}
 	}
@@ -155,33 +155,33 @@ public class Bag<E> implements ImmutableBag<E> {
 	}
 
 	private void expand() {
-		final int newCapacity = (data.length * 3) / 2 + 1;
+		final int newCapacity = (mData.length * 3) / 2 + 1;
 		expand(newCapacity);
 	}
 
 	private void expand(int newCapacity) {
-		final E[] oldData = data;
-		this.data = (E[]) new Object[newCapacity];
-		System.arraycopy(oldData, 0, data, 0, oldData.length);
+		final E[] oldData = mData;
+		mData = (E[]) new Object[newCapacity];
+		System.arraycopy(oldData, 0, mData, 0, oldData.length);
 	}
 
 	private static class BagIterator<E> implements Iterator<E> {
-		private final Bag<E> bag;
-		private int index;
+		private final Bag<E> mBag;
+		private int mIndex;
 
 		private BagIterator(Bag<E> bag) {
-			this.bag = bag;
-			this.index = 0;
+			mBag = bag;
+			mIndex = 0;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return index < bag.size;
+			return mIndex < mBag.mSize;
 		}
 
 		@Override
 		public E next() {
-			return bag.get(index++);
+			return mBag.get(mIndex++);
 		}
 	}
 }

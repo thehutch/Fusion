@@ -34,8 +34,8 @@ import me.thehutch.fusion.engine.util.ReflectionHelper;
  * @author thehutch
  */
 public class EventManager implements IEventManager {
-	private final TMap<Class<? extends Event>, SortedSet<EventExecutor>> events;
-	private final IScheduler scheduler;
+	private final TMap<Class<? extends Event>, SortedSet<EventExecutor>> mEvents;
+	private final IScheduler mScheduler;
 
 	/**
 	 * The default constructor for {@link EventManager}.
@@ -43,8 +43,8 @@ public class EventManager implements IEventManager {
 	 * @param scheduler The engine scheduler
 	 */
 	public EventManager(IScheduler scheduler) {
-		this.events = new THashMap<>();
-		this.scheduler = scheduler;
+		mEvents = new THashMap<>();
+		mScheduler = scheduler;
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class EventManager implements IEventManager {
 	 */
 	@Override
 	public <T extends Event> void invoke(T event) {
-		final Set<EventExecutor> executors = events.get(event.getClass());
+		final Set<EventExecutor> executors = mEvents.get(event.getClass());
 		if (executors != null) {
 			executors.forEach(executor -> executor.execute(event));
 		}
@@ -63,7 +63,7 @@ public class EventManager implements IEventManager {
 	 */
 	@Override
 	public <T extends Event> void invokeDelayed(T event, long delay) {
-		this.scheduler.invokeDelayed(() -> invoke(event), TaskPriority.HIGHEST, delay);
+		mScheduler.invokeDelayed(() -> invoke(event), TaskPriority.HIGHEST, delay);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class EventManager implements IEventManager {
 	 */
 	@Override
 	public <T extends Event> void invokeAsync(T event) {
-		this.scheduler.invokeAsync(() -> invoke(event), TaskPriority.HIGHEST);
+		mScheduler.invokeAsync(() -> invoke(event), TaskPriority.HIGHEST);
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class EventManager implements IEventManager {
 	 */
 	@Override
 	public <T extends Event> void invokeAsync(T event, Consumer<T> callback) {
-		this.scheduler.invokeAsync(() -> {
+		mScheduler.invokeAsync(() -> {
 			invoke(event);
 			callback.accept(event);
 		}, TaskPriority.HIGHEST);
@@ -91,10 +91,10 @@ public class EventManager implements IEventManager {
 	@Override
 	public <T extends Event> void register(Consumer<T> handler, EventPriority priority, boolean ignoreCancelled) {
 		final Class<T> eventClass = ReflectionHelper.getGenericClass();
-		SortedSet<EventExecutor> executors = events.get(eventClass);
+		SortedSet<EventExecutor> executors = mEvents.get(eventClass);
 		if (executors == null) {
 			executors = new TreeSet<>();
-			this.events.put(eventClass, executors);
+			this.mEvents.put(eventClass, executors);
 		}
 		executors.add(new EventExecutor(handler, priority, ignoreCancelled));
 	}
@@ -105,7 +105,7 @@ public class EventManager implements IEventManager {
 	@Override
 	public <T extends Event> void unregister(Consumer<T> handler) {
 		final Class<T> eventClass = ReflectionHelper.getGenericClass();
-		final SortedSet<EventExecutor> executors = events.get(eventClass);
+		final SortedSet<EventExecutor> executors = mEvents.get(eventClass);
 		if (executors == null) {
 			throw new IllegalArgumentException("No events to unregister of type " + eventClass.getName());
 		}

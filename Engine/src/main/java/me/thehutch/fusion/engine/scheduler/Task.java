@@ -24,98 +24,98 @@ import me.thehutch.fusion.api.scheduler.TaskPriority;
  * @author thehutch
  */
 public final class Task implements Comparable<Task> {
-	private final Runnable runnable;
-	private final TaskPriority priority;
-	private final AtomicBoolean isAlive;
-	private final long creationTime;
-	private final boolean isAsync;
-	private final long period;
-	private final int id;
-	private long tick;
+	private final Runnable mRunnable;
+	private final TaskPriority mPriority;
+	private final AtomicBoolean mIsAlive;
+	private final long mCreationTime;
+	private final boolean mIsAsync;
+	private final long mPeriod;
+	private final int mID;
+	private long mTick;
 
 	/**
 	 * Default constructor for {@link Task}.
 	 *
-	 * @param id           The id of the task
-	 * @param runnable     The task runnable function
-	 * @param priority     The priority of the task
+	 * @param id           The mID of the task
+	 * @param runnable     The task mRunnable function
+	 * @param priority     The mPriority of the task
 	 * @param async        True if the task is executed asynchronously
 	 * @param creationTime A timestamp of this task's creation
 	 * @param delay        The number of ticks before task execution
 	 * @param period       The number of ticks between task execution
 	 */
 	public Task(int id, Runnable runnable, TaskPriority priority, boolean async, long creationTime, long delay, long period) {
-		this.id = id;
-		this.runnable = runnable;
-		this.priority = priority;
-		this.isAsync = async;
-		this.period = period;
-		this.creationTime = creationTime;
-		this.isAlive = new AtomicBoolean(true);
-		this.tick = creationTime + delay;
+		mID = id;
+		mRunnable = runnable;
+		mPriority = priority;
+		mIsAsync = async;
+		mPeriod = period;
+		mCreationTime = creationTime;
+		mIsAlive = new AtomicBoolean(true);
+		mTick = creationTime + delay;
 	}
 
 	/**
-	 * @return The task runnable function
+	 * @return The task mRunnable function
 	 */
 	public Runnable getRunnable() {
-		return runnable;
+		return mRunnable;
 	}
 
 	/**
-	 * @return The priority of the task
+	 * @return The mPriority of the task
 	 */
 	public TaskPriority getPriority() {
-		return priority;
+		return mPriority;
 	}
 
 	/**
 	 * @return True if the task is still running
 	 */
 	public boolean isAlive() {
-		return isAlive.get();
+		return mIsAlive.get();
 	}
 
 	/**
 	 * @return A timestamp of this task's creation
 	 */
 	public long getCreationTime() {
-		return creationTime;
+		return mCreationTime;
 	}
 
 	/**
 	 * @return True if this task is executed asynchronously
 	 */
 	public boolean isAsync() {
-		return isAsync;
+		return mIsAsync;
 	}
 
 	/**
 	 * @return The number of ticks between task executions
 	 */
 	public long getPeriod() {
-		return period;
+		return mPeriod;
 	}
 
 	/**
-	 * @return The id of the task
+	 * @return The mID of the task
 	 */
 	public int getId() {
-		return id;
+		return mID;
 	}
 
 	/**
 	 * @return True if this task repeats
 	 */
 	public boolean isRepeating() {
-		return period > 0;
+		return mPeriod > 0;
 	}
 
 	/**
 	 * @return The tick when this task is next executed
 	 */
 	public long getTime() {
-		return tick;
+		return mTick;
 	}
 
 	/**
@@ -124,14 +124,14 @@ public final class Task implements Comparable<Task> {
 	 * @param tick The next execution tick
 	 */
 	public void setTime(long tick) {
-		this.tick = tick;
+		mTick = tick;
 	}
 
 	/**
 	 * Cancels this task
 	 */
 	public void cancel() {
-		this.isAlive.set(false);
+		mIsAlive.set(false);
 	}
 
 	/**
@@ -139,7 +139,7 @@ public final class Task implements Comparable<Task> {
 	 *
 	 * @param task The task to compare this task with
 	 *
-	 * @return Greater than 1 if this task has a greater priority
+	 * @return Greater than 1 if this task has a greater mPriority
 	 *         than the given task else less than one
 	 */
 	@Override

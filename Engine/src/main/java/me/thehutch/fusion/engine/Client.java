@@ -37,27 +37,27 @@ import me.thehutch.fusion.engine.render.opengl.gl30.OpenGL30Context;
  * @author thehutch
  */
 public final class Client extends Engine implements IClient {
-	private final InputManager inputManager;
-	private final GLContext context;
-	private final Renderer renderer;
+	private final InputManager mInputManager;
+	private final GLContext mContext;
+	private final Renderer mRenderer;
 
 	protected Client(Application application) {
 		super(application);
-		// Create the opengl context
-		this.context = new OpenGL30Context();
-		this.context.create();
+		// Create the opengl mContext
+		mContext = new OpenGL30Context();
+		mContext.create();
 
 		// Create the scene
-		this.renderer = new Renderer(this, Camera.createPerspective(70.0f, context.getWindowPositionAndSize().getAspectRatio(), 0.01f, 1000.0f));
+		mRenderer = new Renderer(this, Camera.createPerspective(70.0f, mContext.getWindowPositionAndSize().getAspectRatio(), 0.01f, 1000.0f));
 
 		// Create the input manager
-		this.inputManager = new InputManager(this);
+		mInputManager = new InputManager(this);
 	}
 
 	@Override
 	public void initialise() {
 		// Schedule the input manager task
-		getScheduler().invokeRepeating(inputManager::execute, TaskPriority.CRITICAL, 0L, 1L);
+		getScheduler().invokeRepeating(mInputManager::execute, TaskPriority.CRITICAL, 0L, 1L);
 
 		// Register the image loader
 		getFileSystem().registerResourceManager(new ImageLoader(), "png", "jpg");
@@ -68,10 +68,10 @@ public final class Client extends Engine implements IClient {
 		// Register the material loader
 		getFileSystem().registerResourceManager(new MaterialLoader(this), "fmat");
 		// Register the model loader
-		getFileSystem().registerResourceManager(new MeshManager(context), "obj");
+		getFileSystem().registerResourceManager(new MeshManager(mContext), "obj");
 
 		// Add the scene to the component system
-		getComponentSystem().addProcessor(renderer);
+		getComponentSystem().addProcessor(mRenderer);
 
 		// Enable mouse grab toggle
 		getInputManager().registerKeyBinding(() -> {
@@ -91,22 +91,22 @@ public final class Client extends Engine implements IClient {
 	}
 
 	public Renderer getRenderer() {
-		return renderer;
+		return mRenderer;
 	}
 
 	@Override
 	public Camera getCamera() {
-		return renderer.getCamera();
+		return mRenderer.getCamera();
 	}
 
 	@Override
 	public GLContext getContext() {
-		return context;
+		return mContext;
 	}
 
 	@Override
 	public InputManager getInputManager() {
-		return inputManager;
+		return mInputManager;
 	}
 
 	@Override
@@ -116,12 +116,12 @@ public final class Client extends Engine implements IClient {
 
 	@Override
 	public GLVersion getOpenGLVersion() {
-		return context.getGLVersion();
+		return mContext.getGLVersion();
 	}
 
 	@Override
 	public void stop(String reason) {
-		//this.inputManager.dispose();
+		//this.mInputManager.dispose();
 		//this.window.dispose();
 		super.stop(reason);
 	}

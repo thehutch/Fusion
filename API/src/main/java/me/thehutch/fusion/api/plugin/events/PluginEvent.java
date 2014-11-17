@@ -21,24 +21,24 @@ import me.thehutch.fusion.api.event.Event;
 import me.thehutch.fusion.api.plugin.Plugin;
 
 /**
- * The base event class used to signify a plugin based event.
+ * The base event class used to signify a mPlugin based event.
  *
  * @author thehutch
  */
 public abstract class PluginEvent extends Event {
-	private final Plugin plugin;
+	private final Plugin mPlugin;
 
 	public PluginEvent(Plugin plugin, boolean canCancel) {
 		super(canCancel);
-		this.plugin = plugin;
+		mPlugin = plugin;
 	}
 
 	/**
-	 * Gets the plugin from the event.
+	 * Gets the mPlugin from the event.
 	 *
-	 * @return The plugin
+	 * @return The mPlugin
 	 */
 	public final Plugin getPlugin() {
-		return plugin;
+		return mPlugin;
 	}
 }

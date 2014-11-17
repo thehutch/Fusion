@@ -46,7 +46,7 @@ public enum TaskPriority {
 	 */
 	LOWEST(10000L);
 	private static final TaskPriority[] VALUES = TaskPriority.values();
-	private final long maxDeferred;
+	private final long mMaxDeferred;
 
 	/**
 	 * Creates a TaskPriority instance which sets the maximum time that a task can be deferred.
@@ -54,7 +54,7 @@ public enum TaskPriority {
 	 * @param maxDeferred The maximum delay for this task
 	 */
 	private TaskPriority(long maxDeferred) {
-		this.maxDeferred = maxDeferred;
+		mMaxDeferred = maxDeferred;
 	}
 
 	/**
@@ -63,7 +63,7 @@ public enum TaskPriority {
 	 * @return The maximum deferred time
 	 */
 	public long getMaxDeferred() {
-		return maxDeferred;
+		return mMaxDeferred;
 	}
 
 	/**

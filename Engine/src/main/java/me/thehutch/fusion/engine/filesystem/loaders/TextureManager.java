@@ -45,16 +45,16 @@ public class TextureManager implements IResourceManager<Texture> {
 	private static final String S_WRAP_ATTRIBUTE = "WRAP_S";
 	private static final String T_WRAP_ATTRIBUTE = "WRAP_T";
 
-	private final TMap<Path, Texture> textures = new THashMap<>();
-	private final Client engine;
+	private final TMap<Path, Texture> mTextures = new THashMap<>();
+	private final Client mEngine;
 
 	public TextureManager(Client engine) {
-		this.engine = engine;
+		mEngine = engine;
 	}
 
 	@Override
 	public Texture get(Path path, boolean load) {
-		final Texture texture = textures.get(path);
+		final Texture texture = mTextures.get(path);
 		if (texture == null && load) {
 			return load(path);
 		}
@@ -92,7 +92,7 @@ public class TextureManager implements IResourceManager<Texture> {
 			});
 
 			// Create a texture
-			final Texture texture = engine.getContext().newTexture();
+			final Texture texture = mEngine.getContext().newTexture();
 			texture.create();
 			texture.bind();
 
@@ -115,7 +115,7 @@ public class TextureManager implements IResourceManager<Texture> {
 			texture.setCompareFunc(compareFunc);
 
 			// Set the texture image data
-			final ImageData imageData = engine.getFileSystem().getResource(FileSystem.DATA_DIRECTORY.resolve(values.get(IMAGE_DATA_ATTRIBUTE)));
+			final ImageData imageData = mEngine.getFileSystem().getResource(FileSystem.DATA_DIRECTORY.resolve(values.get(IMAGE_DATA_ATTRIBUTE)));
 			texture.setPixelData(imageData, minFilter.requiresMipmaps());
 
 			// Unbind the texture
@@ -133,7 +133,7 @@ public class TextureManager implements IResourceManager<Texture> {
 
 	@Override
 	public void unload(Path path) {
-		final Texture texture = textures.remove(path);
+		final Texture texture = mTextures.remove(path);
 		if (texture != null) {
 			texture.dispose();
 		}
@@ -141,11 +141,11 @@ public class TextureManager implements IResourceManager<Texture> {
 
 	@Override
 	public void dispose() {
-		this.textures.forEachValue((Texture texture) -> {
+		mTextures.forEachValue((Texture texture) -> {
 			texture.dispose();
 			return true;
 		});
-		this.textures.clear();
+		mTextures.clear();
 	}
 
 	private static String getValue(String line, boolean toUpper) {

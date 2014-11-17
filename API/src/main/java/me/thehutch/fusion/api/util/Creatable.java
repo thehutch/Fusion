@@ -21,50 +21,50 @@ package me.thehutch.fusion.api.util;
  * @author thehutch
  */
 public abstract class Creatable implements Disposable {
-	private boolean created;
+	private boolean mCreated;
 
 	/**
 	 * Default constructor for {@link Creatable}.
 	 */
 	public Creatable() {
-		this.created = false;
+		mCreated = false;
 	}
 
 	/**
 	 * Override this method to use as the initialisation method.
-	 * The base method should also be called to set created to true.
+	 * The base method should also be called to set mCreated to true.
 	 */
 	public void create() {
-		this.created = true;
+		mCreated = true;
 	}
 
 	/**
-	 * @return True if this object has been created
+	 * @return True if this object has been mCreated
 	 */
 	public final boolean isCreated() {
-		return created;
+		return mCreated;
 	}
 
 	/**
-	 * Ensures that this object has been created, otherwise throws an
+	 * Ensures that this object has been mCreated, otherwise throws an
 	 * {@link IllegalStateException}.
 	 *
-	 * @param message The message to display if this object has not been created
+	 * @param message The message to display if this object has not been mCreated
 	 */
 	public final void ensureCreated(String message) {
-		if (!created) {
+		if (!mCreated) {
 			throw new IllegalStateException(message);
 		}
 	}
 
 	/**
-	 * Ensures that this object has not been created, otherwise throws an
+	 * Ensures that this object has not been mCreated, otherwise throws an
 	 * {@link IllegalStateException}.
 	 *
-	 * @param message The message to display if this object has been created
+	 * @param message The message to display if this object has been mCreated
 	 */
 	public final void ensureNotCreated(String message) {
-		if (created) {
+		if (mCreated) {
 			throw new IllegalStateException(message);
 		}
 	}
@@ -74,6 +74,6 @@ public abstract class Creatable implements Disposable {
 	 */
 	@Override
 	public void dispose() {
-		this.created = false;
+		mCreated = false;
 	}
 }
