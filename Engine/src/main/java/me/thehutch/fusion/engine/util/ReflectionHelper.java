@@ -37,7 +37,7 @@ public final class ReflectionHelper {
 
 		private ClassType() {
 			try {
-				final Field field = getClass().getDeclaredField("classType");
+				final Field field = getClass().getDeclaredField("mClassType");
 				final ParameterizedType type = (ParameterizedType) field.getGenericType();
 				mClassType = (Class<T>) type.getActualTypeArguments()[0].getClass();
 			} catch (NoSuchFieldException | SecurityException ex) {
