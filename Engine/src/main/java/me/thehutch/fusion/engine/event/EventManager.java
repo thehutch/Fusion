@@ -28,7 +28,6 @@ import me.thehutch.fusion.api.event.EventPriority;
 import me.thehutch.fusion.api.event.IEventManager;
 import me.thehutch.fusion.api.scheduler.IScheduler;
 import me.thehutch.fusion.api.scheduler.TaskPriority;
-import me.thehutch.fusion.engine.util.ReflectionHelper;
 
 /**
  * @author thehutch
@@ -89,8 +88,7 @@ public class EventManager implements IEventManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T extends Event> void register(Consumer<T> handler, EventPriority priority, boolean ignoreCancelled) {
-		final Class<T> eventClass = ReflectionHelper.getGenericClass();
+	public <T extends Event> void register(Consumer<T> handler, Class<T> eventClass, EventPriority priority, boolean ignoreCancelled) {
 		SortedSet<EventExecutor> executors = mEvents.get(eventClass);
 		if (executors == null) {
 			executors = new TreeSet<>();
@@ -103,8 +101,7 @@ public class EventManager implements IEventManager {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <T extends Event> void unregister(Consumer<T> handler) {
-		final Class<T> eventClass = ReflectionHelper.getGenericClass();
+	public <T extends Event> void unregister(Consumer<T> handler, Class<T> eventClass) {
 		final SortedSet<EventExecutor> executors = mEvents.get(eventClass);
 		if (executors == null) {
 			throw new IllegalArgumentException("No events to unregister of type " + eventClass.getName());

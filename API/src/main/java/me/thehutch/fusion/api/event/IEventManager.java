@@ -62,17 +62,19 @@ public interface IEventManager {
 	 * Registers the event handler with the given priority and ignore flag.
 	 *
 	 * @param <T>             The type of event being registered
+	 * @param eventClass      The event class to register
 	 * @param handler         The function which handles the event
 	 * @param priority        The priority of the event
 	 * @param ignoreCancelled If the handler ignores the cancellation state of the event
 	 */
-	public <T extends Event> void register(Consumer<T> handler, EventPriority priority, boolean ignoreCancelled);
+	public <T extends Event> void register(Consumer<T> handler, Class<T> eventClass, EventPriority priority, boolean ignoreCancelled);
 
 	/**
 	 * Unregisters the event handler from the event manager.
 	 *
-	 * @param <T>     The type of event
-	 * @param handler The handler to unregister
+	 * @param <T>        The type of event
+	 * @param handler    The handler to unregister
+	 * @param eventClass The event class to unregister
 	 */
-	public <T extends Event> void unregister(Consumer<T> handler);
+	public <T extends Event> void unregister(Consumer<T> handler, Class<T> eventClass);
 }
