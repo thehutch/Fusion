@@ -74,11 +74,14 @@ public final class InputManager implements IInputManager {
 		final TMap<Key, Set<Runnable>> bindings = mKeyBindings;
 
 		// Check and execute each key binding
-		bindings.keySet().stream().filter(key -> isKeyDown(key)).map(key -> bindings.get(key)).forEach(executors -> {
-			executors.stream().forEach(executor -> {
-				executor.run();
+		bindings.keySet().stream()
+			.filter(key -> isKeyDown(key))
+			.map(key -> bindings.get(key))
+			.forEach(executors -> {
+				executors.stream().forEach(executor -> {
+					executor.run();
+				});
 			});
-		});
 
 		// Get the event manager
 		final EventManager evManager = mEventManager;

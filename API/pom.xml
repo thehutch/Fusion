@@ -30,8 +30,8 @@
 		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
-			<version>1.13</version>
-			<scope>compile</scope>
+			<version>1.14</version>
+			<type>jar</type>
 		</dependency>
 	</dependencies>
 
